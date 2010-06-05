@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		   xmlns:comp="adaptlearning.view.components.*" creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
+			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionDto;
+
+			[Bindable]
+			private var survey:FilledSurveyDto;
+
+			private var surveys:SurveyDao;
+			private var view:ViewController;
+
+			private function onCreationComplete():void {
+				surveys = ContextFactory.context.service.surveyDao;
+				view = ContextFactory.context.view;
+			}
+
+			public function initializeView(id:Number):void {
+				surveys.getSurvey(id).onSuccess(function(loadedSurvey:FilledSurveyDto):void {
+						survey = loadedSurvey;
+					});
+			}
+
+			public function questionToString(question:SurveyQuestionDto):String {
+				var string:String = question.text;
+				for each (var answer:SurveyQuestionAnswerDto in question.answers) {
+
+				}
+				return string;
+			}
+		]]>
+	</mx:Script>
+	<mx:Form top="10" left="10" right="10" height="127">
+		<mx:FormItem label="survey">
+			<mx:Label text="{survey.surveyTemplateName}"/>
+		</mx:FormItem>
+		<mx:FormItem label="started">
+			<mx:Text text="{survey.startDate}"/>
+		</mx:FormItem>
+		<mx:FormItem label="submitted">
+			<mx:Label text="{survey.submitDate}"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:List left="10" bottom="40" top="145" right="10" dataProvider="{survey.questions}"
+			 itemRenderer="org.adaptiveplatform.surveys.view.QuestionDetailsRenderer"/>
+	<mx:Button x="10" label="back" bottom="10" click="view.goto(View.BACK)"/>
+
+</mx:Canvas>

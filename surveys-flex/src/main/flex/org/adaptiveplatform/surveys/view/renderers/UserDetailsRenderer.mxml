@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="150" height="32" backgroundAlpha="0">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import org.adaptiveplatform.surveys.dto.generated.UserDto;
+			[Bindable]
+			[Embed(source="/assets/icons/student.png")]
+			public var studentIcon:Class;
+
+			[Bindable]
+			[Embed(source="/assets/icons/teacher.png")]
+			public var teacherIcon:Class;
+
+			[Bindable]
+			[Embed(source="/assets/icons/evaluator.png")]
+			public var evaluatorIcon:Class;
+			
+			override public function set data(o:Object):void {
+				super.data = o;
+				iconRole.source = iconFunc(o);
+				userName.text = (o as UserDto).name;
+				userEmail.text = (o as UserDto).email;
+			}
+			
+			private function iconFunc(item:Object):Class {
+				var iconClass:Class;
+	
+				if ((item.roles as ArrayCollection).contains("ROLE_ADMINISTRATOR")) {
+					iconClass = teacherIcon;
+					iconRole.toolTip = "Administrator";
+				} else if ((item.roles as ArrayCollection).contains("ROLE_EVALUATOR")) {
+					iconClass = evaluatorIcon;
+					iconRole.toolTip = "Evaluator";
+				} else {
+					iconClass = studentIcon;
+					iconRole.toolTip = "Student";
+				}
+	
+				return iconClass;
+			}
+		]]>
+	</mx:Script>
+	<mx:Image id="iconRole"  x="2" y="0"/>
+	<mx:Label id="userName" x="41" y="0" width="109" truncateToFit="true"/>
+	<mx:Label id="userEmail" x="41" y="14" width="109" fontSize="9" truncateToFit="true"/>
+</mx:Canvas>

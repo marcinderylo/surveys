@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+	creationComplete="onCreationComplete()" horizontalAlign="center" verticalAlign="middle">
+	
+	<mx:Metadata>
+		[ResourceBundle("adaptive")]
+	</mx:Metadata>	
+	
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.AuthenticationService;
+
+			import mx.controls.Alert;
+			import mx.rpc.Fault;
+
+			private var authentication:AuthenticationService;
+			private var view:ViewController;
+
+			private function onCreationComplete():void {
+				authentication = ContextFactory.context.service.authentication;
+				view = ContextFactory.context.view;
+				username.setFocus();
+				updateLocale( initialLocale );	
+				
+			}
+
+			protected function loginClicked(ignore:MouseEvent = null):void {
+				authentication.login(username.text, password.text) //
+					.onFault(failedToLogIn) //
+					.onSuccess(function(result:Object = null):void {
+						username.text = null;
+						password.text = null;
+						var authorities:Array = result.authorities;
+						if (authorities.indexOf("ROLE_ADMINISTRATOR") > -1) { // FIXME hardcode
+							view.goto(View.USERS_LIST);
+						} else if (authorities.indexOf("ROLE_TEACHER") > -1) {
+							view.goto(View.GROUP_MANAGEMENT);
+						} else if (authorities.indexOf("ROLE_EVALUATOR") > -1) {
+							view.goto(View.EVALUATOR_START_PAGE);
+						} else if (authorities.indexOf("ROLE_USER") > -1) {
+							view.goto(View.SURVEY_TEMPLATE_LIST);
+						} else {
+							Alert.show("your account has no privleges", "authorization error");
+						}
+					});
+			}
+
+			private function failedToLogIn(fault:Fault):void {
+				Alert.show(fault.faultString, "error");
+			}
+
+		/**
+		 *  The locales which this application supports.
+		 *  This is the dataProvider for the Language combobox.
+		 */
+		private var locales:Array = [ "pl_PL" , "en_US" ];
+		
+		/**
+		 *  The initial locale that the application uses.
+		 *  We attempt to load this from a local SharedObject at startup,
+		 *  but default to "en_US" if this SharedObject doesn't exist.
+		 */
+		private var initialLocale:String = "pl_PL";			
+			
+		private function languageComboBoxLabelFunction(item:Object):String
+		{
+			var locale:String = String(item);
+			return resourceManager.getString('adaptive', locale);
+		}
+			
+		private function languageComboBoxChanged(event:Event):void
+		{
+			var newLocale:String = String(langCmbBox.selectedItem);		
+			updateLocale( newLocale );	
+		}
+		
+		private function updateLocale( newLocale:String ):void{
+			var sharedObject:SharedObject = SharedObject.getLocal("savedData");
+			sharedObject.data["locale"] = newLocale;
+			
+			resourceManager.localeChain = [ newLocale ];
+			resourcesChanged();
+			updateLanguageComboBox();
+		}
+		
+		private function updateLanguageComboBox():void
+		{
+			var oldSelectedItem:Object = langCmbBox.selectedItem;
+			
+			langCmbBox.dataProvider = locales;
+			
+			langCmbBox.selectedItem = oldSelectedItem;
+		}
+		
+		]]>
+	</mx:Script>
+	<mx:HBox>
+		<mx:Label id="langLabel" text="{resourceManager.getString('adaptive', 'language')}"/>
+		<mx:ComboBox id="langCmbBox"
+					dataProvider="{locales}"
+					 labelFunction="languageComboBoxLabelFunction"
+					 change="languageComboBoxChanged(event)"/>
+	</mx:HBox>
+	<mx:Form defaultButton="{loginBtn}" width="400">
+		<mx:FormHeading label="{resourceManager.getString('adaptive', 'login')}"/>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'email')}" width="100%">
+			<mx:TextInput id="username" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'password')}" width="100%">
+			<mx:TextInput id="password" width="100%" displayAsPassword="true"/>
+		</mx:FormItem>
+		<mx:FormItem horizontalAlign="right" direction="horizontal" width="100%">
+			<mx:Button id="loginBtn" label="{resourceManager.getString('adaptive', 'doLogin')}" click="loginClicked(event)" width="50%"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'register')}" click="view.goto(View.REGISTER_USER)" width="50%"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:Label text="{resourceManager.getString('adaptive', 'try')}:"/>
+	<mx:Label text="john@doe.com / doe (user)"/>
+	<mx:Label text="eval@adapt.com / eval (evaluator)"/>
+	<mx:Label text="keyser@soze.com / soze (super user)"/>
+</mx:VBox>

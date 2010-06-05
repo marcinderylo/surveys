@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%"
+		 height="100%"
+		 verticalAlign="middle"
+		 horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.view.ResearchWizzard;
+			
+			import mx.events.ValidationResultEvent;
+
+			private function onChange(event:Event):void {
+				if (researchName.text.length>0)
+					(parentDocument as ResearchWizzard).isValid=true;
+				else
+					(parentDocument as ResearchWizzard).isValid=false;
+			}
+			
+			public function clean():void{
+				researchName.text = "";
+				start.selectedDate = null;
+				end.selectedDate = null;
+			}
+		]]>
+	</mx:Script>
+	<mx:Form>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'researchName')}:"
+					 required="true">
+			<mx:TextInput editable="true" change="onChange(event)"
+						  id="researchName"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'validFrom')}:">
+			<mx:DateField editable="true"
+						  id="start"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'validTo')}:">
+			<mx:DateField editable="true"
+						  id="end"/>
+		</mx:FormItem>
+	</mx:Form>
+</mx:VBox>

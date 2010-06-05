@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%"
+		 height="100%"
+		 xmlns:components="adaptlearning.view.components.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.DateField;
+			
+			import org.adaptiveplatform.surveys.dto.generated.AddGroupToResearchCommand;
+			import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
+			[Bindable]
+			private var _groups:ArrayCollection=new ArrayCollection();
+
+			[Bindable]
+			public var start:Date=new Date();
+
+			[Bindable]
+			public var end:Date=new Date();
+
+			[Bindable]
+			public var question:SurveyTemplateDto;
+
+			public function set groups(groups:ArrayCollection):void {
+				_groups=new ArrayCollection();
+				for each (var group:StudentGroupDto in groups) {
+					var groupCommand:Object={"id": group.id, "groupName": group.groupName, "validFrom": start ? new Date(start) : null, "validTo": end ? new Date(end) : null};
+					_groups.addItem(groupCommand);
+				}
+			}
+
+			public function get groups():ArrayCollection {
+				var groups:ArrayCollection=new ArrayCollection();
+				for each (var group:Object in groupList.dataProvider) {
+					var groupCommand:AddGroupToResearchCommand=new AddGroupToResearchCommand();
+					groupCommand.groupId=group.id;
+					groupCommand.validFrom=group.start;
+					groupCommand.validTo=group.end;
+					groups.addItem(groupCommand);
+				}
+				return groups;
+			}
+		]]>
+	</mx:Script>
+	<!--<components:DisplayAnswerQuestionComponent question="{question}"/>-->
+	<mx:Label text="{resourceManager.getString('adaptive', 'surveyTemplate')}: {question.name}"/>
+	<mx:Label text="{resourceManager.getString('adaptive', 'validFrom')}: {DateField.dateToString(start, 'DD/MM/YYYY')}"/>
+	<mx:Label text="{resourceManager.getString('adaptive', 'validTo')}: {DateField.dateToString(end, 'DD/MM/YYYY')}"/>
+	<mx:DataGrid id="groupList"
+				 dataProvider="{_groups}"
+				 width="100%"
+				 height="100%"
+				 rowHeight="26"
+				 draggableColumns="false"
+				 sortableColumns="true"
+				 selectable="true"
+				 editable="true"
+				 allowMultipleSelection="true">
+		<mx:columns>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupName')}"
+							   dataField="groupName"
+							   editable="false"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'validFrom')}"
+							   dataField="validFrom"
+							   itemRenderer="mx.controls.DateField"
+							   rendererIsEditor="true"
+							   width="150"
+							   editorDataField="selectedDate"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'validTo')}"
+							   dataField="validTo"
+							   itemRenderer="mx.controls.DateField"
+							   rendererIsEditor="true"
+							   width="150"
+							   editorDataField="selectedDate"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+</mx:VBox>

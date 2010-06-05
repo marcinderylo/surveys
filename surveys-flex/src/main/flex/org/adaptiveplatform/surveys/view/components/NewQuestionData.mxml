@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="adaptlearning.view.components.*"
+	creationComplete="onCreationComplete()" 
+	remove="onRemove()"
+	width="100%"
+	maxHeight="600">
+    
+    <mx:Script>
+        <![CDATA[
+			import org.adaptiveplatform.surveys.view.components.questions.RequireCommentEvent;
+			import org.adaptiveplatform.surveys.view.events.AnswerEvent;
+			
+			import flash.events.Event;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.containers.FormItem;
+			import mx.containers.GridRow;
+			import mx.controls.Alert;
+			import mx.core.ScrollPolicy;
+			import mx.events.FlexEvent;
+			import mx.formatters.SwitchSymbolFormatter;
+			import mx.managers.PopUpManager;
+			import mx.utils.ArrayUtil;
+			import mx.validators.StringValidator;
+			import mx.validators.Validator;
+			
+			import org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
+            
+			[Bindable]
+            public var question:QuestionTemplateDto;
+            
+            [Bindable]
+            public var survey:SurveyTemplateDto;
+            
+            [Bindable]
+            private var validatorArr:ArrayCollection = new ArrayCollection();
+            
+            [Bindable]
+            private var newAnswer:AnswerTemplateDto = new AnswerTemplateDto();
+            
+            
+            private var watchers:ArrayCollection = new ArrayCollection();
+            
+            private function onCreationComplete():void{
+            	newAnswer.excludesOtherAnswers = !question.type.equals(QuestionTypeEnum.SINGLE_CHOICE);
+            	newAnswer.requiresComment = false;
+            	watchers.addItem( BindingUtils.bindSetter( function( value:QuestionTemplateDto ):void{
+            		if(value != null){
+            			questionText.htmlText = value.text;
+            			createAnswersComponents(value.answers);
+            		}
+            	}, this, "question") );
+            	watchers.addItem( BindingUtils.bindSetter( function( value:QuestionTypeEnum ):void{
+            		if(QuestionTypeEnum.OPEN.equals(value) ){
+            			questionText.percentHeight = 100;
+            		}else{
+            			questionText.percentHeight = 20;            			
+            		}
+            		changeComponentsVisibility();
+            	}, question, "type"));
+            	
+            }
+            
+            private var _requireComment:Boolean = false;
+            
+            public function set requiresComment(value:Boolean):void{
+            		_requireComment = value;
+					changeComponentsVisibility();
+            }
+            
+            private function changeComponentsVisibility():void{
+	            	for each( var answerChild:NewAnswerQuestion in answersList.getChildren()){
+	            		answerChild.requireCommentControls.visible = !requiresComment;
+	            		answerChild.requireCommentControls.includeInLayout = !requiresComment;
+	            		answerChild.excludeOthersControls.visible = (!requiresComment) && (!question.type.equals(QuestionTypeEnum.SINGLE_CHOICE));
+	            		answerChild.excludeOthersControls.includeInLayout = (!requiresComment) && (!question.type.equals(QuestionTypeEnum.SINGLE_CHOICE));
+	            		answerChild.answer.requiresComment = requiresComment;
+	            		answerChild.questionType = question.type;
+	            		
+	            	} 
+            }
+            
+            [Bindable]
+            public function get requiresComment():Boolean{
+            	return _requireComment;
+            }
+            
+            private function createAnswersComponents(answers:ArrayCollection):void{
+            	for each(var _answer:AnswerTemplateDto in answers){
+            		createAnswerComponent(_answer);
+            		
+            	}
+            }
+            
+            private function createAnswerComponent(answer:AnswerTemplateDto):void{
+            		var answerComponent:NewAnswerQuestion = new NewAnswerQuestion();
+            		answerComponent.answer = answer;
+            		answerComponent.percentWidth = 100;
+            		answerComponent.editMode = true;
+            		answerComponent.questionType = question.type;
+            		answerComponent.requiresCommentGlobal = this.requiresComment;
+            		answerComponent.addEventListener( AnswerEvent.REMOVE_ANSWER_EVENT, removeAnswerHandler );
+            		answerComponent.addEventListener( RequireCommentEvent.REQUIRE_COMMENT_CHECKED, function(event:RequireCommentEvent):void{
+            			answerComponent.dispatchEvent(event);
+            		});
+            		answersList.addChild(answerComponent);
+            		changeComponentsVisibility();
+            }
+            
+            private function onRemove():void{
+            	for each( var watcher:ChangeWatcher in watchers ){
+	            	watcher.unwatch();
+            	}
+            }
+            
+            private function answersValid():Boolean{
+            	return Validator.validateAll(validatorArr.toArray()).length == 0;
+            }
+                        
+            private function questionTypeLabel(item:Object):String{
+            	return resourceManager.getString('adaptive', item.label);
+            }
+            
+            public function removeAnswer( item:Object):void{
+            	question.answers.removeItemAt( question.answers.getItemIndex( item ) );
+            }
+
+			public function addAnswer( item:Object ):void{
+				question.answers.addItem( newAnswer );
+				newAnswer = new AnswerTemplateDto();
+			}
+			
+			private function questionTextChange(event:Event):void{
+				question.htmlText = questionText.htmlText;
+				question.text = questionText.text;
+			}
+			
+			private function removeAnswerComponent(answer:AnswerTemplateDto):void{
+				for each( var answerComponent:NewAnswerQuestion in answersList.getChildren() ){
+					if( answerComponent.answer == answer ){
+						answersList.removeChild(answerComponent);
+					}
+				}
+			}
+			
+			private function addAnswerHandler(event:AnswerEvent):void{
+				question.answers.addItem(event.answer);
+				createAnswerComponent(event.answer);
+			}
+			
+			private function addAnswerByClick(event:MouseEvent):void{
+				var _newAnswer:AnswerTemplateDto = new AnswerTemplateDto();
+				createAnswerComponent(_newAnswer);
+				question.answers.addItem(_newAnswer);
+			}
+
+			private function removeAnswerHandler(event:AnswerEvent):void{
+				question.answers.removeItemAt( question.answers.getItemIndex(event.answer) );
+				removeAnswerComponent(event.answer);
+			}
+			
+			public function validate():Boolean{
+				validatorArr.removeAll();
+				for each( var answerComponent:NewAnswerQuestion in answersList.getChildren() ){
+					validatorArr.addItem( answerComponent.answerValidator );
+				}
+				validatorArr.addItem( questionTextValidator );
+				var errArray:Array = Validator.validateAll( validatorArr.toArray() );
+				return errArray.length == 0;
+			}
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:StringValidator id="questionTextValidator" listener="{questionText}" source="{questionText}" property="text" required="true" />
+    	    
+    <mx:VBox width="100%" height="100%">
+    			<mx:Label text="{resourceManager.getString('adaptive', 'createQuestion.dataView.questionText')}" />
+    		 	<mx:TextArea 
+    		 		id="questionText"
+    		 		text="{question.text}"
+    		 		change="questionTextChange(event)"
+    		 		width="100%"
+    		 		height="100%"
+    		 		/>
+    		 		<mx:VBox includeInLayout="{!question.type.equals(QuestionTypeEnum.OPEN)}" 
+					    	visible="{!question.type.equals(QuestionTypeEnum.OPEN)}" height="100%" width="100%" >
+	    		 		<mx:Label text="{resourceManager.getString('adaptive', 'createQuestion.typeView.answers')}:" 
+	    		 			visible="{survey.questions.length > 0}"/>
+	    		 		<mx:VBox width="100%" height="240">
+		    		 		<mx:VBox id="answersList" width="100%" height="100%"/>
+		    		 		<mx:Spacer height="100%"/>
+	    		 		</mx:VBox>
+	    	
+		    			<mx:HBox width="100%" height="40">
+		    				<mx:Spacer width="100%" />
+							<mx:Button label="{resourceManager.getString('adaptive', 'addAnswer')}"
+								   toolTip="{resourceManager.getString('adaptive', 'addAnswer')}"
+								   click="addAnswerByClick(event)"
+								   icon="@Embed(source='/assets/icons/add.png')"/>
+		    			</mx:HBox>
+    		 		</mx:VBox>
+    </mx:VBox>
+	
+</mx:Canvas>

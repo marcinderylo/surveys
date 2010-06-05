@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    implements="mx.core.IToolTip" 
+    headerHeight="10"
+    layout="horizontal"
+    minWidth="300"
+    horizontalAlign="center"
+    verticalAlign="middle"
+    xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*" xmlns:components="adaptlearning.view.components.*" xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
+    <mx:Script>
+        <![CDATA[
+            
+            [Bindable]
+            private var _details:Object;
+        
+            /**
+            * Required text property of the IToolTip interface
+            */
+            private var _text:String;
+    
+            /**
+             * Getter method for text property, required for the IToolTip interface
+             */
+            public function get text():String 
+            { 
+                return _text; 
+            } 
+            
+            /**
+             * Setter method for text property, required for the IToolTip interface
+             */
+            public function set text(value:String):void 
+            {
+                _text = value;
+            } 
+            
+            public function set details(value:Object):void
+            {
+                _details = value;
+            }
+            
+        ]]>
+    </mx:Script>
+    <components1:DisplayAnswerQuestionComponent question="{_details}" />
+    
+</mx:Panel>

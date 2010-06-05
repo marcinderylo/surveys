@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+	xmlns:stringEqualValidator="adapting.view.validators.EqualStringsValidator"
+	creationComplete="onCreationComplete()" horizontalAlign="center" verticalAlign="middle" xmlns:validators="org.adaptiveplatform.surveys.view.validators.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.Fault;
+			import mx.validators.Validator;
+			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.UserFacade;
+			import org.adaptiveplatform.surveys.dto.generated.RegisterAccountCommand;
+
+			private var userFacade:UserFacade;
+			private var view:ViewController;
+			
+			[Bindable]
+			private var user:RegisterAccountCommand;
+
+			private function onCreationComplete():void {
+				userFacade = ContextFactory.context.service.userFacade;
+				view = ContextFactory.context.view;
+				user = new RegisterAccountCommand();
+			}
+
+			protected function registerClicked(event:MouseEvent):void {
+				var validatorErrorArray:Array = Validator.validateAll(validators);;
+                var isValidForm:Boolean = validatorErrorArray.length == 0;
+                if (isValidForm) {
+					user.password = password.text;
+					user.name = displayedName.text;
+					user.email = email.text;
+					userFacade.registerUser(user) //
+						.onSuccess(userCreated) //
+						.onFault(failedToCreateUser);
+                }
+			}
+			
+			protected function loginClicked(event:MouseEvent):void{
+				user = new RegisterAccountCommand();
+			}
+
+			private function userCreated(ignore:Object = null):void {
+				Alert.show("user created successfully");
+			}
+
+			private function failedToCreateUser(fault:Fault):void {
+				Alert.show(fault.faultString);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Array id="validators">
+		<mx:EmailValidator source="{user}" property="email" required="true" trigger="{email}" listener="{email}" triggerEvent="change"/>
+		<mx:EmailValidator source="{email2}" property="text" required="true" trigger="{email2}" triggerEvent="change" listener="{email2}" />
+		<mx:StringValidator source="{user}" property="name" required="true" listener="{displayedName}" trigger="{displayedName}" triggerEvent="change"/>
+		<mx:StringValidator source="{user}" property="password" required="true" minLength="5" maxLength="255" listener="{password}" trigger="{password}" triggerEvent="change"/>
+		<validators:EqualStringsValidator source="{password2}" property="text" repeatedValue="{user.password}" notEqualErrorMsg="Password not equal" listener="{password2}" trigger="{password2}" triggerEvent="change" required="true"/>
+		<validators:EqualStringsValidator source="{email2}" property="text" repeatedValue="{user.email}" notEqualErrorMsg="Emails not equal" listener="{email2}" trigger="{email2}" triggerEvent="change" />
+	</mx:Array>
+
+	<mx:Form width="400" >
+		<mx:FormItem width="100%" horizontalAlign="center" direction="horizontal">
+			<mx:Image buttonMode="true" toolTip="{resourceManager.getString('adaptive', 'selectPhoto')}" source="@Embed(source='/assets/icons/user1.png')"/>
+		</mx:FormItem>		
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'displayedName')}" width="100%">
+			<mx:TextInput id="displayedName" change="{user.name = displayedName.text}" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'mailAddress')}" width="100%">
+			<mx:TextInput id="email" width="100%" change="{ user.email = email.text }"/>
+		</mx:FormItem>
+		<mx:FormItem id="repeatEmail" label="{resourceManager.getString('adaptive', 'reMailAddress')}" width="100%">
+			<mx:TextInput id="email2" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'password')}" width="100%">
+			<mx:TextInput id="password" width="100%" displayAsPassword="true" change="{user.password = password.text}"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'rePassword')}" width="100%">
+			<mx:TextInput id="password2" width="100%" displayAsPassword="true"/>
+		</mx:FormItem>
+		<mx:FormItem horizontalAlign="right" direction="horizontal" width="100%">
+			<mx:Button id="register" label="{resourceManager.getString('adaptive', 'register')}" click="registerClicked(event)" width="50%"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'login')}" click="view.goto(View.LOGIN)" width="50%"/>
+		</mx:FormItem>
+	</mx:Form>
+</mx:VBox>

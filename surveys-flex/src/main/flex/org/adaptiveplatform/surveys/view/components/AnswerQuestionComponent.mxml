@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="adaptlearning.view.components.*"
+		  label="{question.number}" creationComplete="onCreationComplete()" remove="remove()"
+		  width="100%" height="100%" xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			
+			import flash.events.KeyboardEvent;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.containers.HBox;
+			import mx.controls.Label;
+			import mx.controls.Text;
+			import mx.controls.TextArea;
+			import mx.controls.TextInput;
+			import mx.core.IFlexDisplayObject;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			
+			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionDto;
+
+			[Bindable]
+			public var survey:FilledSurveyDto;			
+			[Bindable]
+			public var isQuestionsAnsweredList:ArrayCollection;		
+			[Bindable]
+			public var question:SurveyQuestionDto;
+
+			private var _commentVisible:Boolean = false;
+			private var _bindings:ArrayCollection = new ArrayCollection;
+			
+			private function onCreationComplete():void {
+				_commentVisible = isCommentRequired(question.answers);
+				commentOrOpenAnswer.visible = _commentVisible;
+				commentOrOpenAnswer.includeInLayout = _commentVisible;
+				commentLabel.includeInLayout = _commentVisible;
+				commentLabel.visible = _commentVisible;
+				questionText.addEventListener(
+				    MouseEvent.MOUSE_WHEEL, 
+				    function(e:MouseEvent):void 
+				    {
+				        dispatchEvent(e);
+				    }
+				);
+				commentOrOpenAnswer.addEventListener(
+				    MouseEvent.MOUSE_WHEEL, 
+				    function(e:MouseEvent):void 
+				    {
+				        dispatchEvent(e);
+				    }
+				);
+			}
+
+			private function isCommentRequired( answersToCheck:ArrayCollection ):Boolean{
+				return isQuestionOpenType() || anyAnswerRequireComment(answersToCheck) ;
+			}
+			
+			private function anyAnswerRequireComment( answersToCheck:ArrayCollection ):Boolean{
+				if( question.answers != null ){
+						
+					for each( var _answer:SurveyQuestionAnswerDto in answersToCheck ){
+						if( _answer.requiresComment ){
+							return true;
+						}
+					}
+					
+				}
+				return false;
+			}
+
+			private function isQuestionOpenType():Boolean{
+				return ( question.type.equals(QuestionTypeEnum.OPEN)  );
+			}
+			
+			private function remove():void{
+				for each( var _watcher:ChangeWatcher in _bindings){
+					_watcher.unwatch();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+		<mx:Label text="{resourceManager.getString('adaptive', 'surveyFilling.question')} {question.number}:" />
+		<mx:TextArea id="questionText" height="100%" enabled="true" editable="false" htmlText="{question.htmlText}" 
+			paddingLeft="10"
+			width="100%"/>	
+
+		<components1:SurveyAnswerQuestion id="answersComponent" question="{question}" survey="{survey}" 
+			isQuestionsAnsweredList="{isQuestionsAnsweredList}"
+			paddingLeft="20" paddingRight="20" width="100%"/>
+
+		<mx:Label id="commentLabel" text="{resourceManager.getString('adaptive', 'surveyFilling.comment')}:" />
+		<mx:TextArea paddingLeft="20" id="commentOrOpenAnswer" width="100%" 
+			text="{question.comment}" 
+			valueCommit="{question.comment = commentOrOpenAnswer.text}"/>
+		<mx:RadioButtonGroup id="questionGroup" />
+		<mx:HRule width="100%" />
+</mx:VBox>

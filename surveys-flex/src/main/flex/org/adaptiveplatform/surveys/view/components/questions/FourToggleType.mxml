@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.core.mx_internal;
+			import mx.events.ItemClickEvent;
+			
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
+			import org.adaptiveplatform.surveys.view.controls.MultiLineButton;
+			
+
+			[Bindable]
+			public var answers:ArrayCollection;
+			
+			private function toggleBtnDown(event:ItemClickEvent):void{
+				for each( var _answer:SurveyQuestionAnswerDto in answers ){
+					_answer.selected = false;
+				}
+				(answers.getItemAt(event.index) as SurveyQuestionAnswerDto).selected = true;
+				answersComponent.selectedIndex = event.index;
+				dispatchEvent( new ItemClickEvent(ItemClickEvent.ITEM_CLICK) );
+	        }
+
+			
+		]]>
+	</mx:Script>
+
+	<mx:ToggleButtonBar id="answersComponent" dataProvider="{answers}" labelField="text"
+		itemClick="toggleBtnDown(event)"
+		initialize="answersComponent.mx_internal::navItemFactory = new ClassFactory(MultiLineButton)" 
+		width="100%"/>
+</mx:HBox>

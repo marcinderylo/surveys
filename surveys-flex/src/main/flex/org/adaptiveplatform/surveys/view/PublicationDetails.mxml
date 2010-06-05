@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   width="100%"
+		   height="100%"
+		   creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.view.components.PublishDatesDialog;
+			import org.adaptiveplatform.surveys.view.components.ToolTipQuestionDetails;
+			import org.adaptiveplatform.surveys.view.components.ToolTipSurveyDetails;
+			import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.DateField;
+			import mx.controls.ToolTip;
+			import mx.controls.dataGridClasses.DataGridItemRenderer;
+			import mx.core.Application;
+			import mx.events.CloseEvent;
+			import mx.events.ListEvent;
+			import mx.events.ToolTipEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.Fault;
+			import mx.rpc.events.FaultEvent;
+			
+			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
+			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
+
+			[Bindable]
+			private var research:ResearchDto;
+
+			private var views:ViewController;
+			[Bindable]
+			private var templateId:Number;
+			[Bindable]
+
+			[Bindable]
+			private var questions:ArrayCollection;
+
+			[Bindable]
+			private var filledSurveys:ArrayCollection;
+
+			private var tooltipData:Object;
+
+			private var evaluationDao:EvaluationDao;
+
+			private function onCreationComplete():void {
+				evaluationDao=ContextFactory.context.service.evaluationDao;
+				views=ContextFactory.context.view;
+				questionGrid.addEventListener(ToolTipEvent.TOOL_TIP_CREATE, toolTipQuestionCreateHandler, false, 0, true);
+				userGrid.addEventListener(ToolTipEvent.TOOL_TIP_CREATE, toolTipSurveyCreateHandler, false, 0, true);
+			}
+
+			private function toolTipQuestionCreateHandler(ev:ToolTipEvent):void {
+				var tooltip:ToolTipQuestionDetails=new ToolTipQuestionDetails();
+				tooltip.details=tooltipData;
+				ev.toolTip=tooltip;
+			}
+
+			private function toolTipSurveyCreateHandler(ev:ToolTipEvent):void {
+				var tooltip:ToolTipSurveyDetails=new ToolTipSurveyDetails();
+				tooltip.details=tooltipData;
+				ev.toolTip=tooltip;
+			}
+
+			public function initializeView(researchDto:ResearchDto):void {
+				research=researchDto;
+				findResearch();
+			}
+
+			protected function findResearch():void {
+				evaluationDao.get(research.id) //
+					.onSuccess(function(result:ResearchDto):void {
+						research=result;
+						templateId=research.templateDto.id;
+						templateName.text=research.templateDto.name;
+						researchName.text=research.name;
+						questions=research.templateDto.questions;
+						filledSurveys=research.submittedSurveys;
+						if (research.status)
+							status.text=research.status.name;
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+
+			private function viewQuestionDetails():void {
+				var questionDetails:FilledQuestionDetails=PopUpManager.createPopUp(Application.application as DisplayObject, FilledQuestionDetails, true) as FilledQuestionDetails;
+				questionDetails.research=research;
+				questionDetails.questions=research.templateDto.questions;
+				questionDetails.currentQuestionNumber=questionGrid.selectedIndex;
+				PopUpManager.centerPopUp(questionDetails);
+			}
+
+			private function viewFilledSurveyDetails():void {
+				var surveyDetails:FilledSurveyDetails=PopUpManager.createPopUp(Application.application as DisplayObject, FilledSurveyDetails, true) as FilledSurveyDetails;
+				surveyDetails.filledSurveys=filledSurveys;
+				surveyDetails.currentSurveyNumber=userGrid.selectedIndex;
+				PopUpManager.centerPopUp(surveyDetails);
+			}
+
+			private function createToolTip(event:ListEvent, grid:DataGrid):void {
+				tooltipData=event.itemRenderer.data;
+				grid.toolTip=" ";
+				grid.dispatchEvent(new ToolTipEvent(ToolTipEvent.TOOL_TIP_CREATE));
+			}
+
+			private function deleteToolTip(event:ListEvent, grid:DataGrid):void {
+				grid.toolTip=null;
+			}
+
+			private function displayDate(o:Object, col:Object):String {
+				return DateField.dateToString(o[col.dataField], "DD/MM/YYYY");
+			}
+
+			private function displayDuration(o:Object, col:Object):String {
+				var start:Date=o[col.dataField] as Date;
+				var end:Date=o["startDate"] as Date;
+				var duration:Number=(end.getTime() - start.getTime()) / 60000;
+				return duration + " minutes";
+			}
+
+			private function showDate(value:Date):String {
+				if (value == null) {
+					return resourceManager.getString('adaptive', 'notSet');
+				} else
+					return DateField.dateToString(value, "DD/MM/YYYY");
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox x="0"
+			 y="0"
+			 height="100%"
+			 width="100%">
+		<mx:ApplicationControlBar width="100%">
+			<mx:VBox width="100%">
+				<mx:Form>
+					<mx:FormItem label="{resourceManager.getString('adaptive', 'researchName')}: ">
+						<mx:Label id="researchName"/>
+					</mx:FormItem>
+					<mx:FormItem label="{resourceManager.getString('adaptive', 'researchStatus')}: ">
+						<mx:Label id="status"/>
+					</mx:FormItem>
+					<mx:FormItem label="{resourceManager.getString('adaptive', 'surveyTemplate')}: ">
+						<mx:Label id="templateName"/>
+					</mx:FormItem>
+					<mx:FormItem label="{resourceManager.getString('adaptive', 'groupName')}: ">
+						<mx:Label id="groupNames"/>
+					</mx:FormItem>
+				</mx:Form>
+
+			</mx:VBox>
+		</mx:ApplicationControlBar>
+		<mx:HBox width="100%"
+				 height="100%">
+			<mx:Panel width="50%"
+					  height="100%"
+					  title="{resourceManager.getString('adaptive', 'Questions')}">
+				<mx:DataGrid id="questionGrid"
+							 height="100%"
+							 width="100%"
+							 dataProvider="{questions}"
+							 doubleClickEnabled="true"
+							 rowHeight="26"
+							 draggableColumns="false"
+							 sortableColumns="true"
+							 itemDoubleClick="viewQuestionDetails()"
+							 itemRollOut="deleteToolTip(event, questionGrid)"
+							 itemRollOver="createToolTip(event, questionGrid)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'question')}"
+										   dataField="text"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'type')}"
+										   dataField="type"
+										   width="50"
+										   textAlign="center"
+										   itemRenderer="{new ClassFactory(QuestionTypeItemRenderer)}"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:Panel>
+			<mx:Panel width="50%"
+					  height="100%"
+					  title="{resourceManager.getString('adaptive', 'filledSurveys')}">
+				<mx:DataGrid id="userGrid"
+							 dataProvider="{filledSurveys}"
+							 doubleClickEnabled="true"
+							 rowHeight="26"
+							 height="100%"
+							 width="100%"
+							 draggableColumns="false"
+							 sortableColumns="true"
+							 itemDoubleClick="viewFilledSurveyDetails()"
+							 itemRollOut="deleteToolTip(event, userGrid)"
+							 itemRollOver="createToolTip(event, userGrid)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'submitDate')}"
+										   dataField="submitDate"
+										   labelFunction="displayDate"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'fillingTime')}"
+										   dataField="startDate"
+										   labelFunction="displayDuration"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:Panel>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

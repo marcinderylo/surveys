@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="org.adaptiveplatform.surveys.view.*"
+		   xmlns:comp="adaptlearning.view.components.*" width="100%" height="100%"
+		   horizontalScrollPolicy="off" verticalScrollPolicy="off"
+		   creationComplete="onCreationComplete()" xmlns:components="org.adaptiveplatform.surveys.view.components.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.ScrollEvent;
+			
+			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
+			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
+			import org.adaptiveplatform.surveys.view.components.AnswerQuestionComponent;
+
+			private var authentication:AuthenticationService;
+			private var surveyDao:SurveyDao;
+			private var surveyFacade:SurveyFacade;
+			private var views:ViewController;
+			
+			[Bindable]
+			public var isQuestionsAnsweredList:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			public var survey:FilledSurveyDto;
+
+			private function onCreationComplete():void {
+				authentication = ContextFactory.context.service.authentication;
+				surveyDao = ContextFactory.context.service.surveyDao;
+				surveyFacade = ContextFactory.context.service.surveyFacade;
+				views = ContextFactory.context.view;
+			}
+
+			public function initializeView(surveyId:Number):void {
+				surveyDao.getSurvey(surveyId).onSuccess(function(found:FilledSurveyDto):void {
+					survey = found;
+					isQuestionsAnsweredList.removeAll();
+					for(var i:int = 0; i < survey.questions.length; i++){
+						isQuestionsAnsweredList.addItem(false);
+					}
+				});
+			}
+
+
+			private function submit():void {
+				if(allQuestionAnswerred()){
+					surveyFacade.submit(survey.id).onSuccessGoto(View.SURVEY_TEMPLATE_LIST);
+				}else{
+					var questionsNumbersNotAnswerred:String = new String();
+					for( var i:int; i < isQuestionsAnsweredList.length; i++ ){
+						if( !isQuestionsAnsweredList.getItemAt(i) ){
+							questionsNumbersNotAnswerred = questionsNumbersNotAnswerred.concat((i + 1).toString());
+							questionsNumbersNotAnswerred = questionsNumbersNotAnswerred.concat( " ");
+						}
+					}
+					Alert.show(resourceManager.getString('adaptive', 'surveyFilling.followingAnswersNotFilled') + questionsNumbersNotAnswerred);
+				}
+			}
+			
+			private function allQuestionAnswerred():Boolean{
+				for each( var isAnswered:Boolean in isQuestionsAnsweredList ){
+					if( !isAnswered ){
+						return false;
+					}
+				}
+				return true;
+			}
+
+			private function toggleBtnDown(event:ItemClickEvent):void{
+				var pos:int = questions.calculateQuestionPos( event.index);
+				if( pos >= questions.maxVerticalScrollPosition ){
+					questions.verticalScrollPosition = questions.maxVerticalScrollPosition;
+				}else{
+					questions.verticalScrollPosition = pos;
+				}
+	        }
+				
+			private function scroll(event:ScrollEvent):void {
+				// FIXME: measure properly the height of each question
+				toggleBtn.selectedIndex = questions.calculateQuestionIndex( event.position );
+			}
+			
+		]]>
+	</mx:Script>
+		<mx:ApplicationControlBar id="appBar" width="100%" height="80">
+			<mx:VBox width="100%">
+				<mx:HBox verticalAlign="top" width="100%">
+					<mx:Label text="{resourceManager.getString('adaptive', 'surveyFilling.surveyName')}" />
+					<mx:TextInput id="surveyName" text="{survey.surveyTemplateName}" change="{surveyName.text=survey.surveyTemplateName}" width="100%" />
+					<mx:Label text="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}" />
+					<mx:TextInput id="groupName" text="{survey.groupName}" change="{groupName.text=survey.groupName}" width="100%"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('adaptive', 'surveyFilling.questions')}" />					
+						<mx:ToggleButtonBar id="toggleBtn" dataProvider="{questions.questions}" 
+							labelField="number" 
+							itemClick="toggleBtnDown(event)"/>
+					</mx:HBox>
+					<mx:HBox textAlign="right">
+						<mx:Button label="{resourceManager.getString('adaptive', 'btn.surveyFilling.finishLater')}" click="{views.goto(View.BACK);}" toolTip="{resourceManager.getString('adaptive', 'btn.surveyFilling.finishLater')}"/>
+						<mx:Button label="{resourceManager.getString('adaptive', 'btn.send')}" click="submit()" toolTip="{resourceManager.getString('adaptive', 'btn.saveExit')}"/>					
+					</mx:HBox>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:ApplicationControlBar>
+		<components:SurveyQuestionsScrollPane id="questions"
+			isQuestionsAnsweredList="{isQuestionsAnsweredList}"
+			questions="{survey.questions}" 
+			survey="{survey}" 
+			height="{this.height-appBar.height}" 
+			scroll="scroll(event)"/>			
+</mx:VBox>

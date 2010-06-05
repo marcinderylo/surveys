@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" creationComplete="create()" remove="remove()">
+
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.QuestionStyleEnum;
+			import org.adaptiveplatform.surveys.view.components.questions.FourToggleType;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.containers.HBox;
+			import mx.controls.Alert;
+			import mx.controls.RadioButtonGroup;
+			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.MoveEvent;
+			import mx.events.StateChangeEvent;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			
+			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionDto;
+
+			private var watcher:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			public var question:SurveyQuestionDto;
+			[Bindable]
+			public var isQuestionsAnsweredList:ArrayCollection;
+			[Bindable]
+			public var survey:FilledSurveyDto;
+			private var surveyFacade:SurveyFacade;
+
+			[Bindable]
+			public var group:RadioButtonGroup;
+
+			private function create():void {
+				var isFirstCall:Boolean = true;
+				surveyFacade = ContextFactory.context.service.surveyFacade;
+				watcher.addItem(BindingUtils.bindSetter(function(question:SurveyQuestionDto):void {
+						if( question != null ){
+							createAnswersComponent();
+//							Alert.show( " Created " + question.number );
+							adnotateIfIsFullyAnswered();
+						}
+					}, this, "question"));
+				watcher.addItem( BindingUtils.bindSetter( 
+					function(value:String):void{
+						if( !isFirstCall ){
+							saveQuestion();
+						}else{
+							isFirstCall = false;
+						}
+					}, 
+					question, "comment" ) 
+				);
+
+			}
+
+			private function createAnswersComponent():void {
+				if (QuestionTypeEnum.MULTIPLE_CHOICE.equals(question.type)) { 
+					createCheckboxes();
+				} else if (QuestionTypeEnum.SINGLE_CHOICE.equals(question.type)) {
+					if( (question.style != null) ){
+						if( QuestionStyleEnum.FOUR_TOGGLE.name == question.style ){
+							createFourToggle();
+						}else{
+							createRadioButtons();
+						}
+					}else{
+						createRadioButtons();
+					}
+
+				}
+			}
+			
+			private function createCheckboxes():void{
+				for each( var answer:SurveyQuestionAnswerDto in question.answers ){
+					var checkBox:AnswerCheckBox = new AnswerCheckBox();
+					checkBox.answer = answer;
+//					checkBox.addEventListener(Event.CHANGE, uncheckButtonsThatDisallow );
+					checkBox.addEventListener(MouseEvent.CLICK, uncheckButtonsThatDisallow );
+					content.addChild( checkBox );
+				}
+			}
+			
+			private function createFourToggle():void{
+				var fourToggleButton:FourToggleType = new FourToggleType();
+				fourToggleButton.answers = question.answers;
+				fourToggleButton.addEventListener(ItemClickEvent.ITEM_CLICK, saveOnChange );
+				content.addChild( fourToggleButton );
+			}
+			
+			private function createRadioButtons():void{
+				for each( var _answer:SurveyQuestionAnswerDto in question.answers ){
+					var radioButton:AnswerRadioButton = new AnswerRadioButton();
+					radioButton.group = group;
+					radioButton.answer = _answer;
+					radioButton.addEventListener(MouseEvent.CLICK, saveOnChange );
+					content.addChild( radioButton );
+				}
+			}
+
+			private function saveOnChange(event:Event):void{
+				saveQuestion();
+			}
+			
+			private function retriveSelectedAnswers():ArrayCollection{
+				var _selectedAnswers:ArrayCollection = new ArrayCollection();
+				for each( var _answerQuestion:SurveyQuestionAnswerDto in question.answers){
+					if( _answerQuestion.selected ){
+						_selectedAnswers.addItem( _answerQuestion );
+					}
+				}
+				return _selectedAnswers;
+			}
+			
+			private function isCommentRequired(answersToCheck:ArrayCollection):Boolean{
+				return isQuestionOpenType() || givenAnswerRequireComment(answersToCheck);
+			}
+			
+			private function givenAnswerRequireComment( answersToCheck:ArrayCollection ):Boolean{
+				for each(var _answer:SurveyQuestionAnswerDto in answersToCheck){
+					if( _answer.requiresComment ){
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			
+			private function adnotateIfIsFullyAnswered():void{
+				var givenAnswers:ArrayCollection = retriveSelectedAnswers();
+				var commentRequieredForSelectedAnswers:Boolean = isCommentRequired(givenAnswers);
+
+				var commentToQuestion:String = "";
+				if( commentRequieredForSelectedAnswers ){
+					commentToQuestion = question.comment;
+				}
+				
+				var isAnsweredFlag:Boolean = isFullyAnswerred(givenAnswers, commentToQuestion, commentRequieredForSelectedAnswers);
+				isQuestionsAnsweredList.setItemAt(isAnsweredFlag, question.number-1);
+				
+//				Alert.show( "Question nr " + (question.number - 1).toString() + " is answered: " + isAnsweredFlag.toString());
+			}
+
+			private function saveQuestion():void{
+//				Alert.show("Question nr " + (question.number - 1).toString() + " is saved with comment " + question.comment);
+				var givenAnswers:ArrayCollection = retriveSelectedAnswers();
+
+				var selectedAnswersNumbers:ArrayCollection = new ArrayCollection();
+				for each( var _answerQuestion:SurveyQuestionAnswerDto in givenAnswers){
+					if( _answerQuestion.selected ){
+						selectedAnswersNumbers.addItem( _answerQuestion.number );
+					}
+				}
+				
+				adnotateIfIsFullyAnswered();
+
+				surveyFacade.answerQuestion( survey.id, question.number, selectedAnswersNumbers, question.comment );
+			}
+			
+			private function isQuestionOpenType():Boolean{
+				return ( question.type.equals(QuestionTypeEnum.OPEN)  );
+			}
+			
+			private function isFullyAnswerred( givenAnswers:ArrayCollection, commentToQuestion:String, commentRequieredForSelectedAnswers:Boolean ):Boolean{
+				if( commentRequieredForSelectedAnswers && ( StringUtil.trim(commentToQuestion) == "" )){
+					return false;
+				}
+				// is not open type and has no answers selected
+				if( (!isQuestionOpenType()) && (givenAnswers.length == 0)){
+					return false;
+				}
+//				Alert.show("Can save");				
+				return true;
+			}
+
+			private function remove():void {
+				for each (var watcherSetter:ChangeWatcher in watcher) {
+					watcherSetter.unwatch();
+				}
+			}
+
+			public function uncheckButtonsThatDisallow(evt:Event):void{
+				for each (var questionAnswer:SurveyQuestionAnswerDto in question.answers) {
+					if( questionAnswer.disallowsOtherAnswers || questionAnswer.requiresComment ){
+						questionAnswer.selected = false;
+					}
+					question.answers.itemUpdated(questionAnswer);
+				}
+				saveQuestion();
+			}
+			
+			public function uncheckOtherButtons():void{
+				for each (var questionAnswer:SurveyQuestionAnswerDto in question.answers) {
+					questionAnswer.selected = false;
+					question.answers.itemUpdated(questionAnswer);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="content" width="100%"/>
+
+</mx:VBox>

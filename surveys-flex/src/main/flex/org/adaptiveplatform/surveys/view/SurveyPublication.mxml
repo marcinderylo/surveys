@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%" 
+	creationComplete="onCreationComplete()"
+	verticalAlign="middle" verticalScrollPolicy="off" horizontalScrollPolicy="off" xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.List;
+			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.Fault;
+			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
+			import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
+			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
+			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+			import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateQuery;
+			import org.adaptiveplatform.surveys.view.components.PublishDatesDialog;
+
+			private var surveyDao:SurveyDao;
+			private var views:ViewController;
+			private var groupDao:StudentGroupDao;
+			private var groupFacade:StudentGroupFacade;
+
+			[Bindable]
+			private var surveys:ArrayCollection;
+
+			[Bindable]
+			private var groups:ArrayCollection;
+
+			[Bindable]
+			private var surveyTemplateQuery:SurveyTemplateQuery;
+			
+			[Bindable]
+			private var query:StudentGroupQuery = new StudentGroupQuery();
+			
+			[Bindable]
+			private var surveyFacade:SurveyFacade;
+			
+			private var selectedIndex:Number=-1;
+
+			private function onCreationComplete():void {
+				surveyDao = ContextFactory.context.service.surveyDao;
+				views = ContextFactory.context.view;
+				
+				surveyFacade = ContextFactory.context.service.surveyFacade;
+				groupDao = ContextFactory.context.service.studentGroupDao;
+				groupFacade = ContextFactory.context.service.studentGroupFacade;
+			}
+
+			public function initializeView(ignore:* = null):void {
+				reset();
+				groups = new ArrayCollection();
+				surveyList.selectedItems = [];
+			}
+
+			private function reset():void {
+				resetSurvey();
+			}
+			
+			private function resetSurvey():void {
+				surveyTemplateQuery = new SurveyTemplateQuery();
+				surveys = new ArrayCollection();
+				findSurveys();
+			}
+			
+			protected function editTemplate(event:ListEvent = null):void {
+				var selectedTemplate:SurveyTemplateDto = event.target.selectedItem;
+				views.goto(View.SURVEY_CREATING, selectedTemplate.id);
+			}
+
+			protected function findSurveys():void {
+				surveyDao.queryTemplates(surveyTemplateQuery) //
+					.onSuccess(function(result:ArrayCollection):void {
+						surveys = result;
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+
+			private function removeSurvey():void{
+				if( surveyList.selectedIndex < 0 )
+					return;
+				var survey:SurveyTemplateDto = surveyList.selectedItem as SurveyTemplateDto;
+				if (!survey)
+					return;
+				surveyFacade.removeSurveyTemplate( survey.id ).onSuccess( 
+						function():void{ 
+							surveys.removeItemAt(surveys.getItemIndex(survey) );
+					} ).onFault(
+						function(error:Fault):void{ 
+							Alert.show(resourceManager.getString('adaptive', 'removeErrorPublished'));					
+					});
+				
+			}
+
+			private function gotoCreateSurvey():void {
+				views.goto(View.SURVEY_CREATING);
+			}
+						
+			private function detailLabel(o:Object):String {
+				return o.name;// + " " + o.expirationDate;
+			}
+		]]>
+	</mx:Script>
+	<mx:Resize id="resize"/>
+    <mx:Fade id="fadeIn" duration="1000" alphaFrom="0.0" alphaTo="1.0"/>
+	
+	<mx:VBox height="100%" width="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" id="surveysContainer">
+		<mx:HBox verticalAlign="middle" width="100%" id="groupsContainer">
+			<mx:Label text="{resourceManager.getString('adaptive', 'SURVEYS')}" width="100%" textAlign="center" />
+			<mx:Button
+				label="{resourceManager.getString('adaptive', 'createSurvey')}"
+				toolTip="{resourceManager.getString('adaptive', 'createSurvey')}" 
+				click="gotoCreateSurvey()" icon="@Embed(source='/assets/icons/add.png')"/>
+			<mx:Button
+				label="{resourceManager.getString('adaptive', 'removeSurvey')}"
+				toolTip="{resourceManager.getString('adaptive', 'removeSurvey')}" 
+				click="removeSurvey()" icon="@Embed(source='/assets/icons/remove.png')"/>
+		</mx:HBox>
+		<mx:ApplicationControlBar width="100%"> 
+			<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+			<mx:TextInput id="cbxKeyword" width="100%" text="{surveyTemplateQuery.nameContains}"
+						  change="{surveyTemplateQuery.nameContains=cbxKeyword.text}" enter="findSurveys()"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'find')}" toolTip="{resourceManager.getString('adaptive', 'find')}" 
+				icon="@Embed(source='/assets/icons/search.png')" click="findSurveys()"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'reset')}" toolTip="{resourceManager.getString('adaptive', 'reset')}" 
+				icon="@Embed(source='/assets/icons/clear.png')" click="resetSurvey()"/>
+		</mx:ApplicationControlBar>
+
+		<mx:DataGrid id="surveyList" dataProvider="{surveys}" width="100%" height="100%" rowHeight="26"
+					 draggableColumns="false" sortableColumns="true" doubleClickEnabled="true" 
+					 itemDoubleClick="editTemplate(event)" dragEnabled="true" allowMultipleSelection="true">
+			<mx:columns>
+				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyTitle')}" dataField="name"/>
+				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'creationDate')}" width="100"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:HBox>

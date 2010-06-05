@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	title="{resourceManager.getString('adaptive', 'publishingDates')}" xmlns:validators="org.adaptiveplatform.surveys.view.validators.*">
+    
+    <mx:Script>
+    	<![CDATA[
+    		import mx.controls.Alert;
+    		import mx.validators.Validator;
+    		import mx.events.CloseEvent;
+    		import mx.managers.PopUpManager;
+    		
+    		private function okButtonPressed():void{
+    			var validatorErrorArray:Array = Validator.validateAll([timePeriodValidator]);
+    			var isValid:Boolean = validatorErrorArray.length == 0;
+    			if( isValid ){
+		    		this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE) );
+    			}
+    		}
+    		
+    	]]>
+    </mx:Script>
+    
+    <validators:DatePeriodValidator id="timePeriodValidator" startDate="{start.text}" source="{end}" 
+    	property="text" errorMessage="{resourceManager.getString('adaptive', 'timePeriodValidatorText')}" required="false"/>
+    
+    <mx:VBox>
+		<mx:DateField id="start" yearNavigationEnabled="true"/>
+		<mx:DateField id="end" yearNavigationEnabled="true"/>
+	    <mx:Button label="{resourceManager.getString('adaptive', 'btn.ok')}" buttonDown="okButtonPressed()"/>
+	    <mx:Button label="{resourceManager.getString('adaptive', 'btn.cancel')}" buttonDown="{PopUpManager.removePopUp(this)}"/>
+    </mx:VBox>
+    	
+</mx:TitleWindow>

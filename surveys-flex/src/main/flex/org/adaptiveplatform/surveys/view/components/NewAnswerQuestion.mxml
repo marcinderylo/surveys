@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="org.adaptiveplatform.surveys.view.controls.*"
+	height="34"
+	width="100%">
+
+		<mx:Script>
+			<![CDATA[
+				import org.adaptiveplatform.surveys.view.components.questions.RequireCommentEvent;
+				import org.adaptiveplatform.surveys.view.events.AnswerEvent;
+				
+				import org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto;
+				import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+				
+				[Bindable]
+				public var editMode:Boolean = false;
+				
+				private var _answer:AnswerTemplateDto;
+				
+				[Bindable]
+				private var _questionType:QuestionTypeEnum;
+				
+				private var _requiresCommentGlobal:Boolean = false;
+				
+				public function set questionType(value:QuestionTypeEnum):void{
+	            	if( excludeOthersControls != null ){
+						excludeOthersControls.visible = value != QuestionTypeEnum.SINGLE_CHOICE;
+						excludeOthersControls.includeInLayout = value != QuestionTypeEnum.SINGLE_CHOICE;
+	            	}
+	            	_questionType = value;
+				}
+
+				[Bindable]
+				public function get questionType():QuestionTypeEnum{
+					return _questionType;
+				}
+				
+	            public function set requiresCommentGlobal(value:Boolean):void{
+	            	if( requireCommentControls != null ){
+		            	requireCommentControls.visible = !value;
+		            	requireCommentControls.includeInLayout = !value;
+	            	}
+	            	if( excludeOthersControls != null ){
+		            	excludeOthersControls.visible = !value;
+		            	excludeOthersControls.includeInLayout = !value;
+	            	}
+	            	_requiresCommentGlobal = value;
+					answer.requiresComment = value;
+	            }
+	            
+	            [Bindable]
+	            public function get requiresCommentGlobal():Boolean{
+	            	return _requiresCommentGlobal;
+	            }
+				
+				[Bindable]
+				public function get answer():AnswerTemplateDto{
+					return _answer;
+				}
+				
+				public function set answer(value:AnswerTemplateDto):void{
+					if( _answer != value ){
+						_answer = value;
+					}
+				}
+				
+				private function addAnswer(event:MouseEvent):void{
+					answer.excludesOtherAnswers = excludesOtherAnswers.selected || requiresComment.selected;
+					answer.requiresComment = requiresComment.selected;
+					answer.text = answerText.text;
+					dispatchEvent(new AnswerEvent( AnswerEvent.ADD_ANSWER_EVENT ,answer));
+					answer = new AnswerTemplateDto;
+				}
+
+				private function removeAnswer(event:MouseEvent):void{
+					dispatchEvent(new AnswerEvent( AnswerEvent.REMOVE_ANSWER_EVENT ,answer));					
+				}
+
+			]]>
+		</mx:Script>
+
+		<mx:Metadata>
+			[Event(name="addAnswerEvent", type="org.adaptiveplatform.surveys.view.events.AnswerEvent")]
+			[Event(name="removeAnswerEvent", type="org.adaptiveplatform.surveys.view.events.AnswerEvent")]
+		</mx:Metadata>
+
+		<mx:StringValidator id="answerValidator" source="{answerText}" listener="{answerText}" required="true" property="text" />
+
+		<mx:HBox width="100%">
+			<mx:TextInput id="answerText" 
+				text="{answer.text}" 
+				change="{answer.text = answerText.text}"
+				width="100%"/>
+			<mx:HBox id="requireCommentControls" visible="{!requiresCommentGlobal || (questionType != QuestionTypeEnum.SINGLE_CHOICE)}" 
+				includeInLayout="{!requiresCommentGlobal ||(questionType != QuestionTypeEnum.SINGLE_CHOICE)}" >
+				<mx:Label text="{resourceManager.getString('adaptive', 'comment')}: "/>
+				<controls:MultilineCheckbox id="requiresComment" 
+					selected="{answer.requiresComment}" 
+					change="{answer.requiresComment = requiresComment.selected}"
+					labelPlacement="top"/>
+			</mx:HBox>
+			<mx:HBox id="excludeOthersControls" visible="{!requiresCommentGlobal }" 
+				includeInLayout="{!requiresCommentGlobal}">
+				<mx:Label text="{resourceManager.getString('adaptive', 'disallowsOther')}: "/>
+				<controls:MultilineCheckbox id="excludesOtherAnswers" 
+					change="{answer.excludesOtherAnswers = excludesOtherAnswers.selected}"
+					selected="{answer.excludesOtherAnswers}" 
+					labelPlacement="top"/>
+			</mx:HBox>
+			<mx:Image 
+				visible="{editMode}"
+				includeInLayout="{editMode}"
+				buttonMode="true"
+				width="26"
+				click="removeAnswer(event)"
+				toolTip="{resourceManager.getString('adaptive', 'removeQuestion')}" 
+				source="@Embed(source='/assets/icons/remove.png')"/>
+			<mx:Image 
+				visible="{!editMode}"
+				includeInLayout="{!editMode}"				
+				buttonMode="true" 
+				width="26"
+				click="addAnswer(event)"
+				toolTip="add question" 
+				source="@Embed(source='/assets/icons/add.png')"/>
+		</mx:HBox>
+
+</mx:Canvas>

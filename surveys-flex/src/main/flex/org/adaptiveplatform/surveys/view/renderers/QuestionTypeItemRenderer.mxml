@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Image xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" toolTip="{data.type}">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.QuestionStyleEnum;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+			
+			[Embed(source="/assets/icons/singleselection.png")]
+			private var single:Class;
+			[Embed(source="/assets/icons/multiselection.png")]
+			private var multi:Class;
+			[Embed(source="/assets/icons/openQuestion.png")]
+			private var open:Class;
+			[Embed(source="/assets/icons/fourToggleButtonBar.png")]
+			private var fourToggleRadioButton:Class;			
+			
+			 override public function set data(value:Object):void {
+           		super.data = value;
+				this.source = iconFunction();
+			}
+			
+			
+			private function iconFunction():Class {
+				if(data.type.equals(QuestionTypeEnum.SINGLE_CHOICE)){
+					if( data.style != null ){
+						if( data.style == QuestionStyleEnum.FOUR_TOGGLE.name ){
+							return fourToggleRadioButton;
+						}else{
+							return single; 
+						}
+					}else{
+						return single; 
+					}
+				}
+				if(data.type.equals(QuestionTypeEnum.MULTIPLE_CHOICE)){
+					return multi;
+				}
+				return open;
+			}
+		]]>
+	</mx:Script>
+</mx:Image>

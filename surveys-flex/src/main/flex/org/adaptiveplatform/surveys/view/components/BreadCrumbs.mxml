@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.view.View;
+
+			import mx.collections.ArrayCollection;
+
+			[Bindable]
+			private var path:ArrayCollection;
+
+			private var views:ViewController;
+
+			private function onCreationComplete():void {
+				views = ContextFactory.context.view;
+				updateViewPath();
+			}
+
+			public function updateViewPath():void {
+				path = views.currentViewPath;
+			}
+		]]>
+	</mx:Script>
+	<mx:Repeater id="buttons" dataProvider="{path}">
+		<mx:LinkButton label="{buttons.currentItem}" color="0x3380DD" textDecoration="underline"/>
+	</mx:Repeater>
+</mx:HBox>

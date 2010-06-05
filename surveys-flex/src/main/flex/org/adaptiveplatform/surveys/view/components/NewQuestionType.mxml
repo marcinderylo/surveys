@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="400" 
+	xmlns:questions="org.adaptiveplatform.surveys.view.components.questions.*" xmlns:controls="org.adaptiveplatform.surveys.view.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.QuestionStyleEnum;
+			import org.adaptiveplatform.surveys.view.components.questions.RequireCommentEvent;
+			
+			import mx.events.FlexEvent;
+			
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+			
+			[Bindable]
+			public var question:QuestionTemplateDto;
+			
+			[Bindable]
+			public var requireComment:Boolean;
+		
+			private function showOpenTypePreview():void{
+				question.type = QuestionTypeEnum.OPEN;
+				questionTypePreview.questionType = QuestionTypeEnum.OPEN;
+			}
+			
+			private function showFourTogglePreview():void{
+				question.style = QuestionStyleEnum.FOUR_TOGGLE.name;
+				question.type = QuestionTypeEnum.SINGLE_CHOICE;				
+				questionTypePreview.questionStyle = QuestionStyleEnum.FOUR_TOGGLE;			
+				questionTypePreview.questionType = QuestionTypeEnum.SINGLE_CHOICE;
+			}
+			
+			private function showMultipleChoicePreview():void{
+				question.type = QuestionTypeEnum.MULTIPLE_CHOICE;
+				questionTypePreview.questionType = QuestionTypeEnum.MULTIPLE_CHOICE;
+			}
+
+			private function showSingleChoicePreview():void{
+				question.style = QuestionStyleEnum.SINGLE_TYPE.name;	
+				question.type = QuestionTypeEnum.SINGLE_CHOICE;
+				questionTypePreview.questionStyle = QuestionStyleEnum.SINGLE_TYPE;
+				questionTypePreview.questionType = QuestionTypeEnum.SINGLE_CHOICE;
+			}
+			
+			private function changeRequireCheckbox(e:Event):void{
+				var event:RequireCommentEvent = new RequireCommentEvent(RequireCommentEvent.REQUIRE_COMMENT_CHECKED);
+				event.requireComment = requireCommentCheckbox.selected;
+				requireComment = requireCommentCheckbox.selected;
+				dispatchEvent( event );
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox width="100%" height="30%" textAlign="center">
+			<controls:MultilineButtonSimple id="open_type" label="{resourceManager.getString('adaptive', 'createQuestion.qType.openType')}" width="100%" height="100%" buttonDown="showOpenTypePreview()"/>
+			<controls:MultilineButtonSimple id="single_choice_single" label="{resourceManager.getString('adaptive', 'createQuestion.qType.single')}" width="100%" height="100%" buttonDown="showSingleChoicePreview()"/>
+			<controls:MultilineButtonSimple id="multiple_choice" label="{resourceManager.getString('adaptive', 'createQuestion.qType.multi')}" width="100%" height="100%" buttonDown="showMultipleChoicePreview()"/>
+			<controls:MultilineButtonSimple id="single_choice_four" label="{resourceManager.getString('adaptive', 'createQuestion.qType.ftoggleBtn')}" width="100%" height="100%" buttonDown="showFourTogglePreview()"/>
+		</mx:HBox>
+		<questions:Question id="questionTypePreview" questionType="{question.type}" requireComment="{requireComment}" width="100%" height="100%"/>
+	</mx:VBox>
+	<mx:CheckBox id="requireCommentCheckbox" visible="{!question.type.equals(QuestionTypeEnum.OPEN)}" selected="{requireComment}" textAlign="right" change="changeRequireCheckbox(event)" 
+		label="{resourceManager.getString('adaptive', 'createQuestion.typeView.comment')}" width="100%"/>
+</mx:VBox>

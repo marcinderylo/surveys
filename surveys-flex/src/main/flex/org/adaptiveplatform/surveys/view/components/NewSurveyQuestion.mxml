@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="600"
+	showCloseButton="true"
+	creationComplete="create()"
+	close="{PopUpManager.removePopUp(this)}"
+    xmlns:components="adaptlearning.view.components.*" xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
+    
+    <mx:Script>
+    	<![CDATA[
+			import org.adaptiveplatform.surveys.view.components.questions.RequireCommentEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CollectionEvent;
+			import mx.events.CollectionEventKind;
+			import mx.managers.PopUpManager;
+			
+			import org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
+    		
+    		private function getTitle():String{
+    			if( questionCreation.selectedIndex == 0 ){
+    				return resourceManager.getString('adaptive', 'createQuestion.typeView');
+    			}else{
+    				return resourceManager.getString('adaptive', 'createQuestion.dataView');
+    			}
+    		}
+    		
+    		[Bindable]
+    		private var survey:SurveyTemplateDto;
+    		
+    		[Bindable]
+    		public var requireComment:Boolean = false;
+    		
+    		[Bindable]
+    		private var question:QuestionTemplateDto;
+    		
+    		[Bindable]
+    		private var editedQuestion:QuestionTemplateDto;
+    		
+    		[Bindable]
+    		public var editMode:Boolean = false;
+
+			public function initializeView(surveyTemplate:SurveyTemplateDto, questionTemplate:QuestionTemplateDto = null):void {
+				survey = surveyTemplate;
+				editedQuestion = questionTemplate;
+				copyQuestionTepmlate(questionTemplate);
+            }
+            
+            public function create():void{
+            	questionTypeView.addEventListener( RequireCommentEvent.REQUIRE_COMMENT_CHECKED, function(event:RequireCommentEvent):void{
+            		questionDataView.requiresComment = event.requireComment;
+            		requireComment = event.requireComment;
+            	});
+            	this.label = getTitle();
+            }
+            
+            private function copyQuestionTepmlate( questionTemplate:QuestionTemplateDto):void{
+            	question = new QuestionTemplateDto();
+            	if( questionTemplate == null ){
+            		editMode = false;
+            		question.type = QuestionTypeEnum.OPEN;
+            		question.answers = new ArrayCollection();
+            		question.answers.addItem( new org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto() );
+            	}else{
+            		editMode = true;
+            		question.type = questionTemplate.type;
+            		question.style = questionTemplate.style;
+            		question.htmlText = questionTemplate.htmlText;
+            		question.text = questionTemplate.text;
+            		question.id = questionTemplate.id;
+            		question.answers = new ArrayCollection();
+            		for each(var answerTemplate:org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto in questionTemplate.answers){
+            			var answer:org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto = new AnswerTemplateDto();
+            			answer.id = answerTemplate.id;
+            			answer.excludesOtherAnswers = answerTemplate.excludesOtherAnswers;
+            			answer.requiresComment = answerTemplate.requiresComment;
+            			answer.text = answerTemplate.text;
+            			question.answers.addItem( answer );
+            		}
+            		questionTypeView.question = questionTemplate;
+            		questionTypeView.question = question;
+            		questionDataView.question = question;
+            	}
+            	questionCreation.selectedIndex = editMode ? 1 : 0;
+            }
+            	
+            	private function saveQuestion():void{
+            		if( requireComment ){
+            			for each( var answerQuestion:AnswerTemplateDto in question.answers ){
+            				answerQuestion.requiresComment = true;
+            				answerQuestion.excludesOtherAnswers = true;
+            			}
+            		}
+            		if( editMode ){
+            			var editedItemIndex:int = survey.questions.getItemIndex( editedQuestion );
+						survey.questions.removeItemAt( editedItemIndex );
+						survey.questions.addItemAt( question, editedItemIndex);
+            		}else{
+            			survey.questions.addItem(question);
+            		}
+            		PopUpManager.removePopUp(this);
+            	}
+            	
+            	private function saveAndExit():void{
+            		if( questionDataView.validate() ){
+            			saveQuestion();
+            		}
+            	}
+            
+    	]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%" height="100%">
+		<mx:ViewStack id="questionCreation" width="100%" height="100%" creationPolicy="all" change="{this.title = getTitle() }">
+			<components1:NewQuestionType id="questionTypeView" question="{question}" requireComment="{requireComment}"/>
+			<components1:NewQuestionData id="questionDataView" survey="{survey}" question="{question}" />
+		</mx:ViewStack>
+		<mx:HBox width="100%">
+			<mx:Button label="{resourceManager.getString('adaptive', 'createQuestion.changeQuestionType')}" buttonDown="{questionCreation.selectedIndex = 0}" visible="{questionCreation.selectedIndex == 1}" includeInLayout="{questionCreation.selectedIndex == 1}"/>
+			<mx:Spacer width="100%" />
+ 		    <mx:Button label="{resourceManager.getString('adaptive', 'btn.cancel')}"
+			          click="PopUpManager.removePopUp(this);"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'createQuestion.addQuestionData')}" buttonDown="{questionCreation.selectedIndex = 1}" visible="{questionCreation.selectedIndex == 0}" includeInLayout="{questionCreation.selectedIndex == 0}"/>
+    		<mx:Button id="saveQuestionBtn" label="{resourceManager.getString('adaptive', 'createQuestion.finish')}" buttonDown="saveAndExit()" visible="{questionCreation.selectedIndex == 1}" includeInLayout="{questionCreation.selectedIndex == 1}"/> 
+		</mx:HBox>
+    </mx:VBox>
+	    	    
+</mx:TitleWindow>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:RadioButton xmlns:mx="http://www.adobe.com/2006/mxml" label="{answer.text}" selected="{answer.selected}"
+				groupName="questionGroup" buttonDown="valueHandler(event)" width="100%" height="100%"
+				creationComplete="create()" remove="remove()">
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import adaptlearning.serverapi.dto.generated.SurveyQuestionAnswerDto;
+			import mx.events.FlexEvent;
+
+			[Bindable]
+			public var answer:SurveyQuestionAnswerDto;
+
+			private var watcher:ChangeWatcher;
+
+			private function create():void {
+				watcher = BindingUtils.bindProperty(answer, "selected", this, "selected");
+			}
+
+			private function remove():void {
+				watcher.unwatch();
+			}
+
+			public function valueHandler(event:FlexEvent):void {
+				if (selected) {
+					this.group.selection = null;
+					this.dispatchEvent(new FlexEvent("radioCleared"));
+				}
+				answer.selected = selected;
+			}
+		]]>
+	</mx:Script>
+</mx:RadioButton>

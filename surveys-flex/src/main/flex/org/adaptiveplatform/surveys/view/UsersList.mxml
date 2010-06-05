@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()" xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*">
+	<mx:Script>
+		<![CDATA[
+			import flash.events.Event;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.events.CollectionEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.rpc.Fault;
+			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.UserDao;
+			import org.adaptiveplatform.surveys.application.generated.UserFacade;
+			import org.adaptiveplatform.surveys.dto.generated.UserDto;
+			import org.adaptiveplatform.surveys.dto.generated.UserQuery;
+			import org.adaptiveplatform.surveys.view.renderers.UserRoleItemRenderer;
+
+			private var userDao:UserDao;
+			private var view:ViewController;
+
+			[Bindable]
+			private var users:ArrayCollection;
+			[Bindable]
+			private var query:UserQuery =  new UserQuery();
+			[Bindable]
+			public var user:UserDto;
+			[Bindable]
+			public var userFacade:UserFacade;
+			[Bindable]
+			public var currentUser:String;
+
+			private function onCreationComplete():void {
+				userDao = ContextFactory.context.service.userDao;
+				view = ContextFactory.context.view;
+				currentUser = ContextFactory.context.service.authentication.currentUser;
+				userFacade = ContextFactory.context.service.userFacade;
+				find();
+			}
+
+			public function initializeView(ignore:* = null):void {
+				reset();
+			}
+
+			protected function find():void {
+				userDao.query(query) //
+					.onSuccess(function(result:ArrayCollection):void {
+						users = result;
+						for each( var userFromList:UserDto in users ){
+							userFromList.roles.addEventListener(CollectionEvent.COLLECTION_CHANGE, function():void{
+								userFacade.setUserRoles( user.email, user.roles).onSuccess( onChangeRoleSuccess ); 
+							});
+						}
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+			
+			private function onChangeRoleSuccess(result:Object):void{
+				users.dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE));
+			}
+
+			protected function reset():void {
+				query = new UserQuery();
+				user = null;
+				find();
+			}
+
+			private function userClicked(event:ListEvent):void {
+				user = UserDto(event.itemRenderer.data);
+				//view.goto(View.USER_ACCOUNT_DETAILS, dto.id);
+			}
+			
+			private function get roles():ArrayCollection{
+				var roles:ArrayCollection = new ArrayCollection();
+				roles.addItem("ROLE_USER");
+				roles.addItem("ROLE_ADMINISTRATOR");
+				roles.addItem("ROLE_TEACHER");
+				roles.addItem("ROLE_EVALUATOR");
+				return roles;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:ApplicationControlBar x="0" y="0" width="100%">
+		<mx:HBox width="60%" verticalAlign="middle">
+			<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+			<mx:TextInput id="cbxKeyword" width="100%" text="{query.nameContains}" change="{query.nameContains=cbxKeyword.text}" enter="find()"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'find')}"
+				   toolTip="{resourceManager.getString('adaptive', 'find')}"
+				   click="find()"
+				   icon="@Embed(source='/assets/icons/search.png')"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'reset')}"
+				   toolTip="{resourceManager.getString('adaptive', 'reset')}"
+				   click="reset()"
+				   icon="@Embed(source='/assets/icons/clear.png')"/>
+		</mx:HBox>
+	</mx:ApplicationControlBar>
+	<mx:HBox x="0" y="50" width="100%" height="100%">
+		<mx:DataGrid width="60%" height="100%" dataProvider="{users}" change="userClicked(event)" itemClick="userClicked(event)"
+					 doubleClickEnabled="true"  draggableColumns="false" rowHeight="32" sortableColumns="true">
+			<mx:columns>
+				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'name')}" dataField="name"/>
+				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'email')}" dataField="email"/>
+				<mx:DataGridColumn width="200" headerText="{resourceManager.getString('adaptive', 'role')}" dataField="roles" itemRenderer="{new ClassFactory(UserRoleItemRenderer)}"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:Form width="40%" height="100%" visible="{user != null}">
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'name')}">
+			<mx:Label text="{user.name}" selectable="true"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('adaptive', 'email')}">
+			<mx:Label text="{user.email}" selectable="true"/>
+		</mx:FormItem>
+<!--		<mx:FormItem label="image" width="100%" height="10%">
+			<mx:Image buttonMode="true" toolTip="{resourceManager.getString('adaptive', 'selectPhoto')}" source="@Embed(source='/assets/icons/user1.png')"/>
+		</mx:FormItem>
+-->		<mx:FormItem label="{resourceManager.getString('adaptive', 'roles')}" width="100%" height="50%">
+			<mx:List id="selectedUserRoles" width="100%"
+				dataProvider="{roles}" selectable="false">
+				<mx:itemRenderer>
+					<mx:Component>
+						<renderers:UserRoleItemRenderer user="{ outerDocument.user }" currentUser="{outerDocument.currentUser}" />
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:List>
+		</mx:FormItem>
+	</mx:Form>
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="org.adaptiveplatform.surveys.view.*"
+		   xmlns:comp="adaptlearning.view.components.*" width="100%" height="100%"
+		   creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.events.MenuEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.Fault;
+			import mx.utils.ArrayUtil;
+			
+			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
+			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+			import org.adaptiveplatform.surveys.dto.generated.CreateSurveyTemplateCommand;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateQuery;
+			import org.adaptiveplatform.surveys.view.components.NewSurveyQuestion;
+			import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
+
+			private var authentication:AuthenticationService;
+			private var surveyDao:SurveyDao;
+			private var surveyFacade:SurveyFacade;
+			private var views:ViewController;
+
+			[Bindable]
+			public var survey:SurveyTemplateDto;
+			
+			[Bindable]
+			private var _evaluatorTemplates:ArrayCollection;
+			
+			[Bindable]
+			private var surveyTemplateQuery:SurveyTemplateQuery;
+			
+			[Bindable]
+			private var isEditMode:Boolean = false;
+
+			public function initializeView(ignore:* = null):void {
+				reset();
+				surveyDao = ContextFactory.context.service.surveyDao;
+				findEvaluatorTemplates();
+				questionsList.selectedItems = [];
+				if(ignore != null){
+					findSurvey(ignore);
+				}else{
+					isEditMode = false;
+//					saveBtn.enabled = true;
+				}
+			}
+			
+			private function reset():void {
+				surveyName.text = "";
+				surveyTemplateQuery = new SurveyTemplateQuery();
+				survey = new SurveyTemplateDto();
+				survey.questions = new ArrayCollection();
+				_evaluatorTemplates = null;
+				isEditMode = false;
+			}
+			
+			protected function findSurvey(id:int):void {
+				surveyDao.getTemplate(id) //
+					.onSuccess(function(result:SurveyTemplateDto):void {
+						survey = result;
+						surveyName.text = result.name;
+						//saveBtn.enabled = true;
+						isEditMode = true;
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+
+			private function onCreationComplete():void {
+				surveyFacade = ContextFactory.context.service.surveyFacade;
+				views = ContextFactory.context.view;
+			}
+
+			private function update():void {
+				if( isCreationValid() ){
+					survey.questions = questionsList.dataProvider as ArrayCollection;
+					surveyFacade.updateTemplate( survey.id, prepareCreateCommand()).onSuccessGoto(View.EVALUATOR_START_PAGE).onFault(creationError);
+				}
+			}
+			
+			private function nameAlreadyExists():Boolean{
+				if(alreadyExists()){
+					Alert.show(resourceManager.getString('adaptive', 'surveyExistsError') +survey.name);
+					return true;
+				}
+				return false;
+			}
+			
+			private function alreadyExists():Boolean{
+				for each(var template:SurveyTemplateDto in _evaluatorTemplates ){
+					if( template.name == survey.name ){
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			private function findEvaluatorTemplates():void{
+				if(_evaluatorTemplates == null){
+					var query:SurveyTemplateQuery = new SurveyTemplateQuery();
+					surveyDao.queryTemplates(query).onSuccess(
+						function(value:ArrayCollection):void{
+							_evaluatorTemplates = value;
+						});					
+				}
+			}
+			
+			private function submit():void {
+				if( isCreationValid() ){
+					if(!nameAlreadyExists()){
+						surveyFacade.createTemplate(prepareCreateCommand()).onSuccessGoto(View.EVALUATOR_START_PAGE).onFault(creationError);
+					}
+				}
+			}
+			
+			private function exit():void{
+				ContextFactory.context.view.goto(View.BACK);
+			}
+			
+			private function creationError(fault:Fault):void {
+				Alert.show(fault.faultString, "error");
+			}
+			
+			private function addQuestion():void{
+				manageQuestion(null);
+			}
+			
+			private function prepareCreateCommand():CreateSurveyTemplateCommand{
+					var createCommand:CreateSurveyTemplateCommand = new CreateSurveyTemplateCommand();
+					createCommand.name = surveyName.text;
+					createCommand.questions = survey.questions;
+					return createCommand;			
+			}
+			
+			private function isCreationValid():Boolean{
+				return (surveyTemplateNameValidator.validate().type == ValidationResultEvent.VALID);
+			}
+			
+			private function manageQuestion(question:QuestionTemplateDto):void {
+				var surveyForm:NewSurveyQuestion = PopUpManager.createPopUp(Application.application as DisplayObject,NewSurveyQuestion , true) as NewSurveyQuestion;
+				surveyForm.initializeView( survey, question );
+				surveyForm.x = (Application.application.width - surveyForm.width ) / 2;
+				PopUpManager.centerPopUp( surveyForm );				
+			}
+			
+			protected function editQuestion(event:ListEvent):void
+			{
+			    var selectedQuestion:QuestionTemplateDto =  event.target.selectedItem as QuestionTemplateDto;
+			    manageQuestion(selectedQuestion);
+			}
+			
+			public function removeQuestion():void {
+				if (questionsList.selectedIndex < 0)
+					return;
+				var currentQuestion:QuestionTemplateDto = questionsList.selectedItem as QuestionTemplateDto;
+				survey.questions.removeItemAt( survey.questions.getItemIndex( currentQuestion ) );
+			}
+			
+            private function menuHandler(event:MenuEvent):void  {
+            	switch( String(event.item.@data) ){
+            		case "save":
+            		{
+            			update();
+            			break;
+            		}
+            		case "exit":
+            		{
+            			exit();
+            			break;
+            		}
+            		case "createCopy":
+            		{
+            			break;
+            		}
+            		case "addNewQuestion":
+            		{
+						addQuestion();
+            			break;
+            		}
+            		case "editSelectedQuestion":
+            		{
+            			if( questionsList.selectedIndex > 0 ){
+	            			manageQuestion( questionsList.selectedIndex as QuestionTemplateDto );
+            			}
+            			break;
+            		}
+            		case "deleteSelectedQuestion":
+            		{
+            			removeQuestion();
+            			break;
+            		}
+            	}
+            }
+			
+		]]>
+	</mx:Script>
+	
+    <mx:StringValidator id="surveyTemplateNameValidator" source="{surveyName}" property="text" required="true" />
+	
+	<mx:VBox x="0" y="0" height="100%" width="100%">
+			<mx:MenuBar id="myMenuBar" labelField="@label" width="100%" itemClick="menuHandler(event)">
+			     <mx:XMLList>
+			         <menuitem label="Menu">
+			             <menuitem data="save" label="Save and Exit"/>
+		                 <menuitem data="createCopy" label="Create copy" visible="{isEditMode}"/>
+				         <menuitem label="Question">
+				             <menuitem data="addNewQuestion" label="Add new" />
+			                 <menuitem data="editSelectedQuestion" label="Edit selected" visible="{isEditMode}"/>
+				             <menuitem data="deleteSelectedQuestion" label="Delete selected"/>
+				         </menuitem>
+			             <menuitem data="exit" label="Exit"/>
+			         </menuitem>
+			     </mx:XMLList>
+			</mx:MenuBar>
+<!--			<mx:HBox width="100%">
+				<mx:Label text="SURVEY CREATION" textAlign="center" width="100%" />
+				<mx:Button id="updateBtn" label="{resourceManager.getString('adaptive', 'btn.saveExit')}" 
+					buttonDown="update()" visible="{isEditMode}" includeInLayout="{isEditMode}"/>
+				<mx:Button id="saveBtn" label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}" buttonDown="submit()"/>
+				<mx:Button label="{resourceManager.getString('adaptive', 'btn.exit')}" buttonDown="exit()"/>
+			</mx:HBox>
+-->			<mx:ApplicationControlBar width="100%">
+				<mx:Label text="{resourceManager.getString('adaptive', 'surveyName')}:" width="100"/>
+				<mx:TextInput id="surveyName" width="100%"/> 
+				<mx:Button toolTip="{resourceManager.getString('adaptive', 'addQuestion')}"
+						   label="{resourceManager.getString('adaptive', 'addQuestion')}"
+						   icon="@Embed(source='/assets/icons/add.png')"
+						   click="addQuestion()"/>
+			</mx:ApplicationControlBar>
+			<mx:DataGrid dataProvider="{survey.questions}" width="100%" height="100%"
+				 draggableColumns="false" sortableColumns="true" rowHeight="26" dragEnabled="true" dropEnabled="true"
+				 doubleClickEnabled="true" itemDoubleClick="editQuestion(event)" dragMoveEnabled="true"
+				 id="questionsList">
+				<mx:columns>
+					<mx:DataGridColumn dataField="text" />
+					<mx:DataGridColumn dataField="type" itemRenderer="{new ClassFactory(QuestionTypeItemRenderer)}" width="50"/>
+					<mx:DataGridColumn headerText="count" width="50">
+						 <mx:itemRenderer>
+					        <mx:Component>
+					            <mx:Label text="{data.answers.length}" />
+					        </mx:Component>
+					    </mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'remove').toLowerCase()}" width="50">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Image toolTip="{resourceManager.getString('adaptive', 'removeQuestion')}" 
+									source="@Embed(source='/assets/icons/remove.png')" 
+									buttonMode="true" click="{outerDocument.removeQuestion()}" 
+									horizontalAlign="center"/>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+	</mx:VBox>
+</mx:Canvas>

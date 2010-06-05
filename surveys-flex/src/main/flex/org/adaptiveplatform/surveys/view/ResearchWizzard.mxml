@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   width="100%"
+		   height="100%"
+		   creationComplete="onCreationComplete()"
+		   xmlns:wizzard="org.adaptiveplatform.surveys.view.wizzard.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			import mx.events.IndexChangedEvent;
+			import mx.rpc.Fault;
+			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
+			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
+			import org.adaptiveplatform.surveys.dto.generated.AddGroupToResearchCommand;
+			import org.adaptiveplatform.surveys.dto.generated.PrepareResearchCommand;
+
+			private var views:ViewController;
+
+			private var evaluationDao:EvaluationDao;
+
+			private var evaluationFacade:EvaluationFacade;
+
+			[Bindable]
+			public var isValid:Boolean=false;
+
+			public function initializeView():void {
+				researchCommand=new PrepareResearchCommand();
+			}
+
+			[Bindable]
+			private var researchCommand:PrepareResearchCommand;
+
+			private function goToList():void {
+				researchCommand=new PrepareResearchCommand();
+				isValid=false;
+				navigator.selectedIndex=0;
+				range.enabled=true;
+				survey.enabled=false;
+				group.enabled=false;
+				publication.enabled=false;
+				views.goto(View.RESEARCH_LIST);
+			}
+
+			private function onCreationComplete():void {
+				views=ContextFactory.context.view;
+				evaluationDao=ContextFactory.context.service.evaluationDao;
+				evaluationFacade=ContextFactory.context.service.evaluationFacade;
+				researchCommand=new PrepareResearchCommand();
+			}
+
+			private function previous():void {
+				var newIndex:Number=--navigator.selectedIndex;
+				navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
+			}
+
+			private function next():void {
+				var newIndex:Number=++navigator.selectedIndex;
+				navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
+			}
+
+			private function save():void {
+				researchCommand.name=range.researchName.text;
+				researchCommand.surveyTemplateId=survey.surveyList.selectedItem.id;
+				researchCommand.groupsToAdd=new ArrayCollection();
+				for each (var groupObj:Object in publication.groupList.dataProvider) {
+					var command:AddGroupToResearchCommand=new AddGroupToResearchCommand();
+					command.groupId=groupObj.id;
+					command.validFrom=groupObj.validFrom;
+					command.validTo=groupObj.validTo;
+					researchCommand.groupsToAdd.addItem(command);
+				}
+				createResearch();
+			}
+
+			protected function createResearch():void {
+				evaluationFacade.createResearch(researchCommand) //
+					.onSuccess(function(o:Object):void {
+						goToList();
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+			
+			private function test(e:Event):void {
+				trace(e.type);
+			}
+
+			private function onChange(event:IndexChangedEvent):void {
+				(navigator.getChildAt(navigator.selectedIndex) as UIComponent).enabled=true;
+				if(event.oldIndex>event.newIndex){
+					isValid=true;
+				} else {
+					isValid=false;
+				}
+				if (navigator.selectedIndex == 3) {
+					publication.groups=group.selectedGroups;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%"
+			 height="100%">
+		<mx:TabNavigator id="navigator"
+						 selectedIndex="0"
+						 tabIndexChange="test(event)"
+						 change="onChange(event)"
+						 tabEnabled="false"
+						 width="100%"
+						 height="100%">
+			<wizzard:RangeChoice label="{resourceManager.getString('adaptive', 'range')}"
+								 id="range"
+								 enabled="true"
+								 width="100%"
+								 height="100%"/>
+
+			<wizzard:SurveyChoice label="{resourceManager.getString('adaptive', 'surveyChoice')}"
+								  id="survey"
+								  enabled="false"
+								  width="100%"
+								  height="100%"/>
+
+			<wizzard:GroupChoice label="{resourceManager.getString('adaptive', 'groupChoice')}"
+								 id="group"
+								 enabled="false"
+								 width="100%"
+								 height="100%"/>
+
+			<wizzard:ConfirmationChoice label="{resourceManager.getString('adaptive', 'researchBegining')}"
+										id="publication"
+										start="{range.start.selectedDate}"
+										end="{range.end.selectedDate}"
+										question="{survey.surveyList.selectedItem as SurveyTemplateDto}"
+										enabled="false"
+										width="100%"
+										height="100%"/>
+
+		</mx:TabNavigator>
+		<mx:HBox width="100%"
+				 horizontalAlign="right">
+			<mx:Button label="{resourceManager.getString('adaptive', 'previous')}"
+					   id="prev"
+					   enabled="{navigator.selectedIndex!=0}"
+					   click="previous()"
+					   icon="@Embed(source='/assets/icons/previous.png')"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'next')}"
+					   includeInLayout="{navigator.selectedIndex!=3}"
+					   click="next()"
+					   enabled="{isValid}"
+					   icon="@Embed(source='/assets/icons/next.png')"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'save')}"
+					   includeInLayout="{navigator.selectedIndex==3}"
+					   click="save()"
+					   icon="@Embed(source='/assets/icons/save.png')"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'cancel')}"
+					   height="{prev.height}"
+					   click="goToList()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

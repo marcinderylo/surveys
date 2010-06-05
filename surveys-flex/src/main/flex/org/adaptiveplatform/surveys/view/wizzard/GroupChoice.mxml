@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 height="100%"
+		 width="100%"
+		 verticalScrollPolicy="off"
+		 horizontalScrollPolicy="off"
+		 creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.rpc.Fault;
+			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
+			import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
+			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
+			import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
+			import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
+			import org.adaptiveplatform.surveys.view.ResearchWizzard;
+			
+			private var groupDao:StudentGroupDao;
+
+			[Bindable]
+			private var groups:ArrayCollection;
+
+			[Bindable]
+			public var selectedGroups:ArrayCollection;
+
+			[Bindable]
+			private var groupQuery:StudentGroupQuery;
+
+			[Bindable]
+			private var groupFacade:StudentGroupFacade;
+
+			private function onCreationComplete():void {
+				groupDao=ContextFactory.context.service.studentGroupDao;
+				groupFacade=ContextFactory.context.service.studentGroupFacade;
+				selectedGroups=new ArrayCollection();
+				resetGroup();
+			}
+
+			private function resetGroup():void {
+				groupQuery=new StudentGroupQuery();
+				groups=new ArrayCollection();
+				findGroups();
+			}
+
+			protected function findGroups():void {
+				groupQuery.runAs=GroupRoleEnum.EVALUATOR;
+				groupDao.query(groupQuery) //
+					.onSuccess(function(result:ArrayCollection):void {
+						groups=result;
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+
+			public function onChange(event:Event, data:Object):void {
+				if (event.target.selected) {
+					if (!selectedGroups.contains(data)) {
+						selectedGroups.addItem(data);
+					}
+				} else {
+					if (selectedGroups.contains(data)) {
+						selectedGroups.removeItemAt(selectedGroups.getItemIndex(data));
+					}
+				}
+
+				if (selectedGroups.length > 0)
+					(parentDocument as ResearchWizzard).isValid=true;
+				else
+					(parentDocument as ResearchWizzard).isValid=false;
+			}
+		]]>
+	</mx:Script>
+	<mx:ApplicationControlBar width="100%">
+		<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+		<mx:TextInput id="cbxKeyword"
+					  width="100%"
+					  enter="findGroups()"/>
+		<!--change="{groupQuery.nameContains=cbxKeyword.text}"-->
+		<mx:Image buttonMode="true"
+				  toolTip="{resourceManager.getString('adaptive', 'find')}"
+				  source="@Embed(source='/assets/icons/search.png')"
+				  click="findGroups()"/>
+		<mx:Image buttonMode="true"
+				  toolTip="{resourceManager.getString('adaptive', 'reset')}"
+				  source="@Embed(source='/assets/icons/clear.png')"
+				  click="resetGroup()"/>
+	</mx:ApplicationControlBar>
+
+	<mx:DataGrid id="groupList"
+				 dataProvider="{groups}"
+				 width="100%"
+				 height="100%"
+				 rowHeight="26"
+				 draggableColumns="false"
+				 sortableColumns="true"
+				 selectable="false">
+		<mx:columns>
+			<mx:DataGridColumn 
+							   textAlign="center"
+							   width="50">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:CheckBox change="{outerDocument.onChange(event, data)}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupName')}"
+							   dataField="groupName"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+</mx:VBox>

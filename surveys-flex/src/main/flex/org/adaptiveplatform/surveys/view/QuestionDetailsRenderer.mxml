@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionDto;
+
+
+			override public function set data(data:Object):void {
+				if (data == null) {
+					text = "";
+				} else {
+					var question:SurveyQuestionDto = SurveyQuestionDto(data);
+					text = question.text + ":";
+					for each (var answer:SurveyQuestionAnswerDto in question.answers) {
+						if (answer.selected) {
+							text = text + " " + answer.text;
+						}
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Label>

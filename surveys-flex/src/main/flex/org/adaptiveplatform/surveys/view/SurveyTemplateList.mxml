@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()" xmlns:components="org.adaptiveplatform.surveys.view.components.*" xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*" xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Image;
+			import mx.events.ListEvent;
+			import mx.utils.ObjectUtil;
+			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
+			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+			import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
+			import org.adaptiveplatform.surveys.dto.generated.PublishedSurveyTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.PublishedSurveyTemplateQuery;
+			import org.adaptiveplatform.surveys.view.renderers.DateTimeRenderer;
+
+			[Bindable]
+			private var surveys:ArrayCollection;
+			[Bindable]
+			private var query:PublishedSurveyTemplateQuery = new PublishedSurveyTemplateQuery();
+			
+			[Embed(source="/assets/icons/empty.png")]
+			public var empty:Class;
+			[Embed(source="/assets/icons/commenced.png")]
+			public var commenced:Class;
+			[Embed(source="/assets/icons/completed.png")]
+			public var completed:Class;
+			
+			[Embed(source="/assets/icons/urgent.png")]
+			public var urgent:Class;
+
+			private var view:ViewController;
+			private var surveyDao:SurveyDao;
+			private var surveyFacade:SurveyFacade;
+
+			protected function onCreationComplete():void {
+				view = ContextFactory.context.view;
+				surveyDao = ContextFactory.context.service.surveyDao;
+				surveyFacade = ContextFactory.context.service.surveyFacade;
+				reset();
+			}
+			
+			public function initializeView(ignore:* = null):void {
+				reset();
+			}
+
+			private function find():void {
+				query.runAs = GroupRoleEnum.STUDENT;
+				surveyDao.queryPublishedTemplates(query).onSuccess(function(result:ArrayCollection):void {
+						surveys = result;
+					});
+			}
+
+			private function reset():void {
+				query = new PublishedSurveyTemplateQuery();
+				find();
+			}
+
+			private function quizChosen(event:ListEvent):void {
+				var dto:PublishedSurveyTemplateDto = PublishedSurveyTemplateDto(event.itemRenderer.data);
+				if (!dto.submitted) {
+					if (dto.filledSurveyId) {
+						view.goto(View.SURVEY_FILLING, dto.filledSurveyId);
+					} else {
+						surveyFacade.startFilling(dto.id).onSuccess(function(surveyId:Number):void {
+								view.goto(View.SURVEY_FILLING, surveyId);
+							});
+					}
+				}
+			}
+			
+			public function isUrgent(date: Object):Class {
+				if(!date || !date.expirationDate) return null;
+				var urgentDate:Date = date.expirationDate;
+//				urgentDate.date -= 2;
+				if(ObjectUtil.dateCompare(new Date(), urgentDate)==1){
+					return urgent;
+				}
+				return null;
+			}
+
+			public function surveyFilled(dto:Object):Class {
+				if(!dto) return null;
+				if (!dto.submitted) {
+					if (dto.filledSurveyId) {
+						return commenced;//"STARTED";
+					} else {
+						return empty;//"WAITING";
+					}
+				}
+				return completed;//"SUBMITTED";
+			}
+			
+			public function surveyFilledTooltip(dto:Object):String {
+				if(!dto) return null;
+				if (!dto.submitted) {
+					if (dto.filledSurveyId) {
+						return resourceManager.getString('adaptive', 'started');
+					} else {
+						return resourceManager.getString('adaptive', 'waiting');
+					}
+				}
+				return resourceManager.getString('adaptive', 'submitted');
+			}
+			
+			private  function calcRowColor(item:Object, rowIndex:int, dataIndex:int, color:uint):uint {
+				if(item.submitted)
+					return 0x0e6c7d;
+				else
+					return color;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:ApplicationControlBar width="100%">
+		<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+		<mx:TextInput id="cbxKeyword" text="{query.keyword}" change="{query.keyword=cbxKeyword.text}" 
+			width="100%" enter="find()"/>
+		<mx:Button label="{resourceManager.getString('adaptive', 'find')}"
+			   toolTip="{resourceManager.getString('adaptive', 'find')}"
+			   click="find()"
+			   icon="@Embed(source='/assets/icons/search.png')"/>
+		<mx:Button label="{resourceManager.getString('adaptive', 'reset')}"
+			   toolTip="{resourceManager.getString('adaptive', 'reset')}"
+			   click="reset()"
+			   icon="@Embed(source='/assets/icons/clear.png')"/>
+	</mx:ApplicationControlBar>
+	<components1:RowColorDataGrid width="100%" height="100%" dataProvider="{surveys}" doubleClickEnabled="true"
+				 itemDoubleClick="quizChosen(event)" draggableColumns="false" rowHeight="26" sortableColumns="true"
+				 rowColorFunction="calcRowColor">
+		<components:columns>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyName')}" dataField="name" />
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupName')}" dataField="groupName"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'filled')}">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Image source="{outerDocument.surveyFilled(data)}" horizontalAlign="center" toolTip="{outerDocument.surveyFilledTooltip(data)}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'starts')}" dataField="startingDate">
+				<mx:itemRenderer>
+					<mx:Component>
+						<renderers:DateTimeRenderer fieldName="startingDate" />
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'expires')}" dataField="expirationDate">
+				<mx:itemRenderer>
+					<mx:Component>
+						<renderers:DateTimeRenderer fieldName="expirationDate" />
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'urgent')}" dataField="expirationDate" width="160">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Image source="{outerDocument.isUrgent(data)}" horizontalAlign="center"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+		</components:columns>
+	</components1:RowColorDataGrid>
+</mx:VBox>

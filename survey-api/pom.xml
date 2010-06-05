@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.adaptiveplatform.surveys</groupId>
+	<artifactId>survey-api</artifactId>
+	<version>0.2.M1-SNAPSHOT</version>
+	<name>Surveys - Survey module API</name>
+	<parent>
+		<groupId>org.adaptiveplatform.surveys</groupId>
+		<artifactId>surveys</artifactId>
+		<version>0.2.M1-SNAPSHOT</version>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>org.adaptiveplatform.codegenerator</groupId>
+			<artifactId>codegenerator-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.adaptiveplatform.surveys</groupId>
+			<artifactId>core-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>3.4.0.GA</version>
+		</dependency>
+	</dependencies>
+</project>

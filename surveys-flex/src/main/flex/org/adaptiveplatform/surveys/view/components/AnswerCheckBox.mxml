@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:CheckBox xmlns:mx="http://www.adobe.com/2006/mxml" label="{answer.text}"
+			 selected="{answer.selected}" width="100%" height="100%" creationComplete="create()" remove="remove()">
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.events.FlexEvent;
+			
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
+
+
+			[Bindable]
+			public var answer:SurveyQuestionAnswerDto;
+
+			private var watcher:ChangeWatcher;
+
+			private function create():void{
+				watcher = BindingUtils.bindProperty( answer, "selected", this, "selected" );
+			}
+			
+			private function remove():void{
+				watcher.unwatch();
+			}
+
+		]]>
+	</mx:Script>
+</mx:CheckBox>

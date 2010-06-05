@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				showCloseButton="true"
+				title="Survey {currentSurveyNumber+1} of {filledSurveys.length}"
+				close="close(event)"
+				width="600"
+				height="500"
+				creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.DateField;
+			import mx.managers.PopUpManager;
+			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
+			
+
+			private var surveyDao:SurveyDao;
+			[Bindable]
+			public var filledSurveys:ArrayCollection;
+			[Bindable]
+			public var currentSurveyNumber:Number;
+
+			[Bindable]
+			private var questions:ArrayCollection=new ArrayCollection();
+
+			private function onCreationComplete():void {
+				questions=new ArrayCollection();
+				surveyDao=ContextFactory.context.service.surveyDao;
+				getQuestionsForSurvey();
+			}
+
+			private function previous():void {
+				if (currentSurveyNumber > 0) {
+					currentSurveyNumber--;
+					getQuestionsForSurvey();
+				}
+			}
+
+			private function next():void {
+				if (currentSurveyNumber < filledSurveys.length - 1) {
+					currentSurveyNumber++;
+					getQuestionsForSurvey();
+				}
+			}
+
+			private function close(event:Event=null):void {
+				PopUpManager.removePopUp(this);
+			}
+
+			private function getQuestionsForSurvey():void {
+				questions=filledSurveys.getItemAt(currentSurveyNumber).questions;
+			}
+
+			private function getStatisticForQuestion():void {
+			/*  surveyDao.getPublishedSurveyStatistics(filledSurveys.getItemAt(currentSurveyNumber).id, groupId)
+			   .onSuccess(function(dto:SurveyStatisticsDto):void {
+			   statistic.dataProvider = getQuestion(currentSurveyNumber, dto).answers;
+			 });  */
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%">
+		<mx:Button icon="@Embed(source='/assets/icons/previous.png')"
+				   click="previous()"
+				   toolTip="{resourceManager.getString('adaptive', 'previous')}"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button icon="@Embed(source='/assets/icons/next.png')"
+				   click="next()"
+				   toolTip="{resourceManager.getString('adaptive', 'next')}"/>
+	</mx:HBox>
+	<mx:TabNavigator width="100%"
+					 height="100%">
+		<mx:VBox label="{resourceManager.getString('adaptive', 'surveyDetails')}">
+			<mx:Label text="{filledSurveys.getItemAt(currentSurveyNumber).groupName}"/>
+			<mx:Label text="{DateField.dateToString(filledSurveys.getItemAt(currentSurveyNumber).startDate, 'DD/MM/YYYY')}"/>
+			<mx:Label text="{DateField.dateToString(filledSurveys.getItemAt(currentSurveyNumber).submitDate, 'DD/MM/YYYY')}"/>
+			<mx:Label text="{filledSurveys.getItemAt(currentSurveyNumber).surveyTemplateName}"/>
+		</mx:VBox>
+		<mx:VBox label="{resourceManager.getString('adaptive', 'surveyQuestions')}">
+			<mx:DataGrid id="answerList"
+						 dataProvider="{filledSurveys.getItemAt(currentSurveyNumber).questions}"
+						 doubleClickEnabled="true"
+						 rowHeight="26"
+						 height="100%"
+						 width="100%"
+						 draggableColumns="false"
+						 sortableColumns="true">
+				<mx:columns>
+					<mx:DataGridColumn headerText="answer"
+									   dataField="text"
+									   itemRenderer="org.adaptiveplatform.surveys.view.QuestionDetailsRenderer"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+	</mx:TabNavigator>
+
+
+</mx:TitleWindow>

@@ -1,0 +1,27 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.0.0" xmlns:xsi="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/assembly-1.0.0.xsd">
+	<id>assembly</id>
+	<formats>
+		<format>dir</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
+			<outputFileNameMapping>
+				adaptive-platform-flex.swf
+			</outputFileNameMapping>
+			<includes>
+				<include>adaptive-platform:adaptive-platform-flex</include>
+			</includes>
+		</dependencySet>
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
+			<unpack>true</unpack>
+			<includes>
+				<!--  <include>adaptive-platform:adaptive-platform-flex:*:resource</include> -->
+				<include>*:resources</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
+</assembly>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-2"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+				xmlns:view="org.adaptiveplatform.surveys.view.*" initialize="onInitialize()"
+				xmlns:components="adaptlearning.view.components.*" backgroundColor="#fbf6e1" xmlns:reflexutil="net.kandov.reflexutil.*" xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
+
+	<mx:Metadata>
+		[ResourceBundle("adaptive")]
+	</mx:Metadata>
+	
+	<!--<reflexutil:ReflexUtil />-->
+	
+	<mx:Style source="/assets/css/Main.css"/>
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.DefaultApplicationContext;
+			import org.adaptiveplatform.surveys.application.ViewStackViewController;
+
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+
+
+			private var context:DefaultApplicationContext;
+			
+			private var viewsWithOutNavigation:ArrayCollection = new ArrayCollection(['surveyCreating', 'surveyFilling']);
+
+			private function onInitialize():void {
+				var channelName:String = "my-amf";
+				var channelUrl:String = "http://localhost:8080/adaptive-platform-web/messagebroker/amf";
+
+				ContextFactory.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
+//				ContextFactory.initializeMockContext(new ViewStackViewController(viewstack));
+			}
+
+			private function onUpdateComplete(event:FlexEvent):void {
+				var target:Object = event.currentTarget;
+				if (target.data != null) {
+					trace("view has been updated with: " + target.data);
+					if (target.hasOwnProperty("initializeView")) {
+						var f:Function = target.initializeView;
+						var arguments:Array = target.data;
+						f.apply(target, arguments);
+					}
+					target.data = null;
+				}
+			}
+
+			private function onViewChange(event:IndexChangedEvent):void {
+//				breadCrumbs.updateViewPath();
+				// FIXME global login/logout events
+				navigation.onUpdateComplete();
+				userInfo.onUpdateComplete();
+				navigation.visible = navigationVisible();
+			}
+			
+			private function navigationVisible():Boolean{
+				return !viewsWithOutNavigation.contains( viewstack.selectedChild.id );
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox height="100%" width="100%" horizontalAlign="center" verticalAlign="middle" verticalGap="15">
+		<mx:ApplicationControlBar id="applicationControlBar" width="80%" height="26" verticalGap="0">
+			<components1:NavigationBar id="navigation" horizontalAlign="left"/>
+			<components1:UserInformation id="userInfo" horizontalAlign="right" width="100%"/>
+		</mx:ApplicationControlBar>
+
+		<mx:Panel width="80%" height="90%" headerHeight="10">
+			<mx:ViewStack id="viewstack" width="100%" height="100%" change="onViewChange(event)">
+				<view:Login id="login" label="login" updateComplete="onUpdateComplete(event)"/>
+				<view:RegisterUser id="registerUser" label="register" updateComplete="onUpdateComplete(event)"/>
+				<view:SurveyTemplateList id="surveyTemplateList" label="Qs" updateComplete="onUpdateComplete(event)"/>
+				<view:SurveyFilling id="surveyFilling" label="Q" updateComplete="onUpdateComplete(event)"/>
+				<view:UsersList id="usersList" label="users" updateComplete="onUpdateComplete(event)"/>
+				<view:GroupManagement id="groupManagement" label="groups" updateComplete="onUpdateComplete(event)"/>
+				<view:UserAccountDetails id="userAccountDetails" label="usrInfo" updateComplete="onUpdateComplete(event)"/>
+				<view:SubmittedSurveyDetails id="submittedSurveyDetails" label="Q stats"
+											updateComplete="onUpdateComplete(event)"/>
+				<view:SurveyCreating id="surveyCreating" label="New S" updateComplete="onUpdateComplete(event)"/>
+				<view:SurveyPublication id="surveyPublication" label="survey management"
+									   updateComplete="onUpdateComplete(event)"/>
+				<view:PublicationDetails id="surveyPublicationDetails" label="publication details"
+										updateComplete="onUpdateComplete(event)"/>
+				<view:ResearchList id="researchList" label="research list" updateComplete="onUpdateComplete(event)"/>
+				<view:ResearchWizzard id="researchWizzard" label="research wizzard" updateComplete="onUpdateComplete(event)"/>
+				<view:EvaluatorStartPage id="evaluatorStartPage" label="evaluatorStartPage" updateComplete="onUpdateComplete(event)" />
+			</mx:ViewStack>
+		</mx:Panel>
+		<!--<mx:ToggleButtonBar x="10" y="540" dataProvider="{viewstack}" height="30"/> -->
+	</mx:VBox>
+</mx:Application>

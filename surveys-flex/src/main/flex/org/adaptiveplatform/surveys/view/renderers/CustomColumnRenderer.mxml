@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml" text="{data.comment}" paddingTop="2" paddingLeft="2">
+	<mx:Script>
+        <![CDATA[
+        	import mx.controls.TextInput;
+			import mx.controls.textClasses.TextRange;
+			
+			private var tr:TextRange;
+			
+ 	       	override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+    		        super.updateDisplayList(unscaledWidth, unscaledHeight);
+ 					
+ 				if (data && data.comment && data.comment!=''){ //don't do anything if it's not ready yet
+        			var token:String = this.parentDocument.phrase.text.toLowerCase();
+             
+             			//Reset to default formatting (in case we already added a highlight somewhere)!
+             			tr = new TextRange(this, false, -1, -1); //selects the whole string
+        			 	tr.color = "white";
+        				tr.fontWeight = "normal";
+        				tr.textDecoration = "none"; 
+             		
+             		
+            			if (token!=''){
+            		
+                			//Hightlight token in column text
+        				var begin:int = this.text.toLowerCase().indexOf(token);
+          				
+        				if ( begin > -1 ){
+              					tr = new TextRange(this, false, begin, begin+token.length);
+        					tr.color = "blue";
+        					tr.fontWeight = "bold";
+        					tr.textDecoration = "underline";
+        				}
+          			}
+     			}
+        	}
+        ]]>
+    </mx:Script>
+</mx:Label>

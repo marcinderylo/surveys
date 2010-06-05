@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete()"
+		 updateComplete="onUpdateComplete()">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
+			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.view.View;
+
+			[Bindable]
+			private var usersVisible:Boolean;
+			[Bindable]
+			private var fillingSurveysVisible:Boolean;
+			[Bindable]
+			private var groupsManagementVisible:Boolean;
+			[Bindable]
+			private var publicationOfSurveyVisible:Boolean;
+			[Bindable]
+			private var evaluatorStartPageVisible:Boolean;			
+
+			private var authentication:AuthenticationService;
+			private var views:ViewController;
+
+			private function onCreationComplete():void {
+				authentication = ContextFactory.context.service.authentication;
+				views = ContextFactory.context.view;
+			}
+
+			public function onUpdateComplete():void {
+				usersVisible = authentication.inRole("ROLE_ADMINISTRATOR");
+				fillingSurveysVisible = authentication.inRole("ROLE_USER");
+				groupsManagementVisible = authentication.inRole("ROLE_TEACHER");
+				publicationOfSurveyVisible = authentication.inRole("ROLE_EVALUATOR");
+				evaluatorStartPageVisible = authentication.inRole("ROLE_EVALUATOR");
+			}
+		]]>
+	</mx:Script>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'fillSurvey')}" color="0x3380DD" textDecoration="underline" visible="{fillingSurveysVisible}"
+				   includeInLayout="{fillingSurveysVisible}" click="{views.goto(View.SURVEY_TEMPLATE_LIST)}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'evalStartPage')}" color="0x3380DD" textDecoration="underline" visible="{evaluatorStartPageVisible}"
+				   includeInLayout="{evaluatorStartPageVisible}" click="{views.goto(View.EVALUATOR_START_PAGE)}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'publication')}" color="0x3380DD" textDecoration="underline" visible="{publicationOfSurveyVisible}"
+	 			   includeInLayout="{publicationOfSurveyVisible}" click="{views.goto(View.SURVEY_PUBLICATION)}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'research')}" color="0x3380DD" textDecoration="underline" visible="{publicationOfSurveyVisible}"
+				   includeInLayout="{publicationOfSurveyVisible}" click="{views.goto(View.RESEARCH_LIST)}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'users')}" color="0x3380DD" textDecoration="underline" visible="{usersVisible}"
+				   includeInLayout="{usersVisible}" click="{views.goto(View.USERS_LIST)}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'groups')}" color="0x3380DD" textDecoration="underline" visible="{groupsManagementVisible}"
+				   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_MANAGEMENT)}"/>
+</mx:HBox>

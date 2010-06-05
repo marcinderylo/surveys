@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
+	dragDrop="dragDrop(event)" 
+	dragEnter="dragEnter(event)"
+	text="{group.groupName}">
+
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.DataGrid;
+			import mx.controls.List;
+			import mx.core.IUIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.DragEvent;
+			import mx.managers.DragManager;
+			import mx.rpc.Fault;
+			
+			import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+			
+			[Bindable]
+			private var group:StudentGroupDto;
+			
+			public override function set data(value:Object):void{
+				group = value as StudentGroupDto;
+				this.text = group.groupName;
+				this.toolTip = group.groupName;
+			}
+			
+			public override function get data():Object{
+				return group;
+			}
+			
+			private function dragDrop(event:DragEvent):void
+			{
+				dragDropFunction( (event.dragInitiator as DataGrid).selectedItem);
+			}
+			
+			private function dragEnter(event:DragEvent):void{
+  				DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
+  				DragManager.showFeedback(DragManager.COPY);
+			}
+						
+			[Bindable]
+			public var dragDropFunction:Function;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Label>

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="600"
+				height="500"
+				showCloseButton="true"
+				close="close(event)"
+				title="{resourceManager.getString('adaptive', 'question')} {currentQuestionNumber+1} / {questions.length}"
+				creationComplete="onCreationComplete()"
+				xmlns:components="adaptlearning.view.components.*"
+				preinitialize="preinitialize()"
+				xmlns:combocheck="org.adaptiveplatform.surveys.view.components.combocheck.*" xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
+
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.view.renderers.CategoryRenderer;
+			import org.adaptiveplatform.surveys.view.renderers.CustomColumnRenderer;
+			
+			import mx.charts.ChartItem;
+			import mx.charts.chartClasses.Series;
+			import mx.charts.series.BarSeries;
+			import mx.charts.series.BarSet;
+			import mx.collections.ArrayCollection;
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.core.UIComponent;
+			import mx.graphics.codec.PNGEncoder;
+			import mx.managers.PopUpManager;
+			import mx.rpc.Fault;
+			
+			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
+			import org.adaptiveplatform.surveys.dto.generated.CommentQuestionCommand;
+			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
+			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
+			import org.adaptiveplatform.surveys.dto.generated.TagAnswerCommand;
+
+			[Bindable]
+			public var research:ResearchDto;
+
+			[Bindable]
+			public var questions:ArrayCollection;
+
+			[Bindable]
+			public var currentQuestionNumber:Number;
+
+			[Bindable]
+			private var filledSurveys:ArrayCollection;
+
+			[Bindable]
+			private var userAnswers:ArrayCollection=new ArrayCollection();
+
+			[Bindable]
+			private var statistics:ArrayCollection=new ArrayCollection();
+
+			private var evaluationFacade:EvaluationFacade;
+
+			private function preinitialize():void {
+				height=(parentApplication as Main).viewstack.height;
+				width=(parentApplication as Main).viewstack.width;
+			}
+
+			private function onCreationComplete():void {
+				userAnswers=new ArrayCollection();
+				evaluationFacade=ContextFactory.context.service.evaluationFacade;
+				filledSurveys=research.submittedSurveys;
+				createStatistics();
+			}
+
+			private function previous():void {
+				if (currentQuestionNumber > 0) {
+					currentQuestionNumber--;
+					createStatistics();
+				}
+			}
+
+			private function next():void {
+				if (currentQuestionNumber < questions.length - 1) {
+					currentQuestionNumber++;
+					createStatistics();
+				}
+			}
+
+			private function close(event:Event=null):void {
+				PopUpManager.removePopUp(this);
+			}
+
+			private function createStatistics():void {
+				userAnswers=new ArrayCollection();
+				var groups:Dictionary=new Dictionary();
+
+				var allGroups:ArrayCollection=new ArrayCollection();
+				for each (var filledSurvey:FilledSurveyDto in filledSurveys) {
+
+					var array:ArrayCollection=new ArrayCollection();
+					if (groups[filledSurvey.groupName]) {
+						array=groups[filledSurvey.groupName].surveys;
+					} else {
+						allGroups.addItem(filledSurvey.groupName);
+					}
+					array.addAll(getSelectedAnswers(filledSurvey.questions.getItemAt(currentQuestionNumber).answers));
+					groups[filledSurvey.groupName]={group: filledSurvey.groupName, surveys: array};
+
+					userAnswers.addItem({groupName: filledSurvey.groupName, date: filledSurvey.submitDate, answer: getSelected(filledSurvey.questions.getItemAt(currentQuestionNumber).answers), comment: filledSurvey.questions.getItemAt(currentQuestionNumber).comment, category: filledSurvey.questions.getItemAt(currentQuestionNumber).tags});
+				}
+				statistics=new ArrayCollection();
+
+				for each (var group:String in allGroups) {
+					var obj:Object=new Object();
+					var dict:Dictionary=prepareStatistic(groups[group].surveys);
+
+					obj["group"]=group;
+
+					for each (var o:Object in dict) {
+						obj[o.number]=o.count;
+					}
+					statistics.addItem(obj);
+
+				}
+				var mySeries:Array=new Array();
+
+				for (var i:int=0; i < research.templateDto.questions.getItemAt(currentQuestionNumber).answers.length; i++) {
+					var serie:BarSeries=new BarSeries();
+					serie.xField=(i + 1).toString();
+					serie.displayName=resourceManager.getString('adaptive', 'answerLabel') + " " + (i + 1);
+					serie.labelField=(i + 1).toString();
+					serie.setStyle("labelPosition", "inside");
+					mySeries.push(serie);
+				}
+				chart.series=mySeries;
+				chart.dataProvider=statistics;
+				chart.validateNow();
+			}
+
+			private function getSelected(list:ArrayCollection):String {
+				var answerText:String="";
+				for each (var answer:SurveyQuestionAnswerDto in list) {
+					if (answer.selected) {
+						answerText+=answer.number + ", ";
+					}
+				}
+				if (answerText.length > 0)
+					return answerText.substring(0, answerText.length - 2);
+				else
+					return answerText;
+			}
+
+			private function getSelectedAnswers(answers:ArrayCollection):ArrayCollection {
+				var answerList:ArrayCollection=new ArrayCollection;
+				if (questions.length > 0 && currentQuestionNumber < questions.length) {
+					for each (var answer:SurveyQuestionAnswerDto in answers) {
+						if (answer.selected) {
+							answerList.addItem(answer);
+						}
+					}
+				}
+				return answerList;
+			}
+
+			private function prepareStatistic(array:ArrayCollection):Dictionary {
+				var answers:Dictionary=new Dictionary();
+				for each (var answer:SurveyQuestionAnswerDto in array) {
+					if (answers[answer.number]) {
+						answers[answer.number]={number: answer.number, count: answers[answer.number].count + 1};
+					} else {
+						answers[answer.number]={number: answer.number, count: 1};
+					}
+				}
+				return answers;
+			}
+
+			private function displayDate(o:Object, col:Object):String {
+				return DateField.dateToString(o[col.dataField], "DD/MM/YYYY");
+			}
+
+			private function takeSnapshot(comp:DisplayObject):void {
+				(comp as UIComponent).setStyle("color", "#000000");
+				(comp as UIComponent).validateNow();
+				var bitmapData:BitmapData=new BitmapData(comp.width, comp.height, false, 0xffffff);
+				(comp as UIComponent).setStyle("color", "#ffffff");
+				bitmapData.draw(comp);
+
+				var bytes:ByteArray=(new PNGEncoder()).encode(bitmapData);
+
+				var fr:FileReference=new FileReference();
+				fr.save(bytes, "chart.png");
+			}
+
+			private function takeStatistic():void {
+				var spreadsheetText:String="lp.\t";
+				var question:Object=questions.getItemAt(currentQuestionNumber);
+				var count:Number=1;
+				var answers:ArrayCollection=new ArrayCollection();
+				for (var i:int=0; i < question.answers.length; i++) {
+					spreadsheetText+=i + "\t";
+				}
+				spreadsheetText=trim(spreadsheetText);
+				spreadsheetText+="\n";
+				for each (var filledSurvey:FilledSurveyDto in filledSurveys) {
+					answers=filledSurvey.questions.getItemAt(currentQuestionNumber).answers;
+					spreadsheetText+=count + "\t";
+					for each (var answer:SurveyQuestionAnswerDto in answers) {
+						if (answer.selected) {
+							spreadsheetText+="1\t";
+						} else {
+							spreadsheetText+="0\t";
+						}
+					}
+					count++;
+					spreadsheetText=trim(spreadsheetText);
+					spreadsheetText+="\n";
+				}
+				spreadsheetText=trim(spreadsheetText);
+				System.setClipboard(spreadsheetText);
+				Alert.show(resourceManager.getString('adaptive', 'copyToClipBoardAlert'));
+			}
+
+			private function trim(text:String):String {
+				return text.substr(0, text.length - 1);
+			}
+
+			/*  private function filterByPhrase(object:Object):Boolean {
+			   if((object.comment as String).search(phrase.text.toLowerCase())>-1)
+			   return true;
+			   return false;
+			 } */
+
+			private function displaySearchResult():void {
+				//answerList.dataProvider.filterFunction = filterByPhrase;
+				answerList.dataProvider.refresh();
+				phrase.dataProvider.addItem(phrase.text);
+				savePhrase(phrase.text);
+			}
+
+			private function savePhrase(text:String):void {
+				evaluationFacade.rememberSearchPhrase(research.id, questions.getItemAt(currentQuestionNumber).id, text).onSuccess(function(o:Object):void {
+						trace("success"); //todo
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+
+			private function onAddItem():void {
+
+			}
+
+			public function addTag(tags:ArrayCollection):void {
+				var tag:TagAnswerCommand=new TagAnswerCommand();
+				tag.filledSurveyId=research.templateDto.id;
+				tag.questionNumber=currentQuestionNumber;
+				tag.setTags=tags;
+				tag.researchId=research.id;
+				evaluationFacade.tagAnswer(tag).onSuccess(function(o:Object):void {
+						trace("success");
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+
+			public function addComment():void {
+				var comment:CommentQuestionCommand=new CommentQuestionCommand();
+				comment.comment=commentArea.text;
+				comment.questionId=questions.getItemAt(currentQuestionNumber).id;
+				comment.researchId=research.id;
+				evaluationFacade.commentQuestion(comment).onSuccess(function(o:Object):void {
+						trace("success"); //todo
+					}).onFault(function(fault:Fault):void {
+						trace(fault.faultString);
+					});
+			}
+
+			private function filter(answer:Object):Boolean {
+				for each (var category:Object in categories.selectedItems) {
+					if (answer.category.contains(category.label))
+						return true;
+				}
+				return false;
+			}
+
+			private function filterByCategory(e:Event=null):void {
+				userAnswers.filterFunction=filter;
+				userAnswers.refresh();
+			}
+		]]>
+	</mx:Script>
+	<mx:ArrayCollection id="arrColl">
+		<mx:source>
+			<mx:Array id="items">
+				<mx:Object label="Positive"
+						   id="positive"
+						   sel="true"
+						   tag="pozytywne"
+						   source="assets/images/positive.png"/>
+				<mx:Object label="Negative"
+						   id="negative"
+						   sel="true"
+						   tag="negatywne"
+						   source="assets/images/negative.png"/>
+				<mx:Object label="Conclusion"
+						   id="conclusion"
+						   sel="true"
+						   tag="wniosek"
+						   source="assets/images/conclusion.png"/>
+				<mx:Object label="Ignore"
+						   id="ignore"
+						   sel="false"
+						   tag="ignoruj"
+						   source="assets/images/ignore.png"/>
+			</mx:Array>
+		</mx:source>
+	</mx:ArrayCollection>
+	<mx:HBox width="100%">
+		<mx:Button click="previous()"
+				   icon="@Embed(source='/assets/icons/previous.png')"
+				   toolTip="{resourceManager.getString('adaptive', 'previous')}"/>
+		<mx:Spacer width="100%"/>
+		<mx:Image click="takeStatistic()"
+				  source="@Embed(source='/assets/icons/statistics.png')"
+				  buttonMode="true"
+				  toolTip="{resourceManager.getString('adaptive', 'takeStatsToolTip')}"
+				  visible="{navigator.selectedIndex==1}"
+				  includeInLayout="{navigator.selectedIndex==1}"/>
+		<mx:Image click="takeSnapshot(chart)"
+				  source="@Embed(source='/assets/icons/camera.png')"
+				  buttonMode="true"
+				  toolTip="{resourceManager.getString('adaptive', 'takeSnapshotToolTip')}"
+				  visible="{navigator.selectedIndex==0}"
+				  includeInLayout="{navigator.selectedIndex==0}"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button click="next()"
+				   icon="@Embed(source='/assets/icons/next.png')"
+				   toolTip="{resourceManager.getString('adaptive', 'next')}"/>
+	</mx:HBox>
+
+	<mx:TabNavigator width="100%"
+					 height="100%"
+					 verticalGap="0"
+					 id="navigator">
+		<mx:HBox width="100%"
+				 label="{resourceManager.getString('adaptive', 'questionDetails')}"
+				 height="100%">
+			<mx:VBox width="40%"
+					 height="100%"
+					 paddingLeft="10">
+
+
+				<components1:DisplayAnswerQuestionComponent question="{questions.getItemAt(currentQuestionNumber)}"/>
+				<mx:Label text="{resourceManager.getString('adaptive', 'commentToQuestion')}"/>
+				<mx:HBox width="100%"
+						 height="100%"
+						 verticalAlign="bottom">
+					<mx:TextArea height="100%"
+								 width="100%"
+								 toolTip="{resourceManager.getString('adaptive', 'placeForQuestion')}"
+								 id="commentArea"
+								 text="{research.questions.getItemAt(currentQuestionNumber).comments}"/>
+
+				</mx:HBox>
+				<mx:Button label="{resourceManager.getString('adaptive', 'addQuestion')}"
+						   click="addComment()"/>
+			</mx:VBox>
+
+			<mx:VBox width="60%"
+					 height="100%"
+					 paddingLeft="10"
+					 horizontalAlign="right">
+				<mx:BarChart id="chart"
+							 width="100%"
+							 height="100%"
+							 type="100%"
+							 showDataTips="true">
+					<mx:verticalAxis>
+						<mx:CategoryAxis categoryField="group"/>
+					</mx:verticalAxis>
+					<mx:horizontalAxis>
+						<mx:LinearAxis/>
+					</mx:horizontalAxis>
+				</mx:BarChart>
+				<mx:Legend dataProvider="{chart}"/>
+
+			</mx:VBox>
+		</mx:HBox>
+		<mx:VBox label="{resourceManager.getString('adaptive', 'filledSurveys')}"
+				 verticalGap="0"
+				 width="100%"
+				 height="100%">
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+				<mx:ComboBox id="phrase"
+							 width="200"
+							 editable="true"
+							 enter="{displaySearchResult()}"
+							 dataProvider="{research.questions.getItemAt(currentQuestionNumber).searchPhrases}"/>
+				<mx:Image buttonMode="true"
+						  toolTip="{resourceManager.getString('adaptive', 'find')}"
+						  source="@Embed(source='/assets/icons/search.png')"
+						  click="{displaySearchResult()}"/>
+				<mx:Image buttonMode="true"
+						  toolTip="{resourceManager.getString('adaptive', 'reset')}"
+						  source="@Embed(source='/assets/icons/clear.png')"
+						  click="{phrase.text = ''; displaySearchResult()}"/>
+				<mx:Spacer width="100%"/>
+				<combocheck:ComboCheck id="categories"
+									   dataProvider="{items}"
+									   labelField="label"
+									   addItem="onAddItem()"
+									   prompt="{resourceManager.getString('adaptive', 'selectCategory')}"/>
+				<mx:Image buttonMode="true"
+						  toolTip="{resourceManager.getString('adaptive', 'find')}"
+						  source="@Embed(source='/assets/icons/search.png')"
+						  click="filterByCategory()"/>
+			</mx:HBox>
+
+			<mx:DataGrid id="answerList"
+						 dataProvider="{userAnswers}"
+						 doubleClickEnabled="true"
+						 rowHeight="40"
+						 height="100%"
+						 width="100%"
+						 draggableColumns="false"
+						 sortableColumns="true">
+				<mx:columns>
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'group')}"
+									   dataField="groupName"
+									   width="100"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'date')}"
+									   dataField="date"
+									   labelFunction="displayDate"
+									   width="100"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
+									   dataField="answer"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'comment')}"
+									   dataField="comment"
+									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'category')}"
+									   dataField="category"
+									   itemRenderer="{new ClassFactory(CategoryRenderer)}"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+	</mx:TabNavigator>
+
+</mx:TitleWindow>

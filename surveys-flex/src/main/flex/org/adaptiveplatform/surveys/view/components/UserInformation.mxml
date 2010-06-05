@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete()"
+		 updateComplete="onUpdateComplete()" visible="{isAuthenticated}">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.view.View;
+			[Bindable]
+			private var loggedUser:String;
+			[Bindable]
+			private var isAuthenticated:Boolean;
+
+			private var authentication:AuthenticationService;
+
+			private function onCreationComplete():void {
+				authentication = ContextFactory.context.service.authentication;
+			}
+
+			public function onUpdateComplete():void {
+				loggedUser = authentication.currentUser;
+				isAuthenticated = authentication.authenticated;
+			}
+
+			private function logout():void {
+				authentication.logout().onSuccessGoto(View.LOGIN);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label text="{resourceManager.getString('adaptive', 'welcome')}"/>
+	<mx:Text text="{loggedUser}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'logout')}" click="logout()" />
+</mx:HBox>

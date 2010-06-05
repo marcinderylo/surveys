@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml" width="100%"> 
+ 
+        <mx:Script>
+            <![CDATA[
+                import mx.formatters.DateFormatter;
+                public var fieldName:String = "";
+                   
+                override public function set data(value:Object):void
+                {
+                    var dateFormatter:DateFormatter = new DateFormatter();
+                    super.data = value;
+                    if (value == null)
+                    {
+                        this.text = "";
+                        return;
+                    }
+                   
+                    try
+                    {
+                        this.text = dateFormatter.format(value[fieldName]);
+                    }catch(e:Error)
+                    {
+                        this.text = "";
+                    }
+                }
+            ]]>
+        </mx:Script>
+</mx:Label>
