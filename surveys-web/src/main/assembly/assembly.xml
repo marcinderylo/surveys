@@ -9,10 +9,10 @@
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
 			<outputFileNameMapping>
-				adaptive-platform-flex.swf
+				surveys-flex.swf
 			</outputFileNameMapping>
 			<includes>
-				<include>adaptive-platform:adaptive-platform-flex</include>
+				<include>org.adaptiveplatform.surveys:surveys-flex</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>

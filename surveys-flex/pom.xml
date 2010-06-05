@@ -75,8 +75,8 @@
                                 </outputDirectory>
 							<htmlName>index</htmlName>
 							<parameters>
-								<title>Adaptive platform</title>
-								<swf>adaptive-platform-flex</swf>
+								<title>Surveys</title>
+								<swf>surveys-flex</swf>
 								<width>100%</width>
 								<height>100%</height>
 							</parameters>

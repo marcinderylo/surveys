@@ -16,14 +16,14 @@
 		<flex:secured />
 	</flex:message-broker>
 
-	<bean class="adaptiveplatform.configuration.flex.ConfigureFlexTypesBean" />
+	<bean class="org.adaptiveplatform.surveys.configuration.flex.ConfigureFlexTypesBean" />
 
 	<bean id="businessExceptionTranslator"
-		class="adaptiveplatform.configuration.flex.BusinessExceptionTranslator" />
+		class="org.adaptiveplatform.surveys.configuration.flex.BusinessExceptionTranslator" />
 	<bean id="validationExceptionTranslator"
-		class="adaptiveplatform.configuration.flex.ValidationExceptionTranslator" />
+		class="org.adaptiveplatform.surveys.configuration.flex.ValidationExceptionTranslator" />
 	<bean id="genericExceptionTranslator"
-		class="adaptiveplatform.configuration.flex.GenericExceptionTranslator">
+		class="org.adaptiveplatform.surveys.configuration.flex.GenericExceptionTranslator">
 		<constructor-arg value="InternalServerError" />
 	</bean>
 </beans>
