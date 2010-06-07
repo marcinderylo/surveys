@@ -13,10 +13,6 @@
 
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
-			import org.adaptiveplatform.surveys.view.renderers.CategoryRenderer;
-			import org.adaptiveplatform.surveys.view.renderers.CustomColumnRenderer;
-			
 			import mx.charts.ChartItem;
 			import mx.charts.chartClasses.Series;
 			import mx.charts.series.BarSeries;
@@ -30,12 +26,15 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
 			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
 			import org.adaptiveplatform.surveys.dto.generated.CommentQuestionCommand;
 			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
 			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
 			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			import org.adaptiveplatform.surveys.dto.generated.TagAnswerCommand;
+			import org.adaptiveplatform.surveys.view.renderers.CategoryRenderer;
+			import org.adaptiveplatform.surveys.view.renderers.CustomColumnRenderer;
 
 			[Bindable]
 			public var research:ResearchDto;
@@ -246,14 +245,14 @@
 
 			}
 
-			public function addTag(tags:ArrayCollection,filledSurveyId:Number):void {
+			public function addTag(tags:ArrayCollection,filledSurveyId:Number,data:Object):void {
 				var tag:TagAnswerCommand=new TagAnswerCommand();
 				tag.filledSurveyId=filledSurveyId;
 				tag.questionNumber=currentQuestionNumber;
 				tag.setTags=tags;
 				tag.researchId=research.id;
 				evaluationFacade.tagAnswer(tag).onSuccess(function(o:Object):void {
-						trace("success");
+						data.category=tags;
 					}).onFault(function(fault:Fault):void {
 						trace(fault.faultString);
 					});

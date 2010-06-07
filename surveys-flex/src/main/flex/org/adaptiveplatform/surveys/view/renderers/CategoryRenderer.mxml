@@ -57,8 +57,7 @@
 							tags.addItem(tag.label);
 						}
 					}
-					(parentDocument as FilledQuestionDetails).addTag(tags,data.filledSurveyId);
-					super.data.category=tags;
+					(parentDocument as FilledQuestionDetails).addTag(tags,data.filledSurveyId,super.data);
 					edited=false;
 					arrColl.refresh();
 				}
