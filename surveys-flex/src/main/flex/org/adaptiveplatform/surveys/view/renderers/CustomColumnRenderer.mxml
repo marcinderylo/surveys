@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml" text="{data.comment}" paddingTop="2" paddingLeft="2">
+<mx:Text xmlns:mx="http://www.adobe.com/2006/mxml" text="{data.comment}" paddingTop="2" paddingLeft="2">
 	<mx:Script>
         <![CDATA[
         	import mx.controls.TextInput;
@@ -36,4 +36,4 @@
         	}
         ]]>
     </mx:Script>
-</mx:Label>
+</mx:Text>

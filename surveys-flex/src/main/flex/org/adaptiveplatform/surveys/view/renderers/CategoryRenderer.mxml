@@ -15,7 +15,7 @@
 			override public function set data(o:Object):void {
 				super.data=o;
 				for each (var tag:Object in arrColl) {
-					if ((o.category as ArrayCollection).contains(tag)) {
+					if ((o.category as ArrayCollection).contains(tag.label)) {
 						tag.sel=true;
 					} else {
 						tag.sel=false;
@@ -57,7 +57,8 @@
 							tags.addItem(tag.label);
 						}
 					}
-					(parentDocument as FilledQuestionDetails).addTag(tags);
+					(parentDocument as FilledQuestionDetails).addTag(tags,data.filledSurveyId);
+					super.data.category=tags;
 					edited=false;
 					arrColl.refresh();
 				}

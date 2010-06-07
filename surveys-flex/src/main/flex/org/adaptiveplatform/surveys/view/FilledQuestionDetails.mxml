@@ -103,7 +103,7 @@
 					array.addAll(getSelectedAnswers(filledSurvey.questions.getItemAt(currentQuestionNumber).answers));
 					groups[filledSurvey.groupName]={group: filledSurvey.groupName, surveys: array};
 
-					userAnswers.addItem({groupName: filledSurvey.groupName, date: filledSurvey.submitDate, answer: getSelected(filledSurvey.questions.getItemAt(currentQuestionNumber).answers), comment: filledSurvey.questions.getItemAt(currentQuestionNumber).comment, category: filledSurvey.questions.getItemAt(currentQuestionNumber).tags});
+					userAnswers.addItem({groupName: filledSurvey.groupName, date: filledSurvey.submitDate, answer: getSelected(filledSurvey.questions.getItemAt(currentQuestionNumber).answers), comment: filledSurvey.questions.getItemAt(currentQuestionNumber).comment, category: filledSurvey.questions.getItemAt(currentQuestionNumber).tags, filledSurveyId:filledSurvey.id});
 				}
 				statistics=new ArrayCollection();
 
@@ -246,9 +246,9 @@
 
 			}
 
-			public function addTag(tags:ArrayCollection):void {
+			public function addTag(tags:ArrayCollection,filledSurveyId:Number):void {
 				var tag:TagAnswerCommand=new TagAnswerCommand();
-				tag.filledSurveyId=research.templateDto.id;
+				tag.filledSurveyId=filledSurveyId;
 				tag.questionNumber=currentQuestionNumber;
 				tag.setTags=tags;
 				tag.researchId=research.id;
@@ -411,6 +411,10 @@
 						  toolTip="{resourceManager.getString('adaptive', 'find')}"
 						  source="@Embed(source='/assets/icons/search.png')"
 						  click="filterByCategory()"/>
+				<mx:Image buttonMode="true"
+						  toolTip="{resourceManager.getString('adaptive', 'reset')}"
+						  source="@Embed(source='/assets/icons/clear.png')"
+						  click="{userAnswers.filterFunction=null;userAnswers.refresh()}"/>
 			</mx:HBox>
 
 			<mx:DataGrid id="answerList"
