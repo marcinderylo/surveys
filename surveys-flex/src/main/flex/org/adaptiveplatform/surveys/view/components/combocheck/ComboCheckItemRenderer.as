@@ -16,7 +16,7 @@ package org.adaptiveplatform.surveys.view.components.combocheck {
 		}
 
 		private function onCreationComplete(event:Event):void {
-			if (data.assigned==true) {
+			if (data.sel==true) {
 				selected=true;
 				var cck:ComboCheck=ComboCheck(ComboCheckDropDownFactory(owner).owner);
 				var index:int=cck.selectedItems.getItemIndex(data);

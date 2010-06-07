@@ -74,7 +74,7 @@ package org.adaptiveplatform.surveys.view.components.combocheck {
         override public function set dataProvider(value:Object):void {
 			super.dataProvider = value;
 			for each (var obj:Object in dataProvider) {
-			    if (obj['assigned']==true) {
+			    if (obj['sel']==true) {
 			    	selectedItems.addItem(obj);
 			    }
 			}
