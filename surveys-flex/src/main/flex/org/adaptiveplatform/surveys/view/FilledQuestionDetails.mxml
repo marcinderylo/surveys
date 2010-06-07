@@ -261,10 +261,10 @@
 			public function addComment():void {
 				var comment:CommentQuestionCommand=new CommentQuestionCommand();
 				comment.comment=commentArea.text;
-				comment.questionId=questions.getItemAt(currentQuestionNumber).id;
+				comment.questionId=currentQuestionNumber;
 				comment.researchId=research.id;
 				evaluationFacade.commentQuestion(comment).onSuccess(function(o:Object):void {
-						trace("success"); //todo
+					research.questions.getItemAt(currentQuestionNumber).comments=commentArea.text;
 					}).onFault(function(fault:Fault):void {
 						trace(fault.faultString);
 					});
