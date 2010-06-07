@@ -419,6 +419,7 @@
 			<mx:DataGrid id="answerList"
 						 dataProvider="{userAnswers}"
 						 doubleClickEnabled="true"
+						 variableRowHeight="true"
 						 rowHeight="40"
 						 height="100%"
 						 width="100%"
@@ -435,7 +436,7 @@
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
 									   dataField="answer"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'comment')}"
-									   dataField="comment"
+									   dataField="comment" minWidth="150"
 									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'category')}"
 									   dataField="category"
