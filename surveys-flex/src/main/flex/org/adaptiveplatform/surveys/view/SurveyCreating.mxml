@@ -225,14 +225,7 @@
 			         </menuitem>
 			     </mx:XMLList>
 			</mx:MenuBar>
-<!--			<mx:HBox width="100%">
-				<mx:Label text="SURVEY CREATION" textAlign="center" width="100%" />
-				<mx:Button id="updateBtn" label="{resourceManager.getString('adaptive', 'btn.saveExit')}" 
-					buttonDown="update()" visible="{isEditMode}" includeInLayout="{isEditMode}"/>
-				<mx:Button id="saveBtn" label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}" buttonDown="submit()"/>
-				<mx:Button label="{resourceManager.getString('adaptive', 'btn.exit')}" buttonDown="exit()"/>
-			</mx:HBox>
--->			<mx:ApplicationControlBar width="100%">
+			<mx:ApplicationControlBar width="100%">
 				<mx:Label text="{resourceManager.getString('adaptive', 'surveyName')}:" width="100"/>
 				<mx:TextInput id="surveyName" width="100%"/> 
 				<mx:Button toolTip="{resourceManager.getString('adaptive', 'addQuestion')}"

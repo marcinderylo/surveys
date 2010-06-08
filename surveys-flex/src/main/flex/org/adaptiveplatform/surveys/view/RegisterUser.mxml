@@ -41,15 +41,27 @@
 			
 			protected function loginClicked(event:MouseEvent):void{
 				user = new RegisterAccountCommand();
+				clearFields();
+				view.goto(View.LOGIN);
 			}
 
 			private function userCreated(ignore:Object = null):void {
 				Alert.show("user created successfully");
+				clearFields();
 			}
 
 			private function failedToCreateUser(fault:Fault):void {
 				Alert.show(fault.faultString);
 			}
+			
+			private function clearFields():void{
+				displayedName.text = '';
+				email.text = '';
+				email2.text = '';
+				password.text = '';
+				password2.text = '';
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -83,7 +95,7 @@
 		</mx:FormItem>
 		<mx:FormItem horizontalAlign="right" direction="horizontal" width="100%">
 			<mx:Button id="register" label="{resourceManager.getString('adaptive', 'register')}" click="registerClicked(event)" width="50%"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'login')}" click="view.goto(View.LOGIN)" width="50%"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'login')}" click="loginClicked(event)" width="50%"/>
 		</mx:FormItem>
 	</mx:Form>
 </mx:VBox>

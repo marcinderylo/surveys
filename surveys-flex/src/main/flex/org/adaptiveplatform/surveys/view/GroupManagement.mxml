@@ -30,8 +30,10 @@
 			private var studentGroupFacade:StudentGroupFacade;
 			private var groupDao:StudentGroupDao;
 
+			[Bindable]
 			private var userQuery:UserQuery = new UserQuery();
 			
+			[Bindable]
 			private var query:StudentGroupQuery = new StudentGroupQuery();
 
 			[Bindable]
@@ -267,10 +269,12 @@
 			private function displayDetails():void {
 				if((groupDetails.parent as Box).percentHeight==100){
 					(groupDetails.parent as Box).height=10;
-					upDown.setStyle('icon', upIcon )
+					upDown.setStyle('icon', upIcon );
+					removeUserFromGroupBtn.enabled = false;
 				} else {
 					(groupDetails.parent as Box).percentHeight=100;
 					upDown.setStyle('icon', downIcon );
+					removeUserFromGroupBtn.enabled = true;
 				}
 			}
 		]]>
@@ -319,12 +323,13 @@
 		</mx:HBox>
 		<mx:ApplicationControlBar width="100%">
 			<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
-			<mx:TextInput id="cbxKeywordG" width="100%" /> <!--text="{query.nameContains}" change="{query.nameContains=cbxKeyword.text}" enter="findGroups()"/> -->
+			<mx:TextInput id="cbxKeywordG" width="100%" text="{query.groupNamePattern}" 
+				change="{query.groupNamePattern=cbxKeywordG.text}" enter="findGroups()"/>
 			<mx:Button label="{resourceManager.getString('adaptive', 'find')}"
 				   toolTip="{resourceManager.getString('adaptive', 'find')}"
 				   click="findGroups()"
 				   icon="@Embed(source='/assets/icons/search.png')"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'reset')}"
+			<mx:Button id="groupResetBtn" label="{resourceManager.getString('adaptive', 'reset')}"
 				   toolTip="{resourceManager.getString('adaptive', 'reset')}"
 				   click="resetGroup()"
 				   icon="@Embed(source='/assets/icons/clear.png')"/>
@@ -345,11 +350,12 @@
 		<mx:HBox width="100%" horizontalAlign="right" textAlign="right">
 			<mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.details')}" width="100%" textAlign="center"/>
 			<mx:Image />
-			<mx:Button label="{resourceManager.getString('adaptive', 'showHideDetails')}"
+			<mx:Button
 				   toolTip="{resourceManager.getString('adaptive', 'showHideDetails')}"
 				   id="upDown" icon="@Embed(source='/assets/icons/down.png')"
 				   click="displayDetails()"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.removeUserFromGroup')}"
+			<mx:Button id="removeUserFromGroupBtn"
+				   label="{resourceManager.getString('adaptive', 'groupManagement.removeUserFromGroup')}"
 				   toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeUserFromGroup')}"
 				   click="removeUser()"
 				   icon="@Embed(source='/assets/icons/remove.png')"/>
