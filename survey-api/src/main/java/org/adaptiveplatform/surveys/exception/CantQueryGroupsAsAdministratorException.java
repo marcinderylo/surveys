@@ -2,10 +2,12 @@ package org.adaptiveplatform.surveys.exception;
 
 import java.io.Serializable;
 
+import org.adaptiveplatform.codegenerator.api.RemoteException;
+
 /**
- *
  * @author Marcin Deryło
  */
+@RemoteException
 public class CantQueryGroupsAsAdministratorException extends BusinessException
         implements Serializable {
 

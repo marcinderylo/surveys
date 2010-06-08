@@ -28,7 +28,7 @@ import org.adaptiveplatform.surveys.exception.NotAllowedToDeleteGroupException;
 import org.adaptiveplatform.surveys.exception.NotAllowedToPublishTemplatesInGroupException;
 import org.adaptiveplatform.surveys.exception.NotTemplateCreatorException;
 import org.adaptiveplatform.surveys.exception.PublishedSurveyTemplateAlreadyFilledException;
-import org.adaptiveplatform.surveys.exception.security.NoSuchUserException;
+import org.adaptiveplatform.surveys.exception.security.EmailNotRegisteredException;
 import org.adaptiveplatform.surveys.service.StudentGroupFactory;
 import org.adaptiveplatform.surveys.service.StudentGroupRepository;
 import org.adaptiveplatform.surveys.service.SurveyPublicationFactory;
@@ -49,151 +49,138 @@ import org.springframework.transaction.annotation.Transactional;
 @RemotingDestination
 public class StudentGroupFacadeImpl implements StudentGroupFacade {
 
-    @Resource
-    private StudentGroupFactory groupFactory;
-    @Resource
-    private StudentGroupRepository groupRepository;
-    @Resource
-    private SurveyTemplateRepository templateRepository;
-    @Resource
-    private AuthenticationService authenticationService;
-    @Resource
-    private SurveyPublicationRepository publicationRepository;
-    @Resource
-    private SurveyRepository surveyRepository;
-    @Resource
-    private SurveyPublicationFactory publicationFactory;
-    @Resource
-    private UserDao userDao;
+	@Resource
+	private StudentGroupFactory groupFactory;
+	@Resource
+	private StudentGroupRepository groupRepository;
+	@Resource
+	private SurveyTemplateRepository templateRepository;
+	@Resource
+	private AuthenticationService authenticationService;
+	@Resource
+	private SurveyPublicationRepository publicationRepository;
+	@Resource
+	private SurveyRepository surveyRepository;
+	@Resource
+	private SurveyPublicationFactory publicationFactory;
+	@Resource
+	private UserDao userDao;
 
-    @Override
-    @Secured({Role.TEACHER})
-    public Long createGroup(CreateStudentGroupCommand command) {
-        StudentGroup group = groupFactory.newGroup(
-                command.getGroupName());
+	@Override
+	@Secured( { Role.TEACHER })
+	public Long createGroup(CreateStudentGroupCommand command) {
+		StudentGroup group = groupFactory.newGroup(command.getGroupName());
 
-        addGroupMembers(group, command.getAddMemberCommands());
-        return group.getId();
-    }
+		addGroupMembers(group, command.getAddMemberCommands());
+		return group.getId();
+	}
 
-    @Override
-    @Secured({Role.EVALUATOR})
-    public void assignSurveyTemplate(PublishSurveyTemplateCommand command) {
-        StudentGroup group = groupRepository.getExisting(command.getGroupId());
+	@Override
+	@Secured( { Role.EVALUATOR })
+	public void assignSurveyTemplate(PublishSurveyTemplateCommand command) {
+		StudentGroup group = groupRepository.getExisting(command.getGroupId());
 
-        UserDto caller = authenticationService.getCurrentUser();
+		UserDto caller = authenticationService.getCurrentUser();
 
-        if (!group.isAssignedAsEvaluator(caller)) {
-            throw new NotAllowedToPublishTemplatesInGroupException(
-                    group.getName());
-        }
-        // FIXME add tests for publishing multiple survey template at once
-        Collection<Long> templateIDs = asLongs(command.getSurveyTemplateIds());
-        for (Long surveyTemplateId : templateIDs) {
-            SurveyTemplate template = templateRepository.getExisting(
-                    surveyTemplateId);
+		if (!group.isAssignedAsEvaluator(caller)) {
+			throw new NotAllowedToPublishTemplatesInGroupException(group.getName());
+		}
+		// FIXME add tests for publishing multiple survey template at once
+		Collection<Long> templateIDs = asLongs(command.getSurveyTemplateIds());
+		for (Long surveyTemplateId : templateIDs) {
+			SurveyTemplate template = templateRepository.getExisting(surveyTemplateId);
 
-            if (!template.getOwnerId().equals(caller.getId())) {
-                throw new NotTemplateCreatorException(surveyTemplateId);
-            }
-            SurveyPublication publication = publicationFactory.create(template,
-                    group, command.getStartingDate(),
-                    command.getExpirationDate());
+			if (!template.getOwnerId().equals(caller.getId())) {
+				throw new NotTemplateCreatorException(surveyTemplateId);
+			}
+			SurveyPublication publication = publicationFactory.create(template, group, command.getStartingDate(),
+					command.getExpirationDate());
 
-            publicationRepository.persist(publication);
-        }
-    }
+			publicationRepository.persist(publication);
+		}
+	}
 
-    @Override
-    public void removeSurveyTemplate(Long publishedSurveyTemplateId) {
-        final SurveyPublication publication =
-                publicationRepository.getExisting(publishedSurveyTemplateId);
+	@Override
+	public void removeSurveyTemplate(Long publishedSurveyTemplateId) {
+		final SurveyPublication publication = publicationRepository.getExisting(publishedSurveyTemplateId);
 
-        List<FilledSurvey> filledSurveys =
-                surveyRepository.list(publishedSurveyTemplateId);
+		List<FilledSurvey> filledSurveys = surveyRepository.list(publishedSurveyTemplateId);
 
-        if (!filledSurveys.isEmpty()) {
-            throw new PublishedSurveyTemplateAlreadyFilledException(
-                    publishedSurveyTemplateId);
-        }
-        publicationRepository.remove(publication);
-    }
+		if (!filledSurveys.isEmpty()) {
+			throw new PublishedSurveyTemplateAlreadyFilledException(publishedSurveyTemplateId);
+		}
+		publicationRepository.remove(publication);
+	}
 
-    @Override
-    @Secured({Role.TEACHER})
-    public void changeGroupMembers(ChangeGroupMembersCommand command) {
-        Long groupId = command.getGroupId();
-        StudentGroup group = groupRepository.getExisting(groupId);
+	@Override
+	@Secured( { Role.TEACHER })
+	public void changeGroupMembers(ChangeGroupMembersCommand command) {
+		Long groupId = command.getGroupId();
+		StudentGroup group = groupRepository.getExisting(groupId);
 
-        UserDto caller = authenticationService.getCurrentUser();
-        if (!group.isGroupAdministrator(caller)) {
-            throw new NotAllowedToChangeGroupMembershipException(group.getName());
-        }
+		UserDto caller = authenticationService.getCurrentUser();
+		if (!group.isGroupAdministrator(caller)) {
+			throw new NotAllowedToChangeGroupMembershipException(group.getName());
+		}
 
-        for (String email : command.getRemoveMembers()) {
-            if (caller.getEmail().equals(email)) {
-                throw new CantRemoveSelfFromGroupException(group.getName());
-            }
-            UserDto user = getExistingByEmail(email);
+		for (String email : command.getRemoveMembers()) {
+			if (caller.getEmail().equals(email)) {
+				throw new CantRemoveSelfFromGroupException(group.getName());
+			}
+			UserDto user = getExistingByEmail(email);
 
-            group.removeMember(user);
-        }
-        addGroupMembers(group, command.getAddMembers());
+			group.removeMember(user);
+		}
+		addGroupMembers(group, command.getAddMembers());
 
-    }
+	}
 
-    private void addGroupMembers(StudentGroup group,
-            List<AddGroupMemberCommand> newMembers) {
-        for (AddGroupMemberCommand addMemberCmd : newMembers) {
-            UserDto user = getExistingByEmail(addMemberCmd.getEmail());
-            GroupRole role = GroupRole.valueOf(
-                    addMemberCmd.getRole());
-            group.addMember(user, role);
-        }
-    }
+	private void addGroupMembers(StudentGroup group, List<AddGroupMemberCommand> newMembers) {
+		for (AddGroupMemberCommand addMemberCmd : newMembers) {
+			UserDto user = getExistingByEmail(addMemberCmd.getEmail());
+			GroupRole role = GroupRole.valueOf(addMemberCmd.getRole());
+			group.addMember(user, role);
+		}
+	}
 
-    private UserDto getExistingByEmail(String email) {
-        UserDto user = userDao.getByEmail(email);
-        if (user == null) {
-            throw new NoSuchUserException(email);
-        }
-        return user;
-    }
+	private UserDto getExistingByEmail(String email) {
+		UserDto user = userDao.getByEmail(email);
+		if (user == null) {
+			throw new EmailNotRegisteredException(email);
+		}
+		return user;
+	}
 
-    @Override
-    public void removeGroup(Long groupId) {
-        StudentGroup group = groupRepository.getExisting(groupId);
+	@Override
+	public void removeGroup(Long groupId) {
+		StudentGroup group = groupRepository.getExisting(groupId);
 
-        UserDto caller = authenticationService.getCurrentUser();
-        if (!group.isGroupAdministrator(caller)) {
-            throw new NotAllowedToDeleteGroupException(group.getName());
-        }
-        if (!publicationRepository.getByGroup(groupId).isEmpty()) {
-            throw new DeletingGroupWithPublishedTemplatesException(
-                    group.getName());
-        }
-        groupRepository.remove(groupId);
-    }
+		UserDto caller = authenticationService.getCurrentUser();
+		if (!group.isGroupAdministrator(caller)) {
+			throw new NotAllowedToDeleteGroupException(group.getName());
+		}
+		if (!publicationRepository.getByGroup(groupId).isEmpty()) {
+			throw new DeletingGroupWithPublishedTemplatesException(group.getName());
+		}
+		groupRepository.remove(groupId);
+	}
 
-    @Override
-    public void changeSurveyPublication(
-            ChangeSurveyPublicationCommand command) {
-        final SurveyPublication publication =
-                publicationRepository.getExisting(command.getPublicationId());
+	@Override
+	public void changeSurveyPublication(ChangeSurveyPublicationCommand command) {
+		final SurveyPublication publication = publicationRepository.getExisting(command.getPublicationId());
 
-        UserDto caller = authenticationService.getCurrentUser();
-        StudentGroup group = publication.getGroup();
-        SurveyTemplate template = publication.getSurveyTemplate();
-        if (!group.isAssignedAsEvaluator(caller)) {
-            throw new NotAllowedToChangePublicationDetailsException(publication.
-                    getId(), group.getName());
-        }
+		UserDto caller = authenticationService.getCurrentUser();
+		StudentGroup group = publication.getGroup();
+		SurveyTemplate template = publication.getSurveyTemplate();
+		if (!group.isAssignedAsEvaluator(caller)) {
+			throw new NotAllowedToChangePublicationDetailsException(publication.getId(), group.getName());
+		}
 
-        if (!template.getOwnerId().equals(caller.getId())) {
-            throw new NotTemplateCreatorException(template.getId());
-        }
-        publication.enableFillingInPeriod(asDateTime(command.getStartingDate()),
-                asDateTime(command.getExpirationDate()));
+		if (!template.getOwnerId().equals(caller.getId())) {
+			throw new NotTemplateCreatorException(template.getId());
+		}
+		publication.enableFillingInPeriod(asDateTime(command.getStartingDate()),
+				asDateTime(command.getExpirationDate()));
 
-    }
+	}
 }

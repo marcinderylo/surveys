@@ -24,7 +24,7 @@ public final class Collections42 {
         return transform(ints, LongToInteger.INSTANCE);
     }
 
-    public static boolean hasElements(Collection collection) {
+    public static boolean hasElements(Collection<?> collection) {
         return collection != null && !collection.isEmpty();
     }
 
