@@ -48,13 +48,6 @@ public class StudentGroupCreationTest {
         shouldFail();
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
-    public void cantCreateGroupWithPureWhitespaceName() throws Exception {
-        givenUserInTeacherRole();
-        creatingAGroupNamed(" \n \t  ");
-        shouldFail();
-    }
-
     @BeforeMethod
     public void init() {
         user = null;

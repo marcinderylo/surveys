@@ -8,11 +8,13 @@ import org.adaptiveplatform.surveys.domain.StudentGroup;
  */
 public interface StudentGroupRepository {
 
-        void persist(StudentGroup group);
+    void persist(StudentGroup group);
 
-        StudentGroup get(Long groupId);
+    StudentGroup get(Long groupId);
 
-        void remove(Long groupId);
+    void remove(Long groupId);
 
     StudentGroup getExisting(Long groupId);
+
+    StudentGroup getByName(String trimmedName);
 }

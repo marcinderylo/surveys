@@ -24,6 +24,7 @@ import org.adaptiveplatform.surveys.dto.StudentGroupQuery;
 import org.adaptiveplatform.surveys.exception.CantQueryGroupsAsEvaluatorException;
 import org.adaptiveplatform.surveys.exception.CantRemoveSelfFromGroupException;
 import org.adaptiveplatform.surveys.exception.DeletingGroupWithPublishedTemplatesException;
+import org.adaptiveplatform.surveys.exception.GroupAlreadyExistsException;
 import org.adaptiveplatform.surveys.exception.NoSuchGroupException;
 import org.adaptiveplatform.surveys.exception.PublishedSurveyTemplateAlreadyFilledException;
 import org.adaptiveplatform.surveys.service.AuthenticationServiceMock;
@@ -40,6 +41,7 @@ import org.testng.annotations.Test;
 @ContextConfiguration("classpath:/testConfigurationContext.xml")
 public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
 
+    public static final String EXISTING_GROUP_NAME = "some group";
     @Resource
     private SqlScriptImporter ex;
     @Resource
@@ -103,8 +105,7 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         createGroupCmd.getAddMemberCommands().add(new AddGroupMemberCommand(
                 "student@adapt.com", GroupRoleEnum.STUDENT.name()));
         createGroupCmd.getAddMemberCommands().add(
-                new AddGroupMemberCommand("evaluator@adapt.com", GroupRoleEnum.EVALUATOR.
-                name()));
+                new AddGroupMemberCommand("evaluator@adapt.com", GroupRoleEnum.EVALUATOR.name()));
 
         Long groupId = groupFacade.createGroup(createGroupCmd);
         // then
@@ -208,7 +209,7 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
             Exception {
         authMock.authenticate(5L, "evaluator2@adapt.com", Role.EVALUATOR,
                 Role.USER);
-        
+
         assertEmpty(groupDao.query(evaluatorQuery()));
     }
 
@@ -250,7 +251,8 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         assertEquals(first(groups).getId(), id(1L));
     }
 
-    @Test(expectedExceptions = {DeletingGroupWithPublishedTemplatesException.class})
+    @Test(expectedExceptions = {
+        DeletingGroupWithPublishedTemplatesException.class})
     public void cantRemoveGroupWithSurveyTemplatesAssigned() throws
             Exception {
         // given
@@ -261,7 +263,8 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         expectException();
     }
 
-    @Test(expectedExceptions = {PublishedSurveyTemplateAlreadyFilledException.class})
+    @Test(expectedExceptions = {
+        PublishedSurveyTemplateAlreadyFilledException.class})
     public void cantRemoveTemplateFromGroupIfItHasBeenFilledByStudents()
             throws Exception {
         // given
@@ -283,6 +286,22 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         final List<StudentGroupDto> groups = groupDao.query(query);
         // then
         assertCollectionSize(groups, 2);
+    }
+
+    @Test(expectedExceptions = {IllegalArgumentException.class})
+    public void cantCreateGroupWithPureWhitespaceName() throws Exception {
+        authenticatedAsTeacher();
+        groupFacade.createGroup(new CreateStudentGroupCommand(" \n \t  "));
+        expectException();
+    }
+
+    @Test(expectedExceptions = {GroupAlreadyExistsException.class})
+    public void cantTeacherCreateGroupWithSameNameAsExistingOne() throws
+            Exception {
+        authenticatedAsTeacher();
+        groupFacade.createGroup(new CreateStudentGroupCommand(
+                EXISTING_GROUP_NAME));
+        expectException();
     }
 
     private void authenticatedAsTeacher() {

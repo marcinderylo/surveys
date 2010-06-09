@@ -45,11 +45,8 @@ public class StudentGroup implements Serializable {
     public StudentGroup(String groupName, UserDto user) {
         Validate.notNull(user, "Group has to be created by a user");
         validateIsInRole(user, Role.TEACHER);
-
-        String trimmedName = trimIfNotNull(groupName);
-        Validate.notEmpty(trimmedName, "Group name must not be empty");
-
-        this.name = trimmedName;
+        Validate.notEmpty(groupName, "Group name must not be empty");
+        this.name = groupName;
         members.add(new GroupMember(user, GroupRole.GROUP_ADMINISTRATOR));
     }
 
@@ -146,12 +143,5 @@ public class StudentGroup implements Serializable {
         Validate.notNull(member, "User '" + user.getName()
                 + "' is not a member of the group");
         members.remove(member);
-    }
-    
-    public static String trimIfNotNull(String input) {
-        if (input == null) {
-            return null;
-        }
-        return input.trim();
     }
 }
