@@ -20,14 +20,12 @@ import org.adaptiveplatform.codegenerator.api.RemoteObject;
 @Table(name = "PUBLISHED_SURVEY_TEMPLATE_DTOS")
 @org.hibernate.annotations.Entity(mutable = false)
 @NamedQueries({
-    @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATES_IN_GROUPS, query = "SELECT DISTINCT st "
-    + "FROM PublishedSurveyTemplateDto st WHERE st.templateId IN (SELECT sp.surveyTemplate.id "
-    + "FROM SurveyPublication sp JOIN sp.studentGroup g JOIN g.members m "
-    + "WHERE g.id IN (:groupIds) AND m.user = :user AND m.role = 'STUDENT')"),
-    @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATES, query = "SELECT DISTINCT st "
-    + "FROM PublishedSurveyTemplateDto st WHERE st.id IN (SELECT sp.id "
-    + "FROM SurveyPublication sp JOIN sp.studentGroup g JOIN g.members m "
-    + "WHERE m.user = :user AND m.role = 'STUDENT')"),
+    @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATE_IDS_IN_GROUPS,
+    query = "SELECT sp.id FROM SurveyPublication sp JOIN sp.studentGroup g "
+    + "JOIN g.members m WHERE g.id IN (:groupIds) AND m.user = :user AND m.role = 'STUDENT'"),
+    @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATE_IDS,
+    query = "SELECT sp.id FROM SurveyPublication sp JOIN sp.studentGroup g JOIN g.members m "
+    + "WHERE m.user = :user AND m.role = 'STUDENT'"),
     @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATE, query = "SELECT st "
     + "FROM PublishedSurveyTemplateDto st WHERE "
     + "st.templateId = :templateId AND " + "st.groupId = :groupId "
@@ -35,7 +33,7 @@ import org.adaptiveplatform.codegenerator.api.RemoteObject;
     + "OR s.id IN (SELECT sp.surveyTemplate.id FROM SurveyPublication sp "
     + "JOIN sp.studentGroup g JOIN g.members m "
     + "WHERE m.user = :user AND m.role = 'STUDENT') ))"),
-    @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_IDS_IN_RESEARCH, query= "SELECT s.id FROM Research r "
+    @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_IDS_IN_RESEARCH, query = "SELECT s.id FROM Research r "
     + "JOIN r.publishedSurveys s WHERE r.id = :id")
 })
 public class PublishedSurveyTemplateDto implements Serializable {
@@ -44,9 +42,9 @@ public class PublishedSurveyTemplateDto implements Serializable {
 
     public static final class Query {
 
-        public static final String GET_SURVEY_TEMPLATES_IN_GROUPS =
+        public static final String GET_SURVEY_TEMPLATE_IDS_IN_GROUPS =
                 "SurveyTemplate.getSurveyTemplatesInGroup";
-        public static final String GET_SURVEY_TEMPLATES =
+        public static final String GET_SURVEY_TEMPLATE_IDS =
                 "SurveyTemplate.getSurveyTemplates";
         public static final String GET_SURVEY_TEMPLATE =
                 "SurveyTemplate.getSurveyTemplate";

@@ -5,39 +5,21 @@ import static org.adaptiveplatform.surveys.domain.QuestionTemplateBuilder.multip
 import static org.adaptiveplatform.surveys.domain.StudentGroupBuilder.group;
 import static org.adaptiveplatform.surveys.domain.SurveyTemplateBuilder.template;
 import static org.adaptiveplatform.surveys.domain.UserAccountBuilder.user;
-import static org.adaptiveplatform.surveys.test.Asserts.assertCollectionSize;
-import static org.adaptiveplatform.surveys.test.Asserts.expectException;
 import static org.adaptiveplatform.surveys.utils.Collections42.firstOf;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.adaptiveplatform.surveys.test.Asserts.*;
+import static org.testng.Assert.*;
 
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.adaptiveplatform.surveys.domain.CoreTestFixtureBuilder;
-import org.adaptiveplatform.surveys.domain.Role;
-import org.adaptiveplatform.surveys.domain.StudentGroup;
-import org.adaptiveplatform.surveys.domain.StudentGroupTestFixtureBuilder;
-import org.adaptiveplatform.surveys.domain.SurveyTemplate;
-import org.adaptiveplatform.surveys.domain.SurveyTemplateBuilder;
-import org.adaptiveplatform.surveys.domain.SurveyTestFixtureBuilder;
-import org.adaptiveplatform.surveys.domain.UserAccount;
-import org.adaptiveplatform.surveys.dto.FilledSurveyDto;
-import org.adaptiveplatform.surveys.dto.FilledSurveyQuery;
-import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
-import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateDto;
-import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateQuery;
+import org.adaptiveplatform.surveys.domain.*;
+import org.adaptiveplatform.surveys.dto.*;
 import org.adaptiveplatform.surveys.exception.FilledSurveyDoesNotExistException;
 import org.adaptiveplatform.surveys.service.AuthenticationServiceMock;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 @ContextConfiguration("classpath:/testConfigurationContext.xml")
 public class SurveyDaoTest extends AbstractTestNGSpringContextTests {

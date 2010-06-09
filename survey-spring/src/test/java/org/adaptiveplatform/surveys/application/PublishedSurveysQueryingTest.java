@@ -143,6 +143,22 @@ public class PublishedSurveysQueryingTest extends AbstractTestNGSpringContextTes
         thenFollowingPublishedTemplatesAreRead(templateIds);
     }
 
+    @Test
+    public void studentShouldBeAbleToQueryPublishedTemplatesByGroupName()
+            throws Exception {
+        givenStudentIsLoggedIn();
+        whenQueriesPublishedTemplatesAsStudentWithKeyword("up2");
+        thenFollowingPublishedTemplatesAreRead(templateIds[2]);
+    }
+
+    @Test
+    public void studentShouldBeAbleToQueryPublishedTemplatesByTemplateName()
+            throws Exception {
+        givenStudentIsLoggedIn();
+        whenQueriesPublishedTemplatesAsStudentWithKeyword("te1");
+        thenFollowingPublishedTemplatesAreRead(templateIds[1]);
+    }
+
     private void givenEvaluatorIsLoggedIn() {
         authentication.authenticate(evaluatorId, EVALUATOR_LOGIN,
                 Role.USER, Role.EVALUATOR);
@@ -155,7 +171,7 @@ public class PublishedSurveysQueryingTest extends AbstractTestNGSpringContextTes
 
     private void whenQueriesFollowingGroupsForPublishedTemplatesAsEvaluator(
             Long... groupIds) {
-        queryPublishedTemplates(groupIds, GroupRoleEnum.EVALUATOR);
+        queryPublishedTemplates(groupIds, GroupRoleEnum.EVALUATOR, null);
     }
 
     private void whenQueriesAllGroupsForPublishedTemplatesAsEvaluator() {
@@ -164,12 +180,16 @@ public class PublishedSurveysQueryingTest extends AbstractTestNGSpringContextTes
 
     private void whenQueriesFollowingGroupsForPublishedTemplatesAsStudent(
             Long... groupIds) {
-        queryPublishedTemplates(groupIds, GroupRoleEnum.STUDENT);
+        queryPublishedTemplates(groupIds, GroupRoleEnum.STUDENT, null);
 
     }
 
     private void whenQueriesAllGroupsForPublishedTemplatesAsStudent() {
         whenQueriesFollowingGroupsForPublishedTemplatesAsStudent();
+    }
+
+    private void whenQueriesPublishedTemplatesAsStudentWithKeyword(String keyword) {
+        queryPublishedTemplates(groupIds, GroupRoleEnum.STUDENT, keyword);
     }
 
     private void thenFollowingPublishedTemplatesAreRead(Long... templateIds) {
@@ -179,10 +199,11 @@ public class PublishedSurveysQueryingTest extends AbstractTestNGSpringContextTes
 
     }
 
-    private void queryPublishedTemplates(Long[] groupIds, GroupRoleEnum role) {
+    private void queryPublishedTemplates(Long[] groupIds, GroupRoleEnum role, String keyword) {
         PublishedSurveyTemplateQuery query =
                 createQueryForGroups(groupIds,
                 role);
+        query.setKeyword(keyword);
         final List<PublishedSurveyTemplateDto> templates =
                 dao.queryPublishedTemplates(query);
         System.out.println("Read following templates: ");
