@@ -56,10 +56,15 @@
 			
 			private function clearFields():void{
 				displayedName.text = '';
+				displayedName.errorString = '';
 				email.text = '';
+				email.errorString = '';
 				email2.text = '';
+				email2.errorString = '';
 				password.text = '';
+				password.errorString = '';
 				password2.text = '';
+				password2.errorString = '';
 			}
 			
 		]]>
