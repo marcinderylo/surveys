@@ -78,10 +78,20 @@ public class HibernateSurveyDao implements SurveyDao {
             criteria.add(Restrictions.eq("groupId", query.getGroupId()));
         }
         criteria.add(Restrictions.isNotNull("submitDate"));
-        // TODO criteria - add restrictions
+        restrictFilledSurveysSearchWithKeywordIfAny(criteria, query.getKeyword());
+        
         criteria.setResultTransformer(
                 DistinctRootEntityResultTransformer.INSTANCE);
         return criteria.list();
+    }
+
+    private void restrictFilledSurveysSearchWithKeywordIfAny(Criteria criteria, String keyword) {
+        if (StringUtils.hasText(keyword)) {
+            final Disjunction keywordDisjunction = Restrictions.disjunction();
+            keywordDisjunction.add(Restrictions.ilike("groupName", keyword, MatchMode.ANYWHERE));
+            keywordDisjunction.add(Restrictions.ilike("surveyTemplateName", keyword, MatchMode.ANYWHERE));
+            criteria.add(keywordDisjunction);
+        }
     }
 
     @Override
@@ -126,7 +136,7 @@ public class HibernateSurveyDao implements SurveyDao {
         if (templateIds.size() > 0) {
             Criteria dtoCriteria = session.createCriteria(PublishedSurveyTemplateDto.class);
             dtoCriteria.add(Restrictions.in("id", templateIds));
-            restrictSearchWithKeywordIfAny(dtoCriteria, query.getKeyword());
+            restrictFillableSurveysSearchWithKeywordIfAny(dtoCriteria, query.getKeyword());
             templates.addAll(dtoCriteria.list());
             calculatePublishedSurveyStatus(templates);
         }
@@ -142,12 +152,12 @@ public class HibernateSurveyDao implements SurveyDao {
         return query.getGroupIds() != null && !query.getGroupIds().isEmpty();
     }
 
-    private void restrictSearchWithKeywordIfAny(Criteria dtoCriteria, String keyword) {
+    private void restrictFillableSurveysSearchWithKeywordIfAny(Criteria criteria, String keyword) {
         if (StringUtils.hasText(keyword)) {
             final Disjunction keywordDisjunction = Restrictions.disjunction();
             keywordDisjunction.add(Restrictions.ilike("groupName", keyword, MatchMode.ANYWHERE));
             keywordDisjunction.add(Restrictions.ilike("name", keyword, MatchMode.ANYWHERE));
-            dtoCriteria.add(keywordDisjunction);
+            criteria.add(keywordDisjunction);
         }
     }
 
