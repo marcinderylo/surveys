@@ -262,7 +262,7 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
     }
 
     @Test(expectedExceptions = {PublishedSurveyTemplateAlreadyFilledException.class})
-    public void cantRemoveTempalteFromGroupIfItHasBeenFilledByStudents()
+    public void cantRemoveTemplateFromGroupIfItHasBeenFilledByStudents()
             throws Exception {
         // given
         authMock.authenticate(1L, "student@adapt.com", Role.USER);
