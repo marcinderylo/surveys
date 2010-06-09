@@ -134,7 +134,7 @@ public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould extends Abstra
                 new SurveyTemplateQuery());
         // then
         assertCollectionSize(templates, 1);
-        assertNull(templates.get(0).getQuestions());
+        assertEmpty(templates.get(0).getQuestions());
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import static org.adaptiveplatform.surveys.utils.Collections42.asLongs;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -201,13 +202,25 @@ public class HibernateSurveyDao implements SurveyDao {
     @Secured({Role.EVALUATOR})
     public List<SurveyTemplateDto> queryTemplates(SurveyTemplateQuery query) {
         final Session session = sf.getCurrentSession();
-        final Query q = session.getNamedQuery(
-                SurveyTemplateDto.Query.GET_TEMPLATES_QUERY);
-        q.setParameter("owner", authentication.getCurrentUser());
-        List<SurveyTemplateDto> templates = q.list();
+
+        Criteria templateIdCriteria = session.createCriteria(SurveyTemplate.class);
+        templateIdCriteria.add(Restrictions.eq("owner", authentication.getCurrentUser()));
+        templateIdCriteria.setProjection(Projections.id());
+        if(StringUtils.hasText(query.getNameContains())) {
+            templateIdCriteria.add(Restrictions.ilike("title", query.getNameContains(), MatchMode.ANYWHERE));
+        }
+        List<Long> ids = templateIdCriteria.list();
+
+        List<SurveyTemplateDto> templates = Lists.newArrayList();
+
+        if(ids.size() > 0) {
+            Criteria dtoCriteria = session.createCriteria(SurveyTemplateDto.class).add(
+                    Restrictions.in("id", ids));
+            templates.addAll(dtoCriteria.list());
+        }
 
         for (SurveyTemplateDto template : templates) {
-            template.setQuestions(null);
+            template.setQuestions(Collections.EMPTY_LIST);
         }
 
         return templates;
