@@ -87,6 +87,7 @@
 			}
 
 			private function createStatistics():void {
+				
 				userAnswers=new ArrayCollection();
 				var groups:Dictionary=new Dictionary();
 
@@ -234,7 +235,7 @@
 			}
 
 			private function savePhrase(text:String):void {
-				evaluationFacade.rememberSearchPhrase(research.id, questions.getItemAt(currentQuestionNumber).id, text).onSuccess(function(o:Object):void {
+				evaluationFacade.rememberSearchPhrase(research.id, currentQuestionNumber, text).onSuccess(function(o:Object):void {
 						trace("success"); //todo
 					}).onFault(function(fault:Fault):void {
 						trace(fault.faultString);
