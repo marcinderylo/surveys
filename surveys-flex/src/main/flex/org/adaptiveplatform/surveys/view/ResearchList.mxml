@@ -10,7 +10,7 @@
 			import mx.events.ListEvent;
 			import mx.events.ToolTipEvent;
 			import mx.rpc.Fault;
-			
+
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
@@ -36,7 +36,7 @@
 			}
 
 			public function initializeView():void {
-				//researchQuery=new ResearchesQuery();
+				researchQuery=new ResearchesQuery();
 				findResearch();
 			}
 

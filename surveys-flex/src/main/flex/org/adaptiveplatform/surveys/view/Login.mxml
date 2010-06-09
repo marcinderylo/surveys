@@ -23,7 +23,11 @@
 				view = ContextFactory.context.view;
 				username.setFocus();
 				updateLocale( initialLocale );	
-				
+			}
+			
+			public function initializeView(ignore:* = null):void {
+				username.text = "";
+				password.text = "";
 			}
 
 			protected function loginClicked(ignore:MouseEvent = null):void {
