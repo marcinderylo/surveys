@@ -151,7 +151,7 @@ public class HibernateEvaluationDao implements EvaluationDao {
     private void addTemplateRestrictionsIfSpecified(ResearchesQuery query,
             final Criteria criteria) {
         final Long templateId = query.getSurveyTemplateId();
-        if (templateId != null) {
+        if (templateId != null && templateId!=0) {
             criteria.add(Restrictions.eq("templateDto.id", templateId));
         }
     }
