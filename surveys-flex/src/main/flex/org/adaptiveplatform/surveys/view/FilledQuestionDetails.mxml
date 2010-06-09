@@ -124,7 +124,7 @@
 				for (var i:int=0; i < research.templateDto.questions.getItemAt(currentQuestionNumber).answers.length; i++) {
 					var serie:BarSeries=new BarSeries();
 					serie.xField=(i + 1).toString();
-					serie.displayName=resourceManager.getString('adaptive', 'answerLabel') + " " + (i + 1);
+					serie.displayName=research.templateDto.questions.getItemAt(currentQuestionNumber).answers.getItemAt(i).text;//resourceManager.getString('adaptive', 'answerLabel') + " " + (i + 1);
 					serie.labelField=(i + 1).toString();
 					serie.setStyle("labelPosition", "inside");
 					mySeries.push(serie);
@@ -378,7 +378,7 @@
 						<mx:LinearAxis/>
 					</mx:horizontalAxis>
 				</mx:BarChart>
-				<mx:Legend dataProvider="{chart}"/>
+				<mx:Legend dataProvider="{chart}" direction="vertical"/>
 
 			</mx:VBox>
 		</mx:HBox>
