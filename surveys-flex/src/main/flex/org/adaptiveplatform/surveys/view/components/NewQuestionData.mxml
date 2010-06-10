@@ -167,8 +167,10 @@
 			
 			public function validate():Boolean{
 				validatorArr.removeAll();
-				for each( var answerComponent:NewAnswerQuestion in answersList.getChildren() ){
-					validatorArr.addItem( answerComponent.answerValidator );
+				if( !question.type.equals( QuestionTypeEnum.OPEN) ){
+					for each( var answerComponent:NewAnswerQuestion in answersList.getChildren() ){
+						validatorArr.addItem( answerComponent.answerValidator );
+					}
 				}
 				validatorArr.addItem( questionTextValidator );
 				var errArray:Array = Validator.validateAll( validatorArr.toArray() );
