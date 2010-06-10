@@ -26,6 +26,10 @@
 			[Bindable]
 			private var evaluationsActivityDao:EvaluationDao;
 			
+			public function initializeView():void {
+				retriveveActivities();
+			}
+			
 			private function onCreationComplete():void{
 				views = ContextFactory.context.view;
 				evaluationsActivityDao = ContextFactory.context.service.evaluationDao;
