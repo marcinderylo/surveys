@@ -65,6 +65,7 @@
             		question.type = QuestionTypeEnum.OPEN;
             		question.answers = new ArrayCollection();
             		question.answers.addItem( new org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto() );
+            		question.answers.addItem( new org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto() );
             	}else{
             		editMode = true;
             		question.type = questionTemplate.type;

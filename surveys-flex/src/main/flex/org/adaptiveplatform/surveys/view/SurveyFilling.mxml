@@ -93,7 +93,7 @@
 				<mx:HBox verticalAlign="top" width="100%">
 					<mx:Label text="{resourceManager.getString('adaptive', 'surveyFilling.surveyName')}" />
 					<mx:TextInput id="surveyName" text="{survey.surveyTemplateName}" change="{surveyName.text=survey.surveyTemplateName}" width="100%" />
-					<mx:Label text="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}" />
+					<mx:Label text="{resourceManager.getString('adaptive', 'surveyFilling.groupName').toLowerCase()}" />
 					<mx:TextInput id="groupName" text="{survey.groupName}" change="{groupName.text=survey.groupName}" width="100%"/>
 				</mx:HBox>
 				<mx:HBox width="100%">

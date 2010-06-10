@@ -87,13 +87,17 @@
 			private function update():void {
 				if( isCreationValid() ){
 					survey.questions = questionsList.dataProvider as ArrayCollection;
-					surveyFacade.updateTemplate( survey.id, prepareCreateCommand()).onSuccessGoto(View.EVALUATOR_START_PAGE).onFault(creationError);
+					if( isNaN(survey.id ) ){
+						submit();
+					}else{
+						surveyFacade.updateTemplate( survey.id, prepareCreateCommand()).onFault(creationError);
+					}
 				}
 			}
 			
 			private function nameAlreadyExists():Boolean{
 				if(alreadyExists()){
-					Alert.show(resourceManager.getString('adaptive', 'surveyExistsError') +survey.name);
+					Alert.show(resourceManager.getString('adaptive', 'surveyExistsError') + ' ' + surveyName.text);
 					return true;
 				}
 				return false;
@@ -101,7 +105,7 @@
 			
 			private function alreadyExists():Boolean{
 				for each(var template:SurveyTemplateDto in _evaluatorTemplates ){
-					if( template.name == survey.name ){
+					if( template.name == surveyName.text ){
 						return true;
 					}
 				}
@@ -121,7 +125,7 @@
 			private function submit():void {
 				if( isCreationValid() ){
 					if(!nameAlreadyExists()){
-						surveyFacade.createTemplate(prepareCreateCommand()).onSuccessGoto(View.EVALUATOR_START_PAGE).onFault(creationError);
+						surveyFacade.createTemplate(prepareCreateCommand()).onFault(creationError);
 					}
 				}
 			}
@@ -146,6 +150,10 @@
 			}
 			
 			private function isCreationValid():Boolean{
+				if( questionsList.dataProvider.length == 0 ){
+					Alert.show( resourceManager.getString('adaptive', 'createQuestion.questionRequired' ) );
+					return false;
+				}
 				return (surveyTemplateNameValidator.validate().type == ValidationResultEvent.VALID);
 			}
 			
@@ -183,6 +191,7 @@
             		}
             		case "createCopy":
             		{
+            			submit();
             			break;
             		}
             		case "addNewQuestion":
@@ -213,15 +222,17 @@
 	<mx:VBox x="0" y="0" height="100%" width="100%">
 			<mx:MenuBar id="myMenuBar" labelField="@label" width="100%" itemClick="menuHandler(event)">
 			     <mx:XMLList>
-			         <menuitem label="Menu">
-			             <menuitem data="save" label="Save and Exit"/>
-		                 <menuitem data="createCopy" label="Create copy" visible="{isEditMode}"/>
-				         <menuitem label="Question">
-				             <menuitem data="addNewQuestion" label="Add new" />
-			                 <menuitem data="editSelectedQuestion" label="Edit selected" visible="{isEditMode}"/>
-				             <menuitem data="deleteSelectedQuestion" label="Delete selected"/>
+			         <menuitem label="{resourceManager.getString('adaptive', 'createQuestion.menu.survey')}">
+			             <menuitem data="save" label="{resourceManager.getString('adaptive', 'createQuestion.menu.save')}"/>
+		                 <menuitem data="createCopy" label="{resourceManager.getString('adaptive', 'createQuestion.menu.cloneSurvey')}" 
+		                 	visible="{isEditMode}"/>
+				         <menuitem label="{resourceManager.getString('adaptive', 'createQuestion.menu.question')}">
+				             <menuitem data="addNewQuestion" label="{resourceManager.getString('adaptive', 'createQuestion.menu.addQuestion')}" />
+			                 <menuitem data="editSelectedQuestion" label="{resourceManager.getString('adaptive', 'createQuestion.menu.editQuestion')}" 
+			                 	visible="{isEditMode}"/>
+				             <menuitem data="deleteSelectedQuestion" label="{resourceManager.getString('adaptive', 'createQuestion.menu.removeQuestion')}"/>
 				         </menuitem>
-			             <menuitem data="exit" label="Exit"/>
+			             <menuitem data="exit" label="{resourceManager.getString('adaptive', 'createQuestion.menu.exit')}"/>
 			         </menuitem>
 			     </mx:XMLList>
 			</mx:MenuBar>
@@ -232,22 +243,39 @@
 						   label="{resourceManager.getString('adaptive', 'addQuestion')}"
 						   icon="@Embed(source='/assets/icons/add.png')"
 						   click="addQuestion()"/>
+				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
+						   label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
+						   visible="{isEditMode}"
+						   includeInLayout="{isEditMode}"
+						   click="submit()" height="100%"/>
+				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.save')}"
+						   label="{resourceManager.getString('adaptive', 'btn.save')}"
+						   click="update()" height="100%"/>
+				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.exit')}"
+						   label="{resourceManager.getString('adaptive', 'btn.exit')}"
+						   click="exit()" height="100%"/>
 			</mx:ApplicationControlBar>
 			<mx:DataGrid dataProvider="{survey.questions}" width="100%" height="100%"
 				 draggableColumns="false" sortableColumns="true" rowHeight="26" dragEnabled="true" dropEnabled="true"
 				 doubleClickEnabled="true" itemDoubleClick="editQuestion(event)" dragMoveEnabled="true"
 				 id="questionsList">
 				<mx:columns>
-					<mx:DataGridColumn dataField="text" />
-					<mx:DataGridColumn dataField="type" itemRenderer="{new ClassFactory(QuestionTypeItemRenderer)}" width="50"/>
-					<mx:DataGridColumn headerText="count" width="50">
+					<mx:DataGridColumn dataField="text" headerText="{resourceManager.getString('adaptive', 'text')}" />
+					<mx:DataGridColumn dataField="type" 
+						headerText="{resourceManager.getString('adaptive', 'questionType').toLowerCase()}"
+						itemRenderer="{new ClassFactory(QuestionTypeItemRenderer)}" width="100"
+						wordWrap="true"/>
+					<mx:DataGridColumn width="100"
+						wordWrap="true"
+						headerText="{resourceManager.getString('adaptive', 'count')}">
 						 <mx:itemRenderer>
 					        <mx:Component>
-					            <mx:Label text="{data.answers.length}" />
+					            <mx:Label text="{data.answers.length}" width="100%" textAlign="center"/>
 					        </mx:Component>
 					    </mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'remove').toLowerCase()}" width="50">
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'remove').toLowerCase()}" width="50"
+						sortable="false">
 						<mx:itemRenderer>
 							<mx:Component>
 								<mx:Image toolTip="{resourceManager.getString('adaptive', 'removeQuestion')}" 
