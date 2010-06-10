@@ -235,7 +235,7 @@
 			}
 
 			private function savePhrase(text:String):void {
-				evaluationFacade.rememberSearchPhrase(research.id, currentQuestionNumber, text).onSuccess(function(o:Object):void {
+				evaluationFacade.rememberSearchPhrase(research.id, currentQuestionNumber+1, text).onSuccess(function(o:Object):void {
 						trace("success"); //todo
 					}).onFault(function(fault:Fault):void {
 						trace(fault.faultString);
@@ -249,25 +249,21 @@
 			public function addTag(tags:ArrayCollection,filledSurveyId:Number,data:Object):void {
 				var tag:TagAnswerCommand=new TagAnswerCommand();
 				tag.filledSurveyId=filledSurveyId;
-				tag.questionNumber=currentQuestionNumber;
+				tag.questionNumber=currentQuestionNumber+1;
 				tag.setTags=tags;
 				tag.researchId=research.id;
 				evaluationFacade.tagAnswer(tag).onSuccess(function(o:Object):void {
 						data.category=tags;
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
 					});
 			}
 
 			public function addComment():void {
 				var comment:CommentQuestionCommand=new CommentQuestionCommand();
 				comment.comment=commentArea.text;
-				comment.questionId=currentQuestionNumber;
+				comment.questionId=currentQuestionNumber+1;
 				comment.researchId=research.id;
 				evaluationFacade.commentQuestion(comment).onSuccess(function(o:Object):void {
 					research.questions.getItemAt(currentQuestionNumber).comments=commentArea.text;
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
 					});
 			}
 
