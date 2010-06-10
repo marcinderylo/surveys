@@ -3,6 +3,7 @@
 		 updateComplete="onUpdateComplete()" visible="{isAuthenticated}">
 	<mx:Script>
 		<![CDATA[
+			import mx.core.Application;
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
 			import org.adaptiveplatform.surveys.view.View;
@@ -21,9 +22,15 @@
 				loggedUser = authentication.currentUser;
 				isAuthenticated = authentication.authenticated;
 			}
+			
+			private function reloadApplication():void{
+				var urlRequest:URLRequest = new URLRequest(Application.application.url);
+				navigateToURL(urlRequest,"_self");				
+			}
 
 			private function logout():void {
 				authentication.logout().onSuccessGoto(View.LOGIN);
+				reloadApplication();
 			}
 		]]>
 	</mx:Script>
