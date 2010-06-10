@@ -31,7 +31,7 @@ import org.hibernate.annotations.IndexColumn;
     @NamedQuery(name = FilledSurveyDto.Query.GET_FOR_RESEARCH, query="SELECT DISTINCT s FROM FilledSurveyDto s "
     + "JOIN FETCH s.questions q LEFT JOIN FETCH q.answers "
     + "WHERE  s.id IN (SELECT fs.id FROM "
-    + "FilledSurvey fs WHERE fs.template.id IN (:publishedSurveyTemplates))")
+    + "FilledSurvey fs WHERE fs.finishDate IS NOT NULL AND fs.template.id IN (:publishedSurveyTemplates))")
 })
 public class FilledSurveyDto implements Serializable {
 

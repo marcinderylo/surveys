@@ -1,8 +1,8 @@
+
 package org.adaptiveplatform.surveys.application;
 
 import static org.adaptiveplatform.surveys.domain.QuestionTemplateBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.domain.ResearchBuilder.research;
-import static org.adaptiveplatform.surveys.domain.StudentGroupBuilder.group;
 import static org.adaptiveplatform.surveys.domain.SurveyTemplateBuilder.template;
 import static org.adaptiveplatform.surveys.domain.UserAccountBuilder.user;
 import static org.adaptiveplatform.surveys.test.Asserts.assertCollectionSize;
@@ -15,10 +15,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.CoreTestFixtureBuilder;
-import org.adaptiveplatform.surveys.domain.FilledSurvey;
 import org.adaptiveplatform.surveys.domain.ResearchTestFixtureBuilder;
 import org.adaptiveplatform.surveys.domain.Role;
-import org.adaptiveplatform.surveys.domain.StudentGroup;
 import org.adaptiveplatform.surveys.domain.StudentGroupTestFixtureBuilder;
 import org.adaptiveplatform.surveys.domain.SurveyTemplate;
 import org.adaptiveplatform.surveys.domain.SurveyTestFixtureBuilder;
@@ -173,39 +171,6 @@ public class EvaluationDaoTest extends AbstractTestNGSpringContextTests {
         whenReadingSpecificResearch(research3Id);
         // then
         expectException();
-    }
-
-    @Test
-    public void shouldFetchSubmittedSurveys() throws Exception {
-        // FIXME - refactor, this test really sucks
-        final UserDto admin = UserAccountToDto.INSTANCE.apply(
-                userFixture.createUser(user("admin", "foo", "admin@adapt.com",
-                Role.TEACHER, Role.USER)));
-        final UserAccount studentEntity = userFixture.createUser(user("student",
-                "bar", "student@adapt.com", Role.USER));
-        UserDto student = UserAccountToDto.INSTANCE.apply(studentEntity);
-        final StudentGroup group =
-                groupFixture.createGroup(group("group", admin));
-        group.addEvaluator(evaluator);
-        group.addStudent(student);
-        Long groupId = group.getId();
-        final Long publishedTemplateId =
-                surveyFixture.publishTemplate(template1Id, groupId).getId();
-
-        researchFixture.addPublicationToResearch(research1Id,
-                publishedTemplateId);
-
-        final FilledSurvey filledSurvey =
-                surveyFixture.fillSurvey(template1Id, groupId, studentEntity);
-
-        // when
-        whenReadingSpecificResearch(research1Id);
-
-        // then
-        ResearchDto research = shouldFindOneResearch(template1Id);
-        assertCollectionSize(research.getSubmittedSurveys(), 1);
-        Assert.assertEquals(firstOf(research.getSubmittedSurveys()).getId(),
-                filledSurvey.getId());
     }
 
     @Test
