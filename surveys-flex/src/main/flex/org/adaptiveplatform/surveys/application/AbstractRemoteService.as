@@ -21,12 +21,6 @@ package org.adaptiveplatform.surveys.application {
 			service.destination=destination;
 			service.makeObjectsBindable=true;
 			service.showBusyCursor=true;
-
-			// FIXME REMOVE
-			service.addEventListener(FaultEvent.FAULT, function faultHandler(event:FaultEvent):void {
-					Alert.show(event.fault.faultString);
-				});
-
 			return service;
 		}
 

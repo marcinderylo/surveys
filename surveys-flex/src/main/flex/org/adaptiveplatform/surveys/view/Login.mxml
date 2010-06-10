@@ -8,12 +8,13 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
-			import org.adaptiveplatform.surveys.application.ViewController;
-			import org.adaptiveplatform.surveys.application.AuthenticationService;
-
 			import mx.controls.Alert;
 			import mx.rpc.Fault;
+			
+			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.FaultHandler;
+			import org.adaptiveplatform.surveys.application.ViewController;
 
 			private var authentication:AuthenticationService;
 			private var view:ViewController;
@@ -32,7 +33,6 @@
 
 			protected function loginClicked(ignore:MouseEvent = null):void {
 				authentication.login(username.text, password.text) //
-					.onFault(failedToLogIn) //
 					.onSuccess(function(result:Object = null):void {
 						username.text = null;
 						password.text = null;
@@ -48,11 +48,7 @@
 						} else {
 							Alert.show("your account has no privleges", "authorization error");
 						}
-					});
-			}
-
-			private function failedToLogIn(fault:Fault):void {
-				Alert.show(fault.faultString, "error");
+					}).onFault(FaultHandler.displayAlert(resourceManager, "error.loginFailed"));
 			}
 
 		/**

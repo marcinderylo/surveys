@@ -90,7 +90,8 @@
 				if( !roleEnabled.selected ){
 					if( ((data as String) == "ROLE_ADMINISTRATOR") && (currentUser == user.email) ){
 						roleEnabled.selected = !roleEnabled.selected;
-						Alert.show("You can't revoke your admin rights");
+						var msg:String = resourceManager.getString("adaptive","error.cantRevokeOwnAdminRights");
+						Alert.show(msg);
 					}else{
 						user.roles.removeItemAt( user.roles.getItemIndex( data as String) );
 					}

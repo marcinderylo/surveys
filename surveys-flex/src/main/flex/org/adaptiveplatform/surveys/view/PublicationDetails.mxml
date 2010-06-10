@@ -5,13 +5,6 @@
 		   creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
-			import org.adaptiveplatform.surveys.application.ViewController;
-			import org.adaptiveplatform.surveys.view.components.PublishDatesDialog;
-			import org.adaptiveplatform.surveys.view.components.ToolTipQuestionDetails;
-			import org.adaptiveplatform.surveys.view.components.ToolTipSurveyDetails;
-			import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
-			
 			import mx.collections.ArrayCollection;
 			import mx.controls.DateField;
 			import mx.controls.ToolTip;
@@ -24,8 +17,15 @@
 			import mx.rpc.Fault;
 			import mx.rpc.events.FaultEvent;
 			
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.FaultHandler;
+			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
 			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
+			import org.adaptiveplatform.surveys.view.components.PublishDatesDialog;
+			import org.adaptiveplatform.surveys.view.components.ToolTipQuestionDetails;
+			import org.adaptiveplatform.surveys.view.components.ToolTipSurveyDetails;
+			import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
 
 			[Bindable]
 			private var research:ResearchDto;
@@ -80,9 +80,7 @@
 						filledSurveys=research.submittedSurveys;
 						if (research.status)
 							status.text=research.status.name;
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 
 			private function viewQuestionDetails():void {

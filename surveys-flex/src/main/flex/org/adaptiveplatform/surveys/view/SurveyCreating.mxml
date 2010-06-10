@@ -18,6 +18,7 @@
 			
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
 			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.FaultHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
@@ -74,9 +75,7 @@
 						surveyName.text = result.name;
 						//saveBtn.enabled = true;
 						isEditMode = true;
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 
 			private function onCreationComplete():void {
@@ -90,7 +89,8 @@
 					if( isNaN(survey.id ) ){
 						submit();
 					}else{
-						surveyFacade.updateTemplate( survey.id, prepareCreateCommand()).onFault(creationError);
+						surveyFacade.updateTemplate( survey.id, prepareCreateCommand())
+							.onFault(FaultHandler.displayAlert(resourceManager));
 					}
 				}
 			}
@@ -125,17 +125,14 @@
 			private function submit():void {
 				if( isCreationValid() ){
 					if(!nameAlreadyExists()){
-						surveyFacade.createTemplate(prepareCreateCommand()).onFault(creationError);
+						surveyFacade.createTemplate(prepareCreateCommand())
+							.onFault(FaultHandler.displayAlert(resourceManager));
 					}
 				}
 			}
 			
 			private function exit():void{
 				ContextFactory.context.view.goto(View.BACK);
-			}
-			
-			private function creationError(fault:Fault):void {
-				Alert.show(fault.faultString, "error");
 			}
 			
 			private function addQuestion():void{

@@ -17,6 +17,7 @@
 			import mx.rpc.Fault;
 			
 			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.FaultHandler;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
 			import org.adaptiveplatform.surveys.application.generated.UserDao;
@@ -119,9 +120,7 @@
 						users = result;
 						users.filterFunction = filterByRole;
 						users.refresh();
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 
 			protected function findGroups():void {
@@ -131,9 +130,7 @@
 						groups = prepareToDisplay(result);
 						if(selectedIndex>=0)
 							groupList.selectedIndex = selectedIndex;
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 
 			protected function changeMembers():void {
@@ -141,9 +138,7 @@
 				studentGroupFacade.changeGroupMembers(changeGoupCommand) //
 					.onSuccess(function(result:Object):void {
 						findGroups();
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 
 			private function filterByRole(user:Object):Boolean {
@@ -201,9 +196,7 @@
 					.onSuccess(function(result:Object):void {
 						 newGroupName.text = ""; 
 						findGroups();
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 			
 			private function isNotInGroup( user:UserDto, group:ArrayCollection ):Boolean{
@@ -248,9 +241,7 @@
 				studentGroupFacade.removeGroup(currentGroup.id) //
 					.onSuccess(function(result:Object):void {
 						findGroups();
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 
 			private function prepareToDisplay(result:ArrayCollection):ArrayCollection {

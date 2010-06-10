@@ -10,6 +10,7 @@
 			import mx.validators.Validator;
 			
 			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.FaultHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.UserFacade;
 			import org.adaptiveplatform.surveys.dto.generated.RegisterAccountCommand;
@@ -35,7 +36,7 @@
 					user.email = email.text;
 					userFacade.registerUser(user) //
 						.onSuccess(userCreated) //
-						.onFault(failedToCreateUser);
+						.onFault(FaultHandler.displayAlert(resourceManager));
                 }
 			}
 			
@@ -50,10 +51,6 @@
 				clearFields();
 			}
 
-			private function failedToCreateUser(fault:Fault):void {
-				Alert.show(fault.faultString);
-			}
-			
 			private function clearFields():void{
 				displayedName.text = '';
 				displayedName.errorString = '';

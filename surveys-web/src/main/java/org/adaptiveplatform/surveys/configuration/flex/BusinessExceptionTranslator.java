@@ -24,7 +24,6 @@ public class BusinessExceptionTranslator implements ExceptionTranslator {
     private static final String UNKNOWN_COLLECTION_ELEMENT_TYPE = "?";
     private static final String EMPTY_COLLECTION_TYPE = COLLECTION_TYPE_PREFIX
             + UNKNOWN_COLLECTION_ELEMENT_TYPE;
-    @SuppressWarnings("serial")
     private static final Map<Class<?>, String> PARAMETER_TYPE_CODES;
 
     static {

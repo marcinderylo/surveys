@@ -12,6 +12,7 @@
 			import mx.rpc.Fault;
 
 			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.FaultHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
@@ -83,9 +84,7 @@
 				evaluationFacade.createResearch(researchCommand) //
 					.onSuccess(function(o:Object):void {
 						goToList();
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
-					});
+					}).onFault(FaultHandler.displayAlert(resourceManager));
 			}
 
 			private function test(e:Event):void {
