@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Image xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" toolTip="{data.type}">
+	<mx:Script>
+		<![CDATA[
+			import org.adaptiveplatform.surveys.dto.generated.ActivityTypeEnum;
+			import org.adaptiveplatform.surveys.QuestionStyleEnum;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
+			
+			[Embed(source="/assets/icons/survey.png")]
+			private var survey:Class;
+			[Embed(source="/assets/icons/research.png")]
+			private var research:Class;
+			
+			 override public function set data(value:Object):void {
+           		super.data = value;
+				this.source = iconFunction();
+			}
+			
+			
+			private function iconFunction():Class {
+				if(data.type.equals(ActivityTypeEnum.SURVEY_TEMPLATE)){
+					return survey; 
+				}else{
+					return research;
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Image>
