@@ -1,9 +1,16 @@
 package org.adaptiveplatform.surveys.domain;
 
+import org.adaptiveplatform.surveys.exception.OneOfSelectedAnswersDisallowsOthersException;
+import org.adaptiveplatform.surveys.exception.SingleChoiceQuestionAnswersMustDisallowEachOtherException;
+import org.adaptiveplatform.surveys.exception.AtLeastOneAnswerRequiredException;
+import org.adaptiveplatform.surveys.exception.MultipleAnswersForSingleChoiceQuestionException;
 import java.util.ArrayList;
 import java.util.List;
+import org.adaptiveplatform.surveys.dto.QuestionTypeEnum;
+import org.adaptiveplatform.surveys.exception.OpenQuestionHaveNoAnswersException;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -20,14 +27,16 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
 
         @Override
         public void validateQuestion(QuestionTemplate template) {
-            Validate.isTrue(template.hasAnswers(),
-                    "Single choice questions must have answers.");
-            for (AnswerTemplate answer : template.getAnswers()) {
-                Validate.isTrue(answer.disallowsOtherAnswers()
-                        != null
-                        && answer.disallowsOtherAnswers(),
-                        "Each answers of single choice questions "
-                        + "must disallow any other answers");
+            if (!template.hasAnswers()) {
+                throw new AtLeastOneAnswerRequiredException(QuestionTypeEnum.SINGLE_CHOICE);
+            }
+            for (int answerNo = 0; answerNo < template.getAnswers().size(); ++answerNo) {
+                final AnswerTemplate answer = template.getAnswers().get(answerNo);
+                if (!Boolean.TRUE.equals(answer.disallowsOtherAnswers())) {
+                    throw new SingleChoiceQuestionAnswersMustDisallowEachOtherException(template.
+                            getText(),
+                            answerNo);
+                }
             }
         }
 
@@ -45,8 +54,8 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
 
             }
             if (selections > 1) {
-                throw new IllegalStateException("More than one answer selected in "
-                        + "single choice question!");
+                throw new MultipleAnswersForSingleChoiceQuestionException(question.
+                        getQuestionTemplateId());
             }
             if (selections == 1) {
                 if (requiresComment) {
@@ -60,9 +69,9 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
         @Override
         protected void checkAnswer(QuestionTemplate question,
                 List<Integer> selectedAnswerNumbers, String comment) {
-            Validate.isTrue(selectedAnswerNumbers == null || selectedAnswerNumbers.
-                    size() <= 1,
-                    "single choice question accepts only single answers");
+            if (selectedAnswerNumbers != null && selectedAnswerNumbers.size() > 1) {
+                throw new MultipleAnswersForSingleChoiceQuestionException(question.getId());
+            }
         }
     },
     /**
@@ -72,12 +81,14 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
 
         @Override
         public void validateQuestion(QuestionTemplate template) {
-            Validate.isTrue(template.hasAnswers(),
-                    "Multiple choice questions must have answers.");
+            if (!template.hasAnswers()) {
+                throw new AtLeastOneAnswerRequiredException(QuestionTypeEnum.MULTIPLE_CHOICE);
+            }
         }
 
         @Override
-        public boolean isAnswered(AnsweredQuestion question) {
+        public boolean isAnswered(
+                AnsweredQuestion question) {
             List<AnsweredQuestionAnswer> selectedAnswers =
                     new ArrayList<AnsweredQuestionAnswer>();
             for (AnsweredQuestionAnswer answer :
@@ -93,8 +104,7 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
                 // multiple choice with other?
                 if (answer.getAnswerTemplate().disallowsOtherAnswers()) {
                     if (selectedAnswers.size() > 1) {
-                        throw new IllegalArgumentException(
-                                "Selected answer of type 'other' but not alone");
+                        throw new OneOfSelectedAnswersDisallowsOthersException(question.getQuestionTemplateId());
                     }
                     if (answer.getAnswerTemplate().requiresComment()) {
                         return StringUtils.hasText(question.getComment());
@@ -106,7 +116,8 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
 
         @Override
         protected void checkAnswer(QuestionTemplate question,
-                List<Integer> selectedAnswerNumbers, String comment) {
+                List<Integer> selectedAnswerNumbers,
+                String comment) {
             boolean excludingSelected = false;
             boolean regularSelected = false;
             for (int i = 0; i < question.getAnswers().size(); i++) {
@@ -131,8 +142,7 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
                 }
             }
             if (excludingSelected && regularSelected) {
-                throw new IllegalArgumentException("Answer requiring comment must be "
-                        + "selected alone");
+                throw new OneOfSelectedAnswersDisallowsOthersException(question.getId());
             }
         }
     },
@@ -144,8 +154,9 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
 
         @Override
         public void validateQuestion(QuestionTemplate template) {
-            Validate.isTrue(!template.hasAnswers(),
-                    "Open questions can't have answers.");
+            if (template.hasAnswers()) {
+                throw new OpenQuestionHaveNoAnswersException(template.getText());
+            }
         }
 
         @Override
@@ -155,10 +166,11 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
 
         @Override
         protected void checkAnswer(QuestionTemplate question,
-                List<Integer> selectedAnswerNumbers, String comment) {
-            Validate.isTrue(selectedAnswerNumbers == null || selectedAnswerNumbers.
-                    isEmpty(),
-                    "Open question doesn't have answers");
+                List<Integer> selectedAnswerNumbers,
+                String comment) {
+            if (!CollectionUtils.isEmpty(selectedAnswerNumbers)) {
+                throw new OpenQuestionHaveNoAnswersException(question.getText());
+            }
         }
     };
 
@@ -174,6 +186,7 @@ public enum QuestionType implements QuestionValidator, AnswerValidator {
     public void validateAnswer(QuestionTemplate question,
             List<Integer> selectedAnswerIds, String comment) {
         if (!this.equals(question.getType())) {
+            // not changing to a business exception as this would be a developer's mistake
             throw new IllegalArgumentException("Expected question of "
                     + "type " + this.name() + " but found: " + question.getType().
                     name());

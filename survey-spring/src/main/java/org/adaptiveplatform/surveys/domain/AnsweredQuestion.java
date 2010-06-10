@@ -62,6 +62,10 @@ public class AnsweredQuestion implements Serializable {
         return comment;
     }
 
+    public Long getQuestionTemplateId() {
+        return question.getId();
+    }
+
     public boolean isAnswerSelected(Integer answerNumber) {
         AnsweredQuestionAnswer answer = getAnswer(answerNumber);
         if (answer != null) {

@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
+import org.adaptiveplatform.surveys.exception.MultipleAnswersForSingleChoiceQuestionException;
+import org.adaptiveplatform.surveys.exception.OneOfSelectedAnswersDisallowsOthersException;
 import org.adaptiveplatform.surveys.exception.SurveyNotFilledCompletelyException;
 import org.joda.time.DateTime;
 import org.testng.annotations.BeforeMethod;
@@ -80,7 +82,7 @@ public class GivenANewFilledSurveyUserShould {
         assertFalse(survey.isAnswerSelected(2, 3));
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {OneOfSelectedAnswersDisallowsOthersException.class})
     public void notBeAbleToSelectAnyOtherAnswerIfSelectedAnAnswerThatRequiresComment()
             throws
             Exception {
@@ -90,7 +92,7 @@ public class GivenANewFilledSurveyUserShould {
         expectException();
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {OneOfSelectedAnswersDisallowsOthersException.class})
     public void notBeAbleToSelectAnyOtherAnswerIfSelectedAnAnswerThatDisallowsIt()
             throws
             Exception {
@@ -100,7 +102,7 @@ public class GivenANewFilledSurveyUserShould {
         expectException();
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {MultipleAnswersForSingleChoiceQuestionException.class})
     public void notBeAbleToAnswerSingleChoiceQuestionWithMultipleAnswers() throws
             Exception {
         // when
@@ -121,7 +123,7 @@ public class GivenANewFilledSurveyUserShould {
         assertTrue(survey.isAnswerSelected(1, 4));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = OneOfSelectedAnswersDisallowsOthersException.class)
     public void notSelectAnswerOfTypeNoneOfTheAboveWithAnyOtherAnswer() throws
             Exception {
         // when

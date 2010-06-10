@@ -1,4 +1,4 @@
-package org.adaptiveplatform.surveys.service;
+package org.adaptiveplatform.surveys.exception.security;
 
 import org.adaptiveplatform.codegenerator.api.Param;
 import org.adaptiveplatform.codegenerator.api.RemoteException;

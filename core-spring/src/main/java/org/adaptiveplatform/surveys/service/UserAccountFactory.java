@@ -1,5 +1,6 @@
 package org.adaptiveplatform.surveys.service;
 
+import org.adaptiveplatform.surveys.exception.security.EmailAddressAlreadyRegisteredException;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.UserAccount;

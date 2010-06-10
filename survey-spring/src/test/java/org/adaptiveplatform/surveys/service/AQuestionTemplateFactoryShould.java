@@ -12,6 +12,9 @@ import org.adaptiveplatform.surveys.domain.QuestionTemplate;
 import org.adaptiveplatform.surveys.domain.QuestionTemplateBuilder;
 import org.adaptiveplatform.surveys.domain.QuestionType;
 import org.adaptiveplatform.surveys.exception.AnswerWithCommentAllowingOtherAnswersException;
+import org.adaptiveplatform.surveys.exception.AtLeastOneAnswerRequiredException;
+import org.adaptiveplatform.surveys.exception.OpenQuestionHaveNoAnswersException;
+import org.adaptiveplatform.surveys.exception.SingleChoiceQuestionAnswersMustDisallowEachOtherException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -46,7 +49,7 @@ public class AQuestionTemplateFactoryShould {
         expectSingleChoiceQuestionCreated("Single choice question?");
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {SingleChoiceQuestionAnswersMustDisallowEachOtherException.class})
     public void notCreateSingleChoiceQuestionIfAnyAnswerAllowsOtherAnswersToBeSelected()
             throws Exception {
         whenCreatingAQuestion(singleChoiceQuestion("Single choice question?").
@@ -81,21 +84,21 @@ public class AQuestionTemplateFactoryShould {
         expectMultipleChoiceQuestionCreated("Multiple choice question?");
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {OpenQuestionHaveNoAnswersException.class})
     public void notCreateOpenQuestionWithAnswers() throws Exception {
         whenCreatingAQuestion(openQuestion("Open question?").withAnswers(
                 answer("answer 01")));
         expectThatCreationFails();
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {AtLeastOneAnswerRequiredException.class})
     public void notCreateSingleChoiceQuestionWithoutAnswers() throws
             Exception {
         whenCreatingAQuestion(singleChoiceQuestion("single choice question"));
         expectThatCreationFails();
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {AtLeastOneAnswerRequiredException.class})
     public void notCreateMultipleChoiceQuestionWithoutAnswers() throws
             Exception {
         whenCreatingAQuestion(multipleChoiceQuestion("multiple choice question"));

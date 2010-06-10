@@ -17,7 +17,7 @@ import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.dto.UserQuery;
 import org.adaptiveplatform.surveys.exception.security.CantRevokeOwnAdminRights;
 import org.adaptiveplatform.surveys.service.AuthenticationServiceMock;
-import org.adaptiveplatform.surveys.service.EmailAddressAlreadyRegisteredException;
+import org.adaptiveplatform.surveys.exception.security.EmailAddressAlreadyRegisteredException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.AfterMethod;

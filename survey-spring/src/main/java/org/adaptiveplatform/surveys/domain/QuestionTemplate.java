@@ -125,4 +125,8 @@ public class QuestionTemplate implements Serializable {
     public void setStyle(String style) {
         this.style = style;
     }
+
+    public Long getId() {
+        return id;
+    }
 }
