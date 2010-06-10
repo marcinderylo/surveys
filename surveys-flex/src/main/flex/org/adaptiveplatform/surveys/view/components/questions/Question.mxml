@@ -5,6 +5,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			import org.adaptiveplatform.surveys.QuestionStyleEnum;
 			
 			import mx.binding.utils.BindingUtils;
@@ -33,7 +34,7 @@
 				questionStyle = QuestionStyleEnum.SINGLE_TYPE;
 				createBindings();
 				for(var i:int = 0; i < 4; i++){
-					var answer:AnswerTemplateDto = new AnswerTemplateDto();
+					var answer:SurveyQuestionAnswerDto = new SurveyQuestionAnswerDto();
 					answer.text = resourceManager.getString('adaptive', 'createQuestion.typeView.exampleAns') + i;
 					exampleAnswers.addItem( answer );
 				}
