@@ -21,6 +21,9 @@
 			[Bindable]
 			private var group:StudentGroupDto;
 			
+			[Bindable]
+			private var selectedItems:Array;
+			
 			public override function set data(value:Object):void{
 				group = value as StudentGroupDto;
 				this.text = group.groupName;
@@ -33,10 +36,13 @@
 			
 			private function dragDrop(event:DragEvent):void
 			{
-				dragDropFunction( (event.dragInitiator as DataGrid).selectedItem);
+				dragDropFunction( selectedItems, data);
 			}
 			
 			private function dragEnter(event:DragEvent):void{
+				var groupGrid:DataGrid = event.dragInitiator as DataGrid;
+				selectedItems = (event.dragInitiator as DataGrid).selectedItems;
+				groupGrid.selectedIndex = (groupGrid.dataProvider as ArrayCollection).getItemIndex( data );
   				DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
   				DragManager.showFeedback(DragManager.COPY);
 			}

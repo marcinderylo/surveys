@@ -6,6 +6,11 @@
 	verticalAlign="middle" verticalScrollPolicy="off" horizontalScrollPolicy="off">
 	<mx:Script>
 		<![CDATA[
+			import mx.events.ListEvent;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			import mx.binding.utils.BindingUtils;
+			import mx.events.DragEvent;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Label;
 			import mx.events.ItemClickEvent;
@@ -75,7 +80,6 @@
 				groupDao = ContextFactory.context.service.studentGroupDao;
 				findUsers();
 				findGroups();
-				
 			}
 
 			public function initializeView(ignore:* = null):void {
@@ -156,8 +160,9 @@
 				users.refresh();
 			}
 
-			private function addToGroup():void {
-				if (userList.selectedItems.length === 0 || groupList.selectedIndex < 0)
+			private function addToGroup(param:Array = null):void {
+				var usersToAdd:Array = param != null ? param : userList.selectedItems; 
+				if (usersToAdd.length === 0 || groupList.selectedIndex < 0)
 					return;
 
 				var currentRole:String = role.dataProvider.getItemAt(role.selectedIndex).value;
@@ -169,7 +174,7 @@
 				changeGoupCommand.removeMembers = new ArrayCollection();
 				changeGoupCommand.groupId = currentGroup.id;
 
-				for each (var user:UserDto in userList.selectedItems) {
+				for each (var user:UserDto in usersToAdd) {
 					if( !isNotInGroup(user, currentGroup.evaluators) &&
 							!isNotInGroup(user, currentGroup.administrators) &&
 								!isNotInGroup(user, currentGroup.students) )
@@ -210,10 +215,17 @@
 				return false;
 			}
 			
-			public function addToGroupByDrag(index:int):void{
-				groupList.selectedIndex = index;
-				addToGroup();
+			public function addToGroupByDrag(users:Array, group:StudentGroupDto):void{
+				groupList.selectedIndex = groupList.dataProvider.getItemIndex(group);
+				addToGroup(users);
 			}
+			
+            public function dragEnterHandler(event:DragEvent):void {
+                if (event.dragSource.hasFormat("img"))
+                {
+                	addToGroup();
+                }
+            }
 
 			private function removeUser():void {
 				if (!groupDetails.selectedItem)
@@ -277,6 +289,12 @@
 					removeUserFromGroupBtn.enabled = true;
 				}
 			}
+			
+			private function showItem(event:ListEvent):void{
+				if((groupDetails.parent as Box).percentHeight!=100){
+					displayDetails();
+				}
+			}
 		]]>
 	</mx:Script>
 	<mx:Resize id="resize"/>
@@ -336,12 +354,13 @@
 		</mx:ApplicationControlBar>
 		<mx:DataGrid id="groupList" width="100%" height="100%" dataProvider="{groups}" 
 				 draggableColumns="false" rowHeight="26" sortableColumns="true"
-				 resizeEffect="{resize}">
+				 resizeEffect="{resize}" doubleClickEnabled="true" itemDoubleClick="showItem(event)">
 			<mx:columns>
 				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}" dataField="groupName">
 					<mx:itemRenderer>
 						<mx:Component>
-							<renderers:GroupListDragDropRenderer dragDropFunction="{outerDocument.addToGroupByDrag}"/>
+							<renderers:GroupListDragDropRenderer 
+								dragDropFunction="{outerDocument.addToGroupByDrag}" />
 						</mx:Component>
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
