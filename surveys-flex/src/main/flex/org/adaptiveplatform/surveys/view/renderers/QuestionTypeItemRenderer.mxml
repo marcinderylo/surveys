@@ -11,7 +11,7 @@
 			private var multi:Class;
 			[Embed(source="/assets/icons/openQuestion.png")]
 			private var open:Class;
-			[Embed(source="/assets/icons/fourToggleButtonBar.png")]
+			[Embed(source="/assets/icons/fourToggleButton.png")]
 			private var fourToggleRadioButton:Class;			
 			
 			 override public function set data(value:Object):void {

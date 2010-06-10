@@ -168,8 +168,13 @@
 			public function validate():Boolean{
 				validatorArr.removeAll();
 				if( !question.type.equals( QuestionTypeEnum.OPEN) ){
-					for each( var answerComponent:NewAnswerQuestion in answersList.getChildren() ){
-						validatorArr.addItem( answerComponent.answerValidator );
+					if( answersList.getChildren().length == 0 ){
+						Alert.show( resourceManager.getString('adaptive', 'createQuestion.answerRequired') );
+						return false;
+					}else{
+						for each( var answerComponent:NewAnswerQuestion in answersList.getChildren() ){
+							validatorArr.addItem( answerComponent.answerValidator );
+						}
 					}
 				}
 				validatorArr.addItem( questionTextValidator );
