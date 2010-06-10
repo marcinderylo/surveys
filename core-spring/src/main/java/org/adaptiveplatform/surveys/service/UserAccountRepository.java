@@ -8,9 +8,9 @@ public interface UserAccountRepository {
 
 	UserAccount get(Long userId);
 
-	UserAccount get(String username);
+	UserAccount get(String email);
 
 	UserAccount getExisting(Long userId);
 
-	UserAccount getExisting(String username);
+	UserAccount getExisting(String email);
 }
