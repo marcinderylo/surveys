@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 width="100%"
-		 height="100%">
+		 height="100%"
+		 creationComplete="hbox1_creationCompleteHandler(event)">
 
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.view.FilledQuestionDetails;
-			
+			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
+			
+			import org.adaptiveplatform.surveys.view.FilledQuestionDetails;
 
 			private var edited:Boolean=false;
 
@@ -21,7 +24,7 @@
 						tag.sel=false;
 					}
 				}
-				arrColl.refresh();
+				validateNow();
 			}
 
 			private function checkBox_change(evt:Event):void {
@@ -32,21 +35,6 @@
 				arrColl.disableAutoUpdate();
 				arrColl.setItemAt(obj, idx);
 				edited=true;
-			}
-
-			private function selectAll(evt:Event):void {
-				var idx:int;
-				var item:Object;
-				for (idx=0; idx < arrColl.length; idx++) {
-					item=arrColl.getItemAt(idx);
-					item.sel=CheckBox(evt.currentTarget).selected;
-				}
-				arrColl.refresh();
-			}
-
-			private function sel_labelFunc(item:Object, col:DataGridColumn):String {
-				var bool:Boolean=item.hasOwnProperty("sel") && (item.sel == "true" || item.sel == true);
-				return bool.toString();
 			}
 
 			private function close(event:DropdownEvent=null):void {
@@ -62,37 +50,23 @@
 					arrColl.refresh();
 				}
 			}
+			[Bindable]
+			public var arrColl:ArrayCollection = new ArrayCollection([
+				{label:"Positive", sel:false, tag:"pozytywne", source:"assets/images/positive.png"},
+				{label:"Negative", sel:false, tag:"negatywne", source:"assets/images/negative.png"},
+				{label:"Conclusion", sel:false, tag:"wniosek", source:"assets/images/conclusion.png"},
+				{label:"Ignore", sel:false, tag:"ignoruj", source:"assets/images/ignore.png"}
+			]);
+
+			protected function hbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				selCat.dataProvider=arrColl;
+			}
+
 		]]>
 	</mx:Script>
-	<mx:ArrayCollection id="arrColl">
-		<mx:source>
-			<mx:Array id="arr">
-				<mx:Object label="Positive"
-						   id="positive"
-						   sel="true"
-						   tag="pozytywne"
-						   source="assets/images/positive.png"/>
-				<mx:Object label="Negative"
-						   id="negative"
-						   sel="true"
-						   tag="negatywne"
-						   source="assets/images/negative.png"/>
-				<mx:Object label="Conclusion"
-						   id="conclusion"
-						   sel="true"
-						   tag="wniosek"
-						   source="assets/images/conclusion.png"/>
-				<mx:Object label="Ignore"
-						   id="ignore"
-						   sel="false"
-						   tag="ignoruj"
-						   source="assets/images/ignore.png"/>
-			</mx:Array>
-		</mx:source>
-	</mx:ArrayCollection>
-
-	<mx:Repeater id="selCat"
-				 dataProvider="{arrColl}">
+	
+	<mx:Repeater id="selCat">
 		<mx:Image visible="{selCat.currentItem.sel}"
 				  includeInLayout="{selCat.currentItem.sel}"
 				  width="30"
