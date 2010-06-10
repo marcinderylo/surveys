@@ -11,15 +11,14 @@
 			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.Fault;
-			
+
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
-			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 			import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
 			import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
 			import org.adaptiveplatform.surveys.view.ResearchWizzard;
-			
+
 			private var groupDao:StudentGroupDao;
 
 			[Bindable]
@@ -51,22 +50,23 @@
 				groupQuery.runAs=GroupRoleEnum.EVALUATOR;
 				groupDao.query(groupQuery) //
 					.onSuccess(function(result:ArrayCollection):void {
-						groups=result;
-					}).onFault(function(fault:Fault):void {
-						trace(fault.faultString);
+						for each (var o:Object in result) {
+							groups.addItem({groupName: o.groupName, selected: false, data: o});
+						}
 					});
 			}
 
 			public function onChange(event:Event, data:Object):void {
 				if (event.target.selected) {
-					if (!selectedGroups.contains(data)) {
-						selectedGroups.addItem(data);
+					if (!selectedGroups.contains(data.data)) {
+						selectedGroups.addItem(data.data);
 					}
 				} else {
-					if (selectedGroups.contains(data)) {
-						selectedGroups.removeItemAt(selectedGroups.getItemIndex(data));
+					if (selectedGroups.contains(data.data)) {
+						selectedGroups.removeItemAt(selectedGroups.getItemIndex(data.data));
 					}
 				}
+				data.selected=!data.selected;
 
 				if (selectedGroups.length > 0)
 					(parentDocument as ResearchWizzard).isValid=true;
@@ -100,12 +100,13 @@
 				 sortableColumns="true"
 				 selectable="false">
 		<mx:columns>
-			<mx:DataGridColumn 
-							   textAlign="center"
-							   width="50">
+			<mx:DataGridColumn textAlign="center"
+							   width="50"
+							   sortable="false">
 				<mx:itemRenderer>
 					<mx:Component>
-						<mx:CheckBox change="{outerDocument.onChange(event, data)}"/>
+						<mx:CheckBox change="{outerDocument.onChange(event, data)}"
+									 selected="{data.selected}"/>
 					</mx:Component>
 				</mx:itemRenderer>
 			</mx:DataGridColumn>

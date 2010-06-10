@@ -10,7 +10,7 @@
 			import mx.core.UIComponent;
 			import mx.events.IndexChangedEvent;
 			import mx.rpc.Fault;
-			
+
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
@@ -29,6 +29,9 @@
 
 			public function initializeView():void {
 				researchCommand=new PrepareResearchCommand();
+				range.researchName.text="";
+				if (survey.surveyList)
+					survey.surveyList.selectedItems=[];
 			}
 
 			[Bindable]
@@ -84,14 +87,14 @@
 						trace(fault.faultString);
 					});
 			}
-			
+
 			private function test(e:Event):void {
 				trace(e.type);
 			}
 
 			private function onChange(event:IndexChangedEvent):void {
 				(navigator.getChildAt(navigator.selectedIndex) as UIComponent).enabled=true;
-				if(event.oldIndex>event.newIndex){
+				if (event.oldIndex > event.newIndex) {
 					isValid=true;
 				} else {
 					isValid=false;
