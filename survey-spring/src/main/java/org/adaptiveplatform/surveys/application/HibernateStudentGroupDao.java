@@ -16,6 +16,7 @@ import org.adaptiveplatform.surveys.exception.NoSuchGroupException;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.security.access.annotation.Secured;
@@ -87,6 +88,7 @@ public class HibernateStudentGroupDao implements StudentGroupDao {
                     getGroupNamePattern(), MatchMode.ANYWHERE));
         }
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.addOrder(Order.asc("groupName"));
 
         List<StudentGroupDto> groups = criteria.list();
 

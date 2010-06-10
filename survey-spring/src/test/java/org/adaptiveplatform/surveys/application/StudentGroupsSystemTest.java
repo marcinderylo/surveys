@@ -196,6 +196,18 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
     }
 
     @Test
+    public void shouldReadGroupsSortedByName() throws Exception {
+        // given
+        authenticatedAsTeacher();
+        // when
+        List<StudentGroupDto> groups = groupDao.query(adminQuery());
+        // then
+        assertEquals(groups.get(0).getGroupName(), "another group");
+        assertEquals(groups.get(1).getGroupName(), "some group");
+        assertEquals(groups.get(2).getGroupName(), "yet another group");
+    }
+
+    @Test
     public void cantAllowTeacherToReadGroupsHeIsNotAssignedTo() throws
             Exception {
         authMock.authenticate(4L, "bad_teacher@adapt.com", Role.TEACHER,
