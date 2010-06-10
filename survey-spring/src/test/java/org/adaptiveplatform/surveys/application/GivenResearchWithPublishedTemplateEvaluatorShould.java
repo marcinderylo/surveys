@@ -7,10 +7,8 @@ import static org.adaptiveplatform.surveys.domain.SurveyTemplateBuilder.template
 import static org.adaptiveplatform.surveys.domain.UserAccountBuilder.user;
 import static org.adaptiveplatform.surveys.test.Asserts.assertCollectionSize;
 import static org.adaptiveplatform.surveys.test.Asserts.assertEmpty;
-import static org.adaptiveplatform.surveys.test.Asserts.expectException;
 import static org.adaptiveplatform.surveys.utils.Collections42.firstOf;
 
-import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -39,7 +37,7 @@ import org.testng.annotations.Test;
  * @author Marcin Deryło
  */
 @ContextConfiguration("classpath:/testConfigurationContext.xml")
-public class GivenExistingFilledSurveysEvaluatorShould extends AbstractTestNGSpringContextTests {
+public class GivenResearchWithPublishedTemplateEvaluatorShould extends AbstractTestNGSpringContextTests {
 
     @Resource
     private EvaluationDao dao;
@@ -98,7 +96,7 @@ public class GivenExistingFilledSurveysEvaluatorShould extends AbstractTestNGSpr
     }
 
     @Test
-    public void shouldFetchSubmittedSurveys() throws Exception {
+    public void beAbleToFetchSubmittedSurveys() throws Exception {
         // given
         final FilledSurvey filledSurvey =
                 surveyFixture.fillSurvey(templateId, groupId, student);
@@ -110,12 +108,20 @@ public class GivenExistingFilledSurveysEvaluatorShould extends AbstractTestNGSpr
     }
 
     @Test
-    public void shouldNotFetchStartedButNotYetSubmittedSurveys() throws Exception {
+    public void notBeAbleToFetchStartedButNotYetSubmittedSurveys() throws Exception {
         // given
         surveyFixture.startFilling(templateId, groupId, student);
         // when
         final ResearchDto research = dao.get(researchId);
         // then
         assertEmpty(research.getSubmittedSurveys());
+    }
+
+    @Test
+    public void beAbleToFetchGroupNamesInResearch() throws Exception {
+        // when
+        final ResearchDto research = dao.get(researchId);
+        // then
+        assertCollectionSize(research.getGroups(), 1);
     }
 }

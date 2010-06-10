@@ -27,16 +27,20 @@ import org.hibernate.annotations.WhereJoinTable;
 @org.hibernate.annotations.Entity(mutable = false)
 @NamedQueries({
     @NamedQuery(name = StudentGroupDto.Query.GET_STUDENT_GROUP, query = "SELECT g FROM StudentGroupDto g "
-    + "LEFT JOIN g.administrators adm "
-    + "WHERE adm.id = :userId AND g.id = :groupId")
+    + "LEFT JOIN g.administrators adm WHERE adm.id = :userId AND g.id = :groupId"),
+    @NamedQuery(name = StudentGroupDto.Query.GET_GROUP_NAMES_IN_RESEARCH,
+    query = "SELECT gr.name FROM Research res LEFT JOIN res.publishedSurveys ps "
+    + "LEFT JOIN ps.studentGroup gr WHERE res.id = :researchId")
 })
 @RemoteObject
 public class StudentGroupDto implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	public static final class Query {
+    private static final long serialVersionUID = 1L;
+
+    public static final class Query {
 
         public static final String GET_STUDENT_GROUP = "StudentGroupDto.getGroup";
+        public static final String GET_GROUP_NAMES_IN_RESEARCH = "StudentGroupDto.getGroupNamesInResearch";
     }
     @Id
     @Column(name = "ID", insertable = false, updatable = false)

@@ -2,7 +2,9 @@ package org.adaptiveplatform.surveys.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -95,6 +97,8 @@ public class ResearchDto implements Serializable {
     @Transient
     private List<FilledSurveyDto> submittedSurveys =
             new ArrayList<FilledSurveyDto>();
+    @Transient
+    private Set<String> groups = new HashSet<String>();
 
     public FillingProgressDto getFillingProgress() {
         return fillingProgress;
@@ -150,5 +154,13 @@ public class ResearchDto implements Serializable {
 
     public void setSubmittedSurveys(List<FilledSurveyDto> submittedSurveys) {
         this.submittedSurveys = submittedSurveys;
+    }
+
+    public Set<String> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<String> groups) {
+        this.groups = groups;
     }
 }

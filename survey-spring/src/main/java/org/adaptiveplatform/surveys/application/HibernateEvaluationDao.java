@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Maps;
+import org.adaptiveplatform.surveys.dto.StudentGroupDto;
 
 @Service("evaluationDao")
 @RemotingDestination
@@ -53,6 +54,7 @@ public class HibernateEvaluationDao implements EvaluationDao {
     public ResearchDto get(Long researchId) {
         ResearchDto research = getExistingResearch(researchId);
         includeSubmittedSurveys(research);
+        includeGroups(research);
         includeAssignedTags(research);
         return research;
     }
@@ -90,8 +92,7 @@ public class HibernateEvaluationDao implements EvaluationDao {
         List<AnswerEvaluationDto> answerEvaluations = criteria.list();
         Map<Long, Set<String>> tags = Maps.newHashMap();
         for (AnswerEvaluationDto answerEvaluationDto : answerEvaluations) {
-            tags.put(answerEvaluationDto.getAnsweredQuestionId(), answerEvaluationDto.
-                    getTags());
+            tags.put(answerEvaluationDto.getAnsweredQuestionId(), answerEvaluationDto.getTags());
         }
         for (FilledSurveyDto filledSurvey : research.getSubmittedSurveys()) {
             for (SurveyQuestionDto question : filledSurvey.getQuestions()) {
@@ -101,6 +102,13 @@ public class HibernateEvaluationDao implements EvaluationDao {
                 }
             }
         }
+    }
+
+    private void includeGroups(ResearchDto research) {
+        List<String> groupNames = sf.getCurrentSession().getNamedQuery(
+                StudentGroupDto.Query.GET_GROUP_NAMES_IN_RESEARCH).
+                setParameter("researchId", research.getId()).list();
+        research.getGroups().addAll(groupNames);
     }
 
     @Override
@@ -151,7 +159,7 @@ public class HibernateEvaluationDao implements EvaluationDao {
     private void addTemplateRestrictionsIfSpecified(ResearchesQuery query,
             final Criteria criteria) {
         final Long templateId = query.getSurveyTemplateId();
-        if (templateId != null && templateId!=0) {
+        if (templateId != null && templateId != 0) {
             criteria.add(Restrictions.eq("templateDto.id", templateId));
         }
     }
