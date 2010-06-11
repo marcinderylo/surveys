@@ -27,7 +27,7 @@
 
 			private function onInitialize():void {
 				var channelName:String = "my-amf";
-				var channelUrl:String = "http://adaptiveplatform.org:8080/surveys-web/messagebroker/amf";
+				var channelUrl:String = "http://localhost:8080/surveys-web/messagebroker/amf";
 
 				ContextFactory.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
 //				ContextFactory.initializeMockContext(new ViewStackViewController(viewstack));
