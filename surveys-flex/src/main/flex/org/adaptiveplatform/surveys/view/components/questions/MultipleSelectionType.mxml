@@ -5,14 +5,14 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			
-			import org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			[Bindable]
 			public var answers:ArrayCollection;
 		]]>
 	</mx:Script>
 
 	<mx:Repeater id="answersComponent" dataProvider="{answers}" width="100%">
-		<mx:CheckBox label="{ (answersComponent.currentItem as AnswerTemplateDto).text}" />
+		<mx:CheckBox label="{ (answersComponent.currentItem as SurveyQuestionAnswerDto).text}" />
 	</mx:Repeater>
 
 </mx:VBox>

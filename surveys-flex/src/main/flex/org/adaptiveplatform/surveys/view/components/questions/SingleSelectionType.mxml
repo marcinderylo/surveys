@@ -4,13 +4,13 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			
-			import org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto;
+			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			[Bindable]
 			public var answers:ArrayCollection;
 		]]>
 	</mx:Script>
 
 	<mx:Repeater id="answersComponent" dataProvider="{answers}" width="100%">
-		<mx:RadioButton label="{ (answersComponent.currentItem as AnswerTemplateDto).text}" />
+		<mx:RadioButton label="{ (answersComponent.currentItem as SurveyQuestionAnswerDto).text}" />
 	</mx:Repeater>
 </mx:VBox>
