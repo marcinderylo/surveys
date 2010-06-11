@@ -27,7 +27,7 @@
 
 			private function onInitialize():void {
 				var channelName:String = "my-amf";
-				var channelUrl:String = "http://localhost:8080/surveys-web/messagebroker/amf";
+				var channelUrl:String = "http://adaptiveplatform.org:8080/surveys-web/messagebroker/amf";
 
 				ContextFactory.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
 //				ContextFactory.initializeMockContext(new ViewStackViewController(viewstack));
@@ -87,6 +87,6 @@
 				<view:EvaluatorStartPage id="evaluatorStartPage" label="evaluatorStartPage" updateComplete="onUpdateComplete(event)" />
 			</mx:ViewStack>
 		</mx:Panel>
-		<!--<mx:ToggleButtonBar x="10" y="540" dataProvider="{viewstack}" height="30"/> -->
+		<mx:Image source="@Embed(source='/assets/images/baner_projektu.png')" width="50%" horizontalAlign="center"/>
 	</mx:VBox>
 </mx:Application>
