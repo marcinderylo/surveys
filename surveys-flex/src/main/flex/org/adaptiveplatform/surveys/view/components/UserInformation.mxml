@@ -3,6 +3,7 @@
 		 updateComplete="onUpdateComplete()" visible="{isAuthenticated}">
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import mx.core.Application;
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
@@ -24,8 +25,8 @@
 			}
 			
 			private function reloadApplication():void{
-				var urlRequest:URLRequest = new URLRequest(Application.application.url);
-				navigateToURL(urlRequest,"_self");				
+				var urlRequest:URLRequest = new URLRequest( ExternalInterface.call('window.location.search.toString') );
+				navigateToURL(urlRequest,"_self");		
 			}
 
 			private function logout():void {
