@@ -81,7 +81,7 @@
 	            		answerChild.excludeOthersControls.visible = (!requiresComment) && (!question.type.equals(QuestionTypeEnum.SINGLE_CHOICE));
 	            		answerChild.excludeOthersControls.includeInLayout = (!requiresComment) && (!question.type.equals(QuestionTypeEnum.SINGLE_CHOICE));
 	            		answerChild.answer.requiresComment = requiresComment;
-	            		answerChild.answer.excludesOtherAnswers = (!requiresComment) && (!question.type.equals(QuestionTypeEnum.SINGLE_CHOICE));
+	            		answerChild.answer.excludesOtherAnswers = !answerChild.excludeOthersControls.visible;
 	            		answerChild.questionType = question.type;
 	            		
 	            	} 
