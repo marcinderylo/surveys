@@ -103,6 +103,9 @@
             		}else{
             			survey.questions.addItem(question);
             		}
+            		if( question.type.equals(QuestionTypeEnum.OPEN) ){
+            			question.answers = new ArrayCollection();
+            		}
             		PopUpManager.removePopUp(this);
             	}
             	
