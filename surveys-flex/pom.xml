@@ -13,6 +13,17 @@
 		<version>0.1.M2-SNAPSHOT</version>
 	</parent>
 
+	<properties>
+		<skip.flex.tests>false</skip.flex.tests>
+	</properties>
+	<profiles>
+		<profile>
+			<id>bamboo</id>
+			<properties>
+				<skip.flex.tests>true</skip.flex.tests>
+			</properties>
+		</profile>
+	</profiles>
 	<build>
 		<sourceDirectory>src/main/flex</sourceDirectory>
 		<testSourceDirectory>src/test/flex</testSourceDirectory>
@@ -23,6 +34,7 @@
 				<!-- version isn't needed here, but m2eclipse shows errors otherwise -->
 				<version>3.4.2</version>
 				<configuration>
+					<skipTest>${skip.flex.tests}</skipTest>
 					<compiledLocales>
 						<locale>en_US</locale>
 						<locale>pl_PL</locale>
