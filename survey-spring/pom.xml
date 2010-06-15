@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.adaptiveplatform.surveys</groupId>
     <artifactId>survey-spring</artifactId>
-    <version>0.2.M1-SNAPSHOT</version>
+    <version>0.1.final</version>
     <name>Surveys - Survey module implementation</name>
     <parent>
         <groupId>org.adaptiveplatform.surveys</groupId>
         <artifactId>surveys</artifactId>
-        <version>0.2.M1-SNAPSHOT</version>
+        <version>0.1.final</version>
     </parent>
 
     <dependencies>

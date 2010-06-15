@@ -3,13 +3,22 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>core-spring</artifactId>
-	<version>0.2.M1-SNAPSHOT</version>
+	<version>0.1.final</version>
 	<name>Surveys - core implementation and configuration</name>
 	<parent>
 		<groupId>org.adaptiveplatform.surveys</groupId>
 		<artifactId>surveys</artifactId>
-		<version>0.2.M1-SNAPSHOT</version>
+		<version>0.1.final</version>
 	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 		<dependency>
@@ -49,7 +58,7 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
@@ -105,7 +114,7 @@
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-                <dependency>
+		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 		</dependency>
