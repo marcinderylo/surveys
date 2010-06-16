@@ -80,7 +80,7 @@ public class HibernateSurveyDao implements SurveyDao {
         }
         criteria.add(Restrictions.isNotNull("submitDate"));
         restrictFilledSurveysSearchWithKeywordIfAny(criteria, query.getKeyword());
-        
+
         criteria.setResultTransformer(
                 DistinctRootEntityResultTransformer.INSTANCE);
         return criteria.list();
@@ -90,7 +90,8 @@ public class HibernateSurveyDao implements SurveyDao {
         if (StringUtils.hasText(keyword)) {
             final Disjunction keywordDisjunction = Restrictions.disjunction();
             keywordDisjunction.add(Restrictions.ilike("groupName", keyword, MatchMode.ANYWHERE));
-            keywordDisjunction.add(Restrictions.ilike("surveyTemplateName", keyword, MatchMode.ANYWHERE));
+            keywordDisjunction.add(Restrictions.ilike("surveyTemplateName", keyword,
+                    MatchMode.ANYWHERE));
             criteria.add(keywordDisjunction);
         }
     }
@@ -206,14 +207,15 @@ public class HibernateSurveyDao implements SurveyDao {
         Criteria templateIdCriteria = session.createCriteria(SurveyTemplate.class);
         templateIdCriteria.add(Restrictions.eq("owner", authentication.getCurrentUser()));
         templateIdCriteria.setProjection(Projections.id());
-        if(StringUtils.hasText(query.getNameContains())) {
-            templateIdCriteria.add(Restrictions.ilike("title", query.getNameContains(), MatchMode.ANYWHERE));
+        if (StringUtils.hasText(query.getNameContains())) {
+            templateIdCriteria.add(Restrictions.ilike("title", query.getNameContains(),
+                    MatchMode.ANYWHERE));
         }
         List<Long> ids = templateIdCriteria.list();
 
         List<SurveyTemplateDto> templates = Lists.newArrayList();
 
-        if(ids.size() > 0) {
+        if (ids.size() > 0) {
             Criteria dtoCriteria = session.createCriteria(SurveyTemplateDto.class).add(
                     Restrictions.in("id", ids));
             templates.addAll(dtoCriteria.list());
@@ -229,18 +231,16 @@ public class HibernateSurveyDao implements SurveyDao {
     private void calculatePublishedSurveyStatus(
             Collection<PublishedSurveyTemplateDto> templates) {
         List<Object[]> filledIds = sf.getCurrentSession().createQuery(
-                "SELECT s.surveyTemplateId, s.groupId, s.id, s.submitDate "
+                "SELECT s.publicationId, s.id, s.submitDate "
                 + "FROM FilledSurveyDto s WHERE s.userId = :userId").
                 setParameter("userId",
                 authentication.getCurrentUser().getId()).list();
         for (PublishedSurveyTemplateDto template : templates) {
             for (Object[] ids : filledIds) {
-                Long templateId = (Long) ids[0];
-                Long groupId = (Long) ids[1];
-                Long filledSurveyId = (Long) ids[2];
-                Date submitDate = (Date) ids[3];
-                if (template.getTemplateId().equals(templateId) && template.getGroupId().equals(
-                        groupId)) {
+                Long publicationId = (Long) ids[0];
+                Long filledSurveyId = (Long) ids[1];
+                Date submitDate = (Date) ids[2];
+                if (template.getId().equals(publicationId)) {
                     if (submitDate == null) {
                         template.setStatus(SurveyStatusEnum.STARTED);
                         template.setFilledSurveyId(filledSurveyId);

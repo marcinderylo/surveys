@@ -28,7 +28,9 @@ import org.hibernate.annotations.IndexColumn;
     query = "SELECT s FROM FilledSurveyDto s "
     + "WHERE (s.id = :surveyId) AND (s.userId = :userId OR "
     + "s.surveyTemplateId IN (SELECT st FROM SurveyTemplate st WHERE st.owner.id = :userId) )"),
-    @NamedQuery(name = FilledSurveyDto.Query.GET_FOR_RESEARCH, query="SELECT DISTINCT s FROM FilledSurveyDto s "
+    @NamedQuery(name = FilledSurveyDto.Query.GET_FOR_RESEARCH,
+    query =
+    "SELECT DISTINCT s FROM FilledSurveyDto s "
     + "JOIN FETCH s.questions q LEFT JOIN FETCH q.answers "
     + "WHERE  s.id IN (SELECT fs.id FROM "
     + "FilledSurvey fs WHERE fs.finishDate IS NOT NULL AND fs.template.id IN (:publishedSurveyTemplates))")
@@ -48,6 +50,8 @@ public class FilledSurveyDto implements Serializable {
     @Id
     @Column(name = "ID")
     private Long id;
+    @Column(name = "PUBLICATION_ID", insertable = false, updatable = false)
+    private Long publicationId;
     @Column(name = "TEMPLATE_ID", insertable = false, updatable = false)
     private Long surveyTemplateId;
     @Column(name = "TEMPLATE_NAME", insertable = false, updatable = false)

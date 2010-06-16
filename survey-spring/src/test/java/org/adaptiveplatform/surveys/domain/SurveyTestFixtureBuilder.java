@@ -110,6 +110,34 @@ public class SurveyTestFixtureBuilder {
         return publication;
     }
 
+    public FilledSurvey fillSurvey(Long publishedSurveyTemplateId, UserAccount user) {
+        Session session = sf.openSession();
+        Transaction tx = session.beginTransaction();
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        SurveyPublication publication = (SurveyPublication) session.get(SurveyPublication.class,
+                publishedSurveyTemplateId);
+        FilledSurvey filledSurvey = new FilledSurvey(publication,
+                userDto);
+        filledSurvey.startFilling();
+
+        List<QuestionTemplate> questions = publication.getSurveyTemplate().getQuestions();
+        for (int i = 0; i < questions.size(); i++) {
+            QuestionTemplate question = questions.get(i);
+            List<Integer> answerNumbers = new ArrayList<Integer>();
+            if (!question.getAnswers().isEmpty()) {
+                answerNumbers.add(1);
+            }
+            filledSurvey.answerQuestion(i + 1, answerNumbers, "some comment");
+        }
+
+        filledSurvey.submit();
+        filledSurveysIds.add((Long) session.save(filledSurvey));
+        tx.commit();
+        session.close();
+        return filledSurvey;
+    }
+
     public FilledSurvey fillSurvey(Long templateId, Long groupId,
             UserAccount user) {
         Session session = sf.openSession();
