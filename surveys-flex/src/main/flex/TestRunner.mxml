@@ -8,6 +8,7 @@
 			import flexunit.framework.TestSuite;
 			
 			import org.adaptiveplatform.surveys.application.RemoteBusinessExceptionParametersUnmarshallerTest;
+			import org.adaptiveplatform.surveys.application.StringUtilTest;
 			
 			// Create the test suite and run the tests
 			private function onCreationComplete():void
@@ -19,7 +20,8 @@
 			// Creates the test suite to run
 			private function createSuite():TestSuite {
 				var testSuite:TestSuite = new TestSuite();
-				testSuite.addTestSuite( RemoteBusinessExceptionParametersUnmarshallerTest );
+				testSuite.addTestSuite( RemoteBusinessExceptionParametersUnmarshallerTest);
+				testSuite.addTestSuite( StringUtilTest);
 				return testSuite;
 			}	
 		]]>

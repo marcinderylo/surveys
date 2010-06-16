@@ -27,7 +27,7 @@
 			import mx.rpc.Fault;
 			
 			import org.adaptiveplatform.surveys.application.ContextFactory;
-			import org.adaptiveplatform.surveys.application.FaultHandler;
+			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
 			import org.adaptiveplatform.surveys.dto.generated.CommentQuestionCommand;
 			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
@@ -238,7 +238,7 @@
 			private function savePhrase(text:String):void {
 				evaluationFacade.rememberSearchPhrase(research.id, currentQuestionNumber+1, text).onSuccess(function(o:Object):void {
 						trace("success"); //todo
-					}).onFault(FaultHandler.displayAlert(resourceManager));
+					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
 			}
 
 			private function onAddItem():void {

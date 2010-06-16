@@ -4,15 +4,27 @@ package org.adaptiveplatform.surveys.application {
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceBundle;
 	import mx.resources.ResourceManager;
+	import mx.utils.StringUtil;
 	
 	public class RemoteBusinessExceptionParametersUnmarshallerTest extends TestCase	{
 		
+		public function testSplitNull():void{
+			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
+			var split:Array = unmarshaller.split(null);
+			assertEquals(split.length, 0);
+		}
+		
+		public function testSplitEmptyString():void{
+			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
+			var split:Array = unmarshaller.split("");
+			assertEquals(split.length, 0);
+		}
 		
 		public function testSplitOneStringArguments():void {
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split("first");
 			assertEquals(split.length, 1);
-			assertEquals(split[0], "1first");
+			assertEquals(split[0], "first");
 		}
 		
 		public function testSplitTwoStringArguments():void {

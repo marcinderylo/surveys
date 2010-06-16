@@ -12,7 +12,7 @@
 			import mx.rpc.Fault;
 			
 			import org.adaptiveplatform.surveys.application.ContextFactory;
-			import org.adaptiveplatform.surveys.application.FaultHandler;
+			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
 			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateQuery;
@@ -45,7 +45,7 @@
 				surveyDao.queryTemplates(surveyTemplateQuery) //
 					.onSuccess(function(result:ArrayCollection):void {
 						surveys=result;
-					}).onFault(FaultHandler.displayAlert(resourceManager));
+					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
 			}
 
 			private function onChange(event:Event):void {

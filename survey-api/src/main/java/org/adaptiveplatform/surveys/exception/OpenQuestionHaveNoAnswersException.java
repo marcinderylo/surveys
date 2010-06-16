@@ -13,6 +13,6 @@ public class OpenQuestionHaveNoAnswersException extends BusinessException {
     public static final String ERROR_CODE = "OPEN_QUESTION_CANT_HAVE_ANSWERS";
 
     public OpenQuestionHaveNoAnswersException(@Param("questionText") String text) {
-        super(ERROR_CODE, "Question \"{0}\" is an open question and have no answers", text);
+        super(ERROR_CODE, "Question \"{0}\" is an open question and should not have any answers", text);
     }
 }

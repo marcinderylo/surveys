@@ -19,108 +19,111 @@ import flex.messaging.MessageException;
 
 public class BusinessExceptionTranslator implements ExceptionTranslator {
 
-    private static final char PARAMETER_SEPARATOR = '`';
-    private static final String COLLECTION_TYPE_PREFIX = "*";
-    private static final String UNKNOWN_COLLECTION_ELEMENT_TYPE = "?";
-    private static final String EMPTY_COLLECTION_TYPE = COLLECTION_TYPE_PREFIX
-            + UNKNOWN_COLLECTION_ELEMENT_TYPE;
-    private static final Map<Class<?>, String> PARAMETER_TYPE_CODES;
+	public static final String BUSINESS_EXCEPTION_PREFIX = "BSN_";
 
-    static {
-        Map<Class<?>, String> parameterTypeCodes = Maps.newHashMap();
-        parameterTypeCodes.put(Long.class, "L");
-        parameterTypeCodes.put(String.class, "S");
-        parameterTypeCodes.put(Integer.class, "I");
-        parameterTypeCodes.put(Date.class, "D");
-        parameterTypeCodes.put(Boolean.class, "B");
-        parameterTypeCodes.put(UnknownType.class,
-                UNKNOWN_COLLECTION_ELEMENT_TYPE);
-        PARAMETER_TYPE_CODES = Collections.unmodifiableMap(parameterTypeCodes);
-    }
+	private static final char PARAMETER_SEPARATOR = '`';
+	private static final String COLLECTION_TYPE_PREFIX = "";
+	private static final String UNKNOWN_COLLECTION_ELEMENT_TYPE = "";
+	private static final String EMPTY_COLLECTION_TYPE = COLLECTION_TYPE_PREFIX
+			+ UNKNOWN_COLLECTION_ELEMENT_TYPE;
+	private static final Map<Class<?>, String> PARAMETER_TYPE_CODES;
 
-    private static final class UnknownType {
-    }
+	static {
+		Map<Class<?>, String> parameterTypeCodes = Maps.newHashMap();
+		parameterTypeCodes.put(Long.class, "");
+		parameterTypeCodes.put(String.class, "");
+		parameterTypeCodes.put(Integer.class, "");
+		parameterTypeCodes.put(Date.class, "");
+		parameterTypeCodes.put(Boolean.class, "");
+		parameterTypeCodes.put(UnknownType.class,
+				UNKNOWN_COLLECTION_ELEMENT_TYPE);
+		PARAMETER_TYPE_CODES = Collections.unmodifiableMap(parameterTypeCodes);
+	}
 
-    @Override
-    public boolean handles(Class<?> clazz) {
-        return BusinessException.class.isAssignableFrom(clazz);
-    }
+	private static final class UnknownType {
+	}
 
-    @Override
-    public MessageException translate(Throwable t) {
-        BusinessException ex = (BusinessException) t;
-        MessageException exception = new MessageException(ex.getMessage());
-        exception.setCode(ex.getCode());
-        exception.setDetails(encodeParameters(ex));
-        return exception;
-    }
+	@Override
+	public boolean handles(Class<?> clazz) {
+		return BusinessException.class.isAssignableFrom(clazz);
+	}
 
-    private String encodeParameters(BusinessException ex) {
-        return StringUtils.join(encodeParameters(ex.getParameters()),
-                PARAMETER_SEPARATOR);
-    }
+	@Override
+	public MessageException translate(Throwable t) {
+		BusinessException ex = (BusinessException) t;
+		MessageException exception = new MessageException(ex.getMessage());
+		exception.setCode(BUSINESS_EXCEPTION_PREFIX + ex.getCode());
+		exception.setDetails(encodeParameters(ex));
+		return exception;
+	}
 
-    private Collection<String> encodeParameters(List<Object> parameters) {
-        return Collections2.transform(parameters, new Function<Object, String>() {
+	private String encodeParameters(BusinessException ex) {
+		return StringUtils.join(encodeParameters(ex.getParameters()),
+				PARAMETER_SEPARATOR);
+	}
 
-            @Override
-            public String apply(Object from) {
-                return encodeParameter(from);
-            }
-        });
-    }
+	private Collection<String> encodeParameters(List<Object> parameters) {
+		return Collections2.transform(parameters,
+				new Function<Object, String>() {
 
-    private String encodeParameter(Object param) {
-        if (param == null) {
-            return "null";
-        }
-        if (param instanceof Collection) {
-            final Collection collectionParam = (Collection) param;
-            return encodeCollectionParameterType(collectionParam) + encodeCollection(
-                    collectionParam);
-        }
-        return encodeRegularParameterType(param.getClass()) + param;
-    }
+					@Override
+					public String apply(Object from) {
+						return encodeParameter(from);
+					}
+				});
+	}
 
-    private String encodeRegularParameterType(
-            Class<? extends Object> parameterType) {
-        String code = PARAMETER_TYPE_CODES.get(parameterType);
-        Validate.notNull(code, "Unsupported error parameter type: "
-                + parameterType);
-        return code;
-    }
+	private String encodeParameter(Object param) {
+		if (param == null) {
+			return "null";
+		}
+		if (param instanceof Collection) {
+			final Collection collectionParam = (Collection) param;
+			return encodeCollectionParameterType(collectionParam)
+					+ encodeCollection(collectionParam);
+		}
+		return encodeRegularParameterType(param.getClass()) + param;
+	}
 
-    private String encodeCollectionParameterType(Collection collection) {
-        if (collection.isEmpty()) {
-            return EMPTY_COLLECTION_TYPE;
-        }
-        Class<?> elementType = determineElementType(collection);
-        return COLLECTION_TYPE_PREFIX + encodeRegularParameterType(elementType);
-    }
+	private String encodeRegularParameterType(
+			Class<? extends Object> parameterType) {
+		String code = PARAMETER_TYPE_CODES.get(parameterType);
+		Validate.notNull(code, "Unsupported error parameter type: "
+				+ parameterType);
+		return code;
+	}
 
-    private Class<?> determineElementType(Collection<?> nonEmptyCollection) {
-        for (Object element : nonEmptyCollection) {
-            if (element != null) {
-                return element.getClass();
-            }
-        }
-        return UnknownType.class;
-    }
+	private String encodeCollectionParameterType(Collection collection) {
+		if (collection.isEmpty()) {
+			return EMPTY_COLLECTION_TYPE;
+		}
+		Class<?> elementType = determineElementType(collection);
+		return COLLECTION_TYPE_PREFIX + encodeRegularParameterType(elementType);
+	}
 
-    private String encodeCollection(Collection collectionParam) {
-        Collection<String> elementRepresentations =
-                Collections2.transform(collectionParam, new NullSafeToString());
-        return "[" + StringUtils.join(elementRepresentations, ",") + "]";
-    }
+	private Class<?> determineElementType(Collection<?> nonEmptyCollection) {
+		for (Object element : nonEmptyCollection) {
+			if (element != null) {
+				return element.getClass();
+			}
+		}
+		return UnknownType.class;
+	}
 
-    private static class NullSafeToString implements Function<Object, String> {
+	private String encodeCollection(Collection collectionParam) {
+		Collection<String> elementRepresentations = Collections2.transform(
+				collectionParam, new NullSafeToString());
+		return "[" + StringUtils.join(elementRepresentations, ",") + "]";
+	}
 
-        @Override
-        public String apply(Object from) {
-            if (from == null) {
-                return "null";
-            }
-            return from.toString();
-        }
-    }
+	private static class NullSafeToString implements Function<Object, String> {
+
+		@Override
+		public String apply(Object from) {
+			if (from == null) {
+				return "null";
+			}
+			return from.toString();
+		}
+	}
 }
