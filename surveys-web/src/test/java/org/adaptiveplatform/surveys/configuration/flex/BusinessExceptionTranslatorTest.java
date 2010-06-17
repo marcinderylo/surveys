@@ -53,7 +53,7 @@ public class BusinessExceptionTranslatorTest {
 
         MessageException translated = translator.translate(be);
         // then
-        assertEquals(translated.getCode(), "BZNS_CODE");
+        assertEquals(translated.getCode(), "BSN_BZNS_CODE");
         assertEquals(translated.getMessage(), "sample message");
     }
 
@@ -65,7 +65,7 @@ public class BusinessExceptionTranslatorTest {
         // when
         MessageException translated = translator.translate(be);
         // then
-        assertEquals(translated.getDetails(), "S42");
+        assertEquals(translated.getDetails(), "42");
     }
 
     @Test
@@ -126,7 +126,7 @@ public class BusinessExceptionTranslatorTest {
         // when
         MessageException translated = translator.translate(be);
         // then
-        assertEquals(translated.getDetails(), "*L[1,23,42123]");
+        assertEquals(translated.getDetails(), "[1,23,42123]");
     }
 
     @Test
@@ -135,7 +135,7 @@ public class BusinessExceptionTranslatorTest {
         // when
         MessageException translated = translator.translate(be);
         // then
-        assertEquals(translated.getDetails(), "*?[]");
+        assertEquals(translated.getDetails(), "[]");
     }
 
     @Test
@@ -145,7 +145,7 @@ public class BusinessExceptionTranslatorTest {
         // when
         MessageException translated = translator.translate(be);
         // then
-        assertEquals(translated.getDetails(), "*?[null,null]");
+        assertEquals(translated.getDetails(), "[null,null]");
     }
 
     @Test
@@ -155,7 +155,7 @@ public class BusinessExceptionTranslatorTest {
         // when
         MessageException translated = translator.translate(be);
         // then
-        assertEquals(translated.getDetails(), "*S[null,some string]");
+        assertEquals(translated.getDetails(), "[null,some string]");
     }
 
     private BusinessException error(String code, String message, Object... args) {
