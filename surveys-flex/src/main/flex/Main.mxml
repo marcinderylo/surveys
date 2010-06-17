@@ -27,10 +27,31 @@
 
 			private function onInitialize():void {
 				var channelName:String = "my-amf";
-				var channelUrl:String = "http://localhost:8080/surveys-web/messagebroker/amf";
-
+				var destination:String = "/surveys-web/messagebroker/amf";
+				
+				var channelUrl:String = getChannel();
+				
+				channelUrl = channelUrl + destination;
+								
 				ContextFactory.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
 //				ContextFactory.initializeMockContext(new ViewStackViewController(viewstack));
+			}
+			
+			private function getChannel():String{
+				var defaultUrl:String = "http://localhost:8080"; 
+				var url:String = Application.application.url;
+				
+				if( url.indexOf("file///") == 0 ){
+					url = defaultUrl;
+				}else{
+					var hostEnd:Number = url.indexOf("/surveys-web");
+					if( hostEnd > 0 ){
+						url = url.substr(0, hostEnd );
+					}else{
+						url = defaultUrl;
+					}
+				}
+				return url;
 			}
 
 			private function onUpdateComplete(event:FlexEvent):void {
