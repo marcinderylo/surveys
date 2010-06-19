@@ -66,6 +66,10 @@
 				if (researchList.selectedItem)
 					views.goto(View.SURVEY_PUBLICATION_DETAILS, researchList.selectedItem);
 			}
+			
+			private function exit():void{
+				ContextFactory.context.view.goto(View.EVALUATOR_START_PAGE);
+			}
 
 			private function toolTipResearchCreateHandler(ev:ToolTipEvent):void {
 				var tooltip:ToolTipResearchDetails=new ToolTipResearchDetails();
@@ -113,6 +117,9 @@
 					   toolTip="{resourceManager.getString('adaptive', 'evaluateResearchTooltip')}"
 					   click="evaluateResearch()"
 					   icon="@Embed(source='/assets/icons/evaluator.png')"/>
+			<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.exit')}"
+					   label="{resourceManager.getString('adaptive', 'btn.exit')}"
+					   click="exit()" />
 		</mx:HBox>
 		<mx:ApplicationControlBar width="100%">
 			<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>

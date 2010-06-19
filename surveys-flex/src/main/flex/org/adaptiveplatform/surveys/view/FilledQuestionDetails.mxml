@@ -417,7 +417,7 @@
 									   width="100"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
 									   dataField="answer"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'comment')}"
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.comment')}"
 									   dataField="comment" minWidth="150"
 									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'category')}"
@@ -426,7 +426,7 @@
 				</mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>
-		<mx:VBox  label="{resourceManager.getString('adaptive', 'filledSurveys')}"
+		<mx:VBox  label="{resourceManager.getString('adaptive', 'questionComment')}"
 				  verticalGap="0"
 				  width="100%"
 				  height="100%">

@@ -31,11 +31,11 @@
 						  id="researchName"/>
 		</mx:FormItem>
 		<mx:FormItem label="{resourceManager.getString('adaptive', 'validFrom')}:">
-			<mx:DateField editable="true"
+			<mx:DateField editable="false"
 						  id="start"/>
 		</mx:FormItem>
 		<mx:FormItem label="{resourceManager.getString('adaptive', 'validTo')}:">
-			<mx:DateField editable="true"
+			<mx:DateField editable="false"
 						  id="end"/>
 		</mx:FormItem>
 	</mx:Form>

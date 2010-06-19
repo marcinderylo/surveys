@@ -33,6 +33,10 @@
 				range.researchName.text="";
 				if (survey.surveyList)
 					survey.surveyList.selectedItems=[];
+				if(group.groupList)
+					group.resetGroup();
+				range.start.selectedDate=null;
+				range.end.selectedDate=null;
 			}
 
 			[Bindable]

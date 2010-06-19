@@ -45,6 +45,7 @@ Panel, Alert, TitleWindow
 	dropShadowEnabled: false;
 	title-style-name: headerStyle;
 	headerSkin: ClassReference("assets.skins.HeaderSkin");
+	close-button-skin: Embed(source='/assets/icons/exit.png');
 }
 
 ApplicationControlBar

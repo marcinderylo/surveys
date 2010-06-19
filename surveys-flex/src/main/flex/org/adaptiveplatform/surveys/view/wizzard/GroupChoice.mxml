@@ -40,7 +40,7 @@
 				resetGroup();
 			}
 
-			private function resetGroup():void {
+			public function resetGroup():void {
 				groupQuery=new StudentGroupQuery();
 				groups=new ArrayCollection();
 				findGroups();
