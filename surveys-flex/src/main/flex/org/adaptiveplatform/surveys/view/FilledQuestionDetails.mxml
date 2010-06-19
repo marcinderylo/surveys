@@ -128,6 +128,7 @@
 					serie.displayName=research.templateDto.questions.getItemAt(currentQuestionNumber).answers.getItemAt(i).text;//resourceManager.getString('adaptive', 'answerLabel') + " " + (i + 1);
 					serie.labelField=(i + 1).toString();
 					serie.setStyle("labelPosition", "inside");
+					serie.maxBarWidth=15;
 					mySeries.push(serie);
 				}
 				chart.series=mySeries;
@@ -252,7 +253,7 @@
 				tag.setTags=tags;
 				tag.researchId=research.id;
 				evaluationFacade.tagAnswer(tag).onSuccess(function(o:Object):void {
-						data.category=tags;
+						data.data={category:tags};
 					});
 			}
 
@@ -339,22 +340,7 @@
 			<mx:VBox width="40%"
 					 height="100%"
 					 paddingLeft="10">
-
-
 				<components1:DisplayAnswerQuestionComponent question="{questions.getItemAt(currentQuestionNumber)}"/>
-				<mx:Label text="{resourceManager.getString('adaptive', 'commentToQuestion')}"/>
-				<mx:HBox width="100%"
-						 height="100%"
-						 verticalAlign="bottom">
-					<mx:TextArea height="100%"
-								 width="100%"
-								 toolTip="{resourceManager.getString('adaptive', 'placeForQuestion')}"
-								 id="commentArea"
-								 text="{research.questions.getItemAt(currentQuestionNumber).comments}"/>
-
-				</mx:HBox>
-				<mx:Button label="{resourceManager.getString('adaptive', 'addQuestion')}"
-						   click="addComment()"/>
 			</mx:VBox>
 
 			<mx:VBox width="60%"
@@ -373,7 +359,7 @@
 						<mx:LinearAxis/>
 					</mx:horizontalAxis>
 				</mx:BarChart>
-				<mx:Legend dataProvider="{chart}" direction="vertical"/>
+				<mx:Legend dataProvider="{chart}" direction="horizontal"/>
 
 			</mx:VBox>
 		</mx:HBox>
@@ -440,6 +426,20 @@
 				</mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>
+		<mx:VBox  label="{resourceManager.getString('adaptive', 'filledSurveys')}"
+				  verticalGap="0"
+				  width="100%"
+				  height="100%">
+			<mx:Label text="{resourceManager.getString('adaptive', 'commentToQuestion')}"/>
+			<mx:TextArea height="100%"
+						 width="100%"
+						 toolTip="{resourceManager.getString('adaptive', 'placeForQuestion')}"
+						 id="commentArea"
+						 text="{research.questions.getItemAt(currentQuestionNumber).comments}"/>
+			<mx:Button label="{resourceManager.getString('adaptive', 'addComment')}"
+				   click="addComment()"/>
+		</mx:VBox>
+		
 	</mx:TabNavigator>
 
 </mx:TitleWindow>

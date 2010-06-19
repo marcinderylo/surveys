@@ -36,16 +36,12 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'fillSurvey')}" color="0x3380DD" textDecoration="underline" visible="{fillingSurveysVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'fillSurvey')}" visible="{fillingSurveysVisible}"
 				   includeInLayout="{fillingSurveysVisible}" click="{views.goto(View.SURVEY_TEMPLATE_LIST)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'evalStartPage')}" color="0x3380DD" textDecoration="underline" visible="{evaluatorStartPageVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'evalStartPage')}" visible="{evaluatorStartPageVisible}"
 				   includeInLayout="{evaluatorStartPageVisible}" click="{views.goto(View.EVALUATOR_START_PAGE)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'publication')}" color="0x3380DD" textDecoration="underline" visible="{publicationOfSurveyVisible}"
-	 			   includeInLayout="{publicationOfSurveyVisible}" click="{views.goto(View.SURVEY_PUBLICATION)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'research')}" color="0x3380DD" textDecoration="underline" visible="{publicationOfSurveyVisible}"
-				   includeInLayout="{publicationOfSurveyVisible}" click="{views.goto(View.RESEARCH_LIST)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'users')}" color="0x3380DD" textDecoration="underline" visible="{usersVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'users')}" visible="{usersVisible}"
 				   includeInLayout="{usersVisible}" click="{views.goto(View.USERS_LIST)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'groups')}" color="0x3380DD" textDecoration="underline" visible="{groupsManagementVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'groups')}" visible="{groupsManagementVisible}"
 				   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_MANAGEMENT)}"/>
 </mx:HBox>

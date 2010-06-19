@@ -80,6 +80,9 @@
 						filledSurveys=research.submittedSurveys;
 						if (research.status)
 							status.text=research.status.name;
+						for each(var group:String in result.groups){
+							groupNames.text+=group + ", ";
+						}
 					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
 			}
 
