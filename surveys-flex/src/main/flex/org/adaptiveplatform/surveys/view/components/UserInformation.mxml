@@ -25,8 +25,11 @@
 			}
 			
 			private function reloadApplication():void{
-				var urlRequest:URLRequest = new URLRequest( ExternalInterface.call('window.location.search.toString') );
-				navigateToURL(urlRequest,"_self");		
+				try{ // reload browser
+					var urlRequest:URLRequest = new URLRequest( ExternalInterface.call('window.location.search.toString') );
+					navigateToURL(urlRequest,"_self");		
+				}catch(e:Error){ // if not fired in browser
+				}
 			}
 
 			private function logout():void {
