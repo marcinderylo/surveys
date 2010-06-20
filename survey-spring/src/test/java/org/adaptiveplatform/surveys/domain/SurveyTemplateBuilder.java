@@ -13,6 +13,7 @@ public class SurveyTemplateBuilder {
 	private final List<QuestionTemplate> questions = new ArrayList<QuestionTemplate>();
 	private Boolean published = true;
 	private UserDto creator;
+    private String description;
 
 	public SurveyTemplateBuilder(String title) {
 		this.title = title;
@@ -20,6 +21,7 @@ public class SurveyTemplateBuilder {
 
 	public SurveyTemplate build() {
 		SurveyTemplate surveyTemplate = new SurveyTemplate(creator, title);
+        surveyTemplate.setDescription(description);
 		for (QuestionTemplate question : questions) {
 			surveyTemplate.addQuestion(question);
 		}
@@ -49,4 +51,9 @@ public class SurveyTemplateBuilder {
 	public static SurveyTemplateBuilder template(String title) {
 		return new SurveyTemplateBuilder(title);
 	}
+
+    public SurveyTemplateBuilder describedAs(String description) {
+        this.description = description;
+        return this;
+    }
 }

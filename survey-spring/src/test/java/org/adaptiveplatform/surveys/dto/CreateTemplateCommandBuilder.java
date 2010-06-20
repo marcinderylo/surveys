@@ -12,32 +12,38 @@ import org.testng.collections.Lists;
  */
 public final class CreateTemplateCommandBuilder {
 
-        private final String title;
-        private List<QuestionTemplateBuilder> questions = Lists.newArrayList();
+    private final String title;
+    private List<QuestionTemplateBuilder> questions = Lists.newArrayList();
+    private String description;
 
-        private CreateTemplateCommandBuilder(String title) {
-                this.title = title;
+    private CreateTemplateCommandBuilder(String title) {
+        this.title = title;
+    }
+
+    public CreateTemplateCommandBuilder withQuestions(
+            QuestionTemplateBuilder... questions) {
+        this.questions.addAll(Arrays.asList(questions));
+        return this;
+    }
+
+    public CreateSurveyTemplateCommand build() {
+        CreateSurveyTemplateCommand cmd =
+                new CreateSurveyTemplateCommand();
+        cmd.setName(title);
+        cmd.setDescription(description);
+        for (QuestionTemplateBuilder question : questions) {
+            cmd.getQuestions().add(question.buildDto());
         }
 
-        public CreateTemplateCommandBuilder withQuestions(
-                QuestionTemplateBuilder... questions) {
-                this.questions.addAll(Arrays.asList(questions));
-                return this;
-        }
+        return cmd;
+    }
 
-        public CreateSurveyTemplateCommand build() {
-                CreateSurveyTemplateCommand cmd =
-                        new CreateSurveyTemplateCommand();
+    public static CreateTemplateCommandBuilder command(String title) {
+        return new CreateTemplateCommandBuilder(title);
+    }
 
-                cmd.setName(title);
-                for (QuestionTemplateBuilder question : questions) {
-                        cmd.getQuestions().add(question.buildDto());
-                }
-
-                return cmd;
-        }
-
-        public static CreateTemplateCommandBuilder command(String title) {
-                return new CreateTemplateCommandBuilder(title);
-        }
+    public CreateTemplateCommandBuilder withDescription(String string) {
+        this.description = string;
+        return this;
+    }
 }

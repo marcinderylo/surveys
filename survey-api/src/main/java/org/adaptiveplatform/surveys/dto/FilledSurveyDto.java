@@ -50,6 +50,7 @@ public class FilledSurveyDto implements Serializable {
     @Id
     @Column(name = "ID")
     private Long id;
+    @RemoteExclude
     @Column(name = "PUBLICATION_ID", insertable = false, updatable = false)
     private Long publicationId;
     @Column(name = "TEMPLATE_ID", insertable = false, updatable = false)
@@ -64,6 +65,8 @@ public class FilledSurveyDto implements Serializable {
     private Date startDate;
     @Column(name = "FINISH_DATE")
     private Date submitDate;
+    @Column(name = "TEMPLATE_DESCRIPTION", insertable = false, updatable = false)
+    private String description;
     @RemoteExclude
     @Column(name = "USER_ID", insertable = false, updatable = false)
     private Long userId;
@@ -154,6 +157,14 @@ public class FilledSurveyDto implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

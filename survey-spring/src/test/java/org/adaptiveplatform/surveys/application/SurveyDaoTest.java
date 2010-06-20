@@ -110,6 +110,16 @@ public class SurveyDaoTest extends AbstractTestNGSpringContextTests {
     }
 
     @Test
+    public void shouldStudentSeeSurveyTemplateDescription() throws Exception {
+        // given
+        studentIsLoggedIn();
+        // when
+        final FilledSurveyDto survey = dao.getSurvey(filledSurveyId);
+        // then
+        assertEquals(survey.getDescription(), "test survey template");
+    }
+
+    @Test
     public void shouldEvaluatorReadFilledSurveyForHisPublication() throws
             Exception {
         // given
@@ -184,7 +194,7 @@ public class SurveyDaoTest extends AbstractTestNGSpringContextTests {
         return template(title).byUser(author).
                 withQuestions(multipleChoiceQuestion(
                 "another not published question").
-                withAnswers(answer("dobrze")));
+                withAnswers(answer("dobrze"))).describedAs("test survey template");
     }
 
     private PublishedSurveyTemplateQuery studentQuery() {

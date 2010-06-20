@@ -15,6 +15,7 @@ import javax.persistence.Table;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.PublishingTemplateWithoutQuestionsException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -33,6 +34,8 @@ public class SurveyTemplate implements Serializable {
     private Long id;
     @Column(name = "TITLE")
     private String title;
+    @Column(name = "DESCRIPTION")
+    private String description;
     @OneToMany
     @Cascade({org.hibernate.annotations.CascadeType.DELETE_ORPHAN,
         org.hibernate.annotations.CascadeType.ALL})
@@ -104,5 +107,13 @@ public class SurveyTemplate implements Serializable {
     public void setTitle(String name) {
         Validate.notNull(name, "Survey template must have a name");
         this.title = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = StringUtils.defaultIfEmpty(description, "");
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

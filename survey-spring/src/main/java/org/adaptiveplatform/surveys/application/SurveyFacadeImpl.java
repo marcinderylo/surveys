@@ -76,6 +76,7 @@ public class SurveyFacadeImpl implements SurveyFacade {
         checkForDuplicateTemplateName(command.getName());
         SurveyTemplate template = templateFactory.createDraft(authentication.
                 getCurrentUser(), command.getName());
+        template.setDescription(command.getDescription());
         for (QuestionTemplateDto questionCmd : command.getQuestions()) {
             QuestionTemplate question = questionFactory.createQuestion(
                     questionCmd);
@@ -98,6 +99,7 @@ public class SurveyFacadeImpl implements SurveyFacade {
         verifyIsUnused(templateId);
 
         template.removeQuestions();
+        template.setDescription(updateCommand.getDescription());
         for (QuestionTemplateDto questionCmd : updateCommand.getQuestions()) {
             QuestionTemplate question = questionFactory.createQuestion(
                     questionCmd);

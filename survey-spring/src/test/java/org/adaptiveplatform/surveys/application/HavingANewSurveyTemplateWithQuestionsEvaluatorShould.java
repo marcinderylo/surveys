@@ -12,8 +12,6 @@ import static org.adaptiveplatform.surveys.test.Asserts.assertCollectionSize;
 import static org.adaptiveplatform.surveys.test.Asserts.assertEmpty;
 import static org.adaptiveplatform.surveys.test.Asserts.expectException;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -176,7 +174,7 @@ public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould extends Abstra
         // when
         facade.updateTemplate(existingTemplateId, command(
                 "a test template").withQuestions(openQuestion(
-                "another version of the open question")).
+                "another version of the open question")).withDescription("changed description").
                 build());
         // then
         SurveyTemplateDto template = dao.getTemplate(existingTemplateId);
@@ -185,6 +183,7 @@ public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould extends Abstra
         assertCollectionSize(template.getQuestions(), 1);
         assertQuestion(template, 0, QuestionTypeEnum.OPEN,
                 "another version of the open question");
+        assertEquals(template.getDescription(), "changed description");
     }
 
     @Test
