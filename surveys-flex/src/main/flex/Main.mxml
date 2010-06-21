@@ -75,9 +75,10 @@
 		]]>
 	</mx:Script>
 	<mx:VBox height="100%" width="100%" horizontalAlign="center" verticalAlign="middle" verticalGap="15">
-		<mx:ApplicationControlBar id="applicationControlBar" width="80%" height="26" verticalGap="0">
+		<mx:ApplicationControlBar id="applicationControlBar" width="80%" height="46" verticalGap="0">
 			<components1:NavigationBar id="navigation" horizontalAlign="left"/>
-			<components1:UserInformation id="userInfo" horizontalAlign="right" width="100%"/>
+			<components1:Title text="{resourceManager.getString('adaptive', 'title.' + viewstack.selectedChild.name)}" width="100%"/>
+			<components1:UserInformation id="userInfo" horizontalAlign="right" />
 		</mx:ApplicationControlBar>
 
 		<mx:Panel width="80%" height="90%" headerHeight="10">

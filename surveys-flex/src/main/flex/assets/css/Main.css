@@ -48,6 +48,13 @@ Panel, Alert, TitleWindow
 	close-button-up-skin: Embed(source='/assets/icons/exit.png');
 }
 
+.title
+{
+	color: #e5b421;
+	font-size: 18;
+	font-weight:bold;
+}
+
 ApplicationControlBar
 {
 	background-color: #2e2821;

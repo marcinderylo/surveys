@@ -365,7 +365,7 @@
 							>
 							<mx:labelRenderer>
 								<mx:Component>
-									<mx:Label toolTip="{this.myTip}">
+				  					<mx:Label toolTip="{this.myTip}">
 										<mx:Script><![CDATA[
 											[Bindable]
 											private var myTip:String;
