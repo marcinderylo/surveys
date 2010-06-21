@@ -351,10 +351,44 @@
 							 width="100%"
 							 height="100%"
 							 type="100%"
-							 showDataTips="true">
+							 showDataTips="true"
+							 fontSize="12"
+							 >
 					<mx:verticalAxis>
-						<mx:CategoryAxis categoryField="group"/>
+						<mx:CategoryAxis categoryField="group" id="ha1" />
 					</mx:verticalAxis>
+					
+					<mx:verticalAxisRenderers>
+						<mx:AxisRenderer 
+							axis="{ha1}" 
+							canDropLabels="false" 
+							>
+							<mx:labelRenderer>
+								<mx:Component>
+									<mx:Label toolTip="{this.myTip}">
+										<mx:Script><![CDATA[
+											[Bindable]
+											private var myTip:String;
+											
+											override public function set data(value:Object):void{
+												if(value == null)
+													return;
+												myTip = value.text;
+												var length:int = value.text.toString().length;
+												if (length > 20) {
+													text = value.text.toString().substr(0, 20) + "...";
+												} else {
+													text = value.text;
+												}
+											}
+										]]></mx:Script>
+									</mx:Label>
+								</mx:Component>
+							</mx:labelRenderer>
+						</mx:AxisRenderer>                
+					</mx:verticalAxisRenderers>
+
+					
 					<mx:horizontalAxis>
 						<mx:LinearAxis/>
 					</mx:horizontalAxis>
