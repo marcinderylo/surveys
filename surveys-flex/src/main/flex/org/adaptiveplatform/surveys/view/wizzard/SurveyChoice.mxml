@@ -81,7 +81,9 @@
 				 change="onChange(event)"
 				 draggableColumns="false"
 				 sortableColumns="true"
-				 selectable="true">
+				 selectable="true"
+				 doubleClickEnabled="true"
+				 doubleClick="{(parentDocument as ResearchWizzard).next()}">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyTitle')}"
 							   dataField="name"/>

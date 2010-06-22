@@ -55,6 +55,12 @@ Panel, Alert, TitleWindow
 	font-weight:bold;
 }
 
+.printlegend
+{
+	color: #000000;
+	font-weight:normal;
+}
+
 ApplicationControlBar
 {
 	background-color: #2e2821;

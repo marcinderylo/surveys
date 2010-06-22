@@ -60,12 +60,12 @@
 				researchCommand=new PrepareResearchCommand();
 			}
 
-			private function previous():void {
+			public function previous():void {
 				var newIndex:Number=--navigator.selectedIndex;
 				navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
 			}
 
-			private function next():void {
+			public function next():void {
 				var newIndex:Number=++navigator.selectedIndex;
 				navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
 			}
