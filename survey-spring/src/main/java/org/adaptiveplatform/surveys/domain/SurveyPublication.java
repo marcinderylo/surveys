@@ -85,7 +85,7 @@ public class SurveyPublication implements Serializable {
 
         public void enableFillingInPeriod(DateTime from, DateTime to) {
                 if(from != null && to != null) {
-                        Validate.isTrue(from.isBefore(to));
+                        Validate.isTrue(from.isBefore(to),"dates don't form valid time period");
                 }
                 this.enabledFrom = from;
                 this.enabledTo = to;
