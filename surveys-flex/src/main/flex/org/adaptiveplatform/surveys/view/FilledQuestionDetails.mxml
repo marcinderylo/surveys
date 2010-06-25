@@ -35,6 +35,7 @@
 			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
 			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			import org.adaptiveplatform.surveys.dto.generated.TagAnswerCommand;
+			import org.adaptiveplatform.surveys.view.renderers.Category;
 			import org.adaptiveplatform.surveys.view.renderers.CategoryRenderer;
 			import org.adaptiveplatform.surveys.view.renderers.CustomColumnRenderer;
 
@@ -62,7 +63,7 @@
 			private var evaluationFacade:EvaluationFacade;
 
 			private function preinitialize():void {
-				height=(parentApplication as Main).viewstack.height;
+				height=(parentApplication as Main).viewstack.height*1.1;
 				width=(parentApplication as Main).viewstack.width;
 			}
 
@@ -376,7 +377,7 @@
 										 canDropLabels="false">
 							<mx:labelRenderer>
 								<mx:Component>
-									<mx:Label toolTip="{this.myTip}">
+									<mx:TextArea toolTip="{this.myTip}" width="100" wordWrap="true">
 										<mx:Script>
 											<![CDATA[
 												[Bindable]
@@ -387,15 +388,15 @@
 														return;
 													myTip=value.text;
 													var length:int=value.text.toString().length;
-													if (length > 20) {
+												/* 	if (length > 20) {
 														text=value.text.toString().substr(0, 20) + "...";
-													} else {
+													} else { */
 														text=value.text;
-													}
+													/* } */
 												}
 											]]>
 										</mx:Script>
-									</mx:Label>
+									</mx:TextArea>
 								</mx:Component>
 							</mx:labelRenderer>
 						</mx:AxisRenderer>
@@ -481,7 +482,7 @@
 									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'category')}"
 									   dataField="category"
-									   itemRenderer="{new ClassFactory(CategoryRenderer)}"/>
+									   itemRenderer="{new ClassFactory(Category)}"/>
 				</mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>
