@@ -84,14 +84,13 @@ public class PublishedSurveyTemplateStatusTest extends AbstractTestNGSpringConte
         query.setRunAs(GroupRoleEnum.STUDENT);
         final List<PublishedSurveyTemplateDto> fillablePublications =
                 dao.queryPublishedTemplates(query);
-        assertPublicationIsFilled(fillablePublications, filledPublicationId);
+        assertPublicationIsNotInTheList(fillablePublications, filledPublicationId);
         assertPublicationIsNotFilled(fillablePublications, notFilledPublicationId);
     }
 
-    private void assertPublicationIsFilled(List<PublishedSurveyTemplateDto> publications,
+    private void assertPublicationIsNotInTheList(List<PublishedSurveyTemplateDto> publications,
             Long publicationId) {
-        assertPublicationStatus(publications, publicationId,
-                SurveyStatusEnum.SUBMITTED);
+        assertNull(selectPublication(publicationId, publications));
     }
 
     private void assertPublicationIsNotFilled(List<PublishedSurveyTemplateDto> publications,
@@ -102,6 +101,9 @@ public class PublishedSurveyTemplateStatusTest extends AbstractTestNGSpringConte
     private void assertPublicationStatus(List<PublishedSurveyTemplateDto> publications,
             Long publicationId, SurveyStatusEnum expectedStatus) {
         PublishedSurveyTemplateDto publication = selectPublication(publicationId, publications);
+        if (publication == null) {
+            fail("No such published survey template (ID=" + publicationId + ")");
+        }
         assertEquals(publication.getStatus(), expectedStatus, "Published survey template status");
     }
 
@@ -112,7 +114,6 @@ public class PublishedSurveyTemplateStatusTest extends AbstractTestNGSpringConte
                 return publication;
             }
         }
-        fail("No such published survey template (ID=" + publicationId + ")");
         return null;
     }
 }

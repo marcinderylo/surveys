@@ -167,9 +167,8 @@ public class SurveyDaoTest extends AbstractTestNGSpringContextTests {
         List<PublishedSurveyTemplateDto> surveys = dao.queryPublishedTemplates(
                 studentQuery());
         // then
-        assertSurveyIsSubmitted(getSurveyTemplate(surveys, filledTemplateId));
-        assertSurveyFillingIsNotStarted(getSurveyTemplate(surveys,
-                notFilledTemplateId));
+        assertSurveyIsNotInTheList(surveys, filledTemplateId);
+        assertSurveyFillingIsNotStarted(getSurveyTemplate(surveys, notFilledTemplateId));
     }
 
     @Test
@@ -206,18 +205,21 @@ public class SurveyDaoTest extends AbstractTestNGSpringContextTests {
 
     private PublishedSurveyTemplateDto getSurveyTemplate(
             List<PublishedSurveyTemplateDto> templates, Long id) {
+        PublishedSurveyTemplateDto found = getSurveyTemplateOrNull(templates, id);
+        if (found == null) {
+            fail("No survey template (ID=" + id + ")");
+        }
+        return found;
+    }
+
+    private PublishedSurveyTemplateDto getSurveyTemplateOrNull(
+            List<PublishedSurveyTemplateDto> templates, Long id) {
         for (PublishedSurveyTemplateDto surveyTemplateDto : templates) {
             if (id.equals(surveyTemplateDto.getTemplateId())) {
                 return surveyTemplateDto;
             }
         }
-        fail("No survey template (ID=" + id + ")");
-        return null; // unreachable
-    }
-
-    private void assertSurveyIsSubmitted(PublishedSurveyTemplateDto survey) {
-        assertTrue(survey.getSubmitted(),
-                "Expected a filled survey but it has never been filled.");
+        return null;
     }
 
     private void assertSurveyFillingIsNotStarted(
@@ -229,5 +231,10 @@ public class SurveyDaoTest extends AbstractTestNGSpringContextTests {
     private void evaluatorIsLoggedIn() {
         authentication.authenticate(administratorId, "keyser@soze.com",
                 Role.USER, Role.EVALUATOR);
+    }
+
+    private void assertSurveyIsNotInTheList(List<PublishedSurveyTemplateDto> surveys,
+            Long filledTemplateId) {
+        assertNull(getSurveyTemplateOrNull(surveys, filledTemplateId));
     }
 }

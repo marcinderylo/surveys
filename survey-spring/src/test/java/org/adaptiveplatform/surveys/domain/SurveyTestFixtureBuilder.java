@@ -13,6 +13,7 @@ import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -86,6 +87,7 @@ public class SurveyTestFixtureBuilder {
         Transaction tx = session.beginTransaction();
         SurveyPublication publication = new SurveyPublication(template1,
                 group);
+        publication.enableFillingInPeriod(new DateTime().minusDays(1), new DateTime().plusDays(1));
         session.persist(publication);
         tx.commit();
         session.close();

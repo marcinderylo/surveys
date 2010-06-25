@@ -140,7 +140,7 @@ public class HibernateSurveyDao implements SurveyDao {
             dtoCriteria.add(Restrictions.in("id", templateIds));
             restrictFillableSurveysSearchWithKeywordIfAny(dtoCriteria, query.getKeyword());
             templates.addAll(dtoCriteria.list());
-            calculatePublishedSurveyStatus(templates);
+            templates = calculatePublishedSurveyStatus(templates);
         }
         return templates;
     }
@@ -228,14 +228,17 @@ public class HibernateSurveyDao implements SurveyDao {
         return templates;
     }
 
-    private void calculatePublishedSurveyStatus(
+    private List<PublishedSurveyTemplateDto> calculatePublishedSurveyStatus(
             Collection<PublishedSurveyTemplateDto> templates) {
+        List<PublishedSurveyTemplateDto> validResults = Lists.newArrayList();
         List<Object[]> filledIds = sf.getCurrentSession().createQuery(
                 "SELECT s.publicationId, s.id, s.submitDate "
                 + "FROM FilledSurveyDto s WHERE s.userId = :userId").
                 setParameter("userId",
                 authentication.getCurrentUser().getId()).list();
         for (PublishedSurveyTemplateDto template : templates) {
+            boolean isNotSubmittedYet = true;
+            boolean isInsidePublicationPeriod = false;
             for (Object[] ids : filledIds) {
                 Long publicationId = (Long) ids[0];
                 Long filledSurveyId = (Long) ids[1];
@@ -247,6 +250,7 @@ public class HibernateSurveyDao implements SurveyDao {
                     } else {
                         template.setStatus(SurveyStatusEnum.SUBMITTED);
                         template.setSubmitted(Boolean.TRUE);
+                        isNotSubmittedYet = false;
                     }
                 }
             }
@@ -254,11 +258,17 @@ public class HibernateSurveyDao implements SurveyDao {
 
                 if (template.isFillable(new Date())) {
                     template.setStatus(SurveyStatusEnum.PENDING);
+                    isInsidePublicationPeriod = true;
                 } else {
                     template.setStatus(
                             SurveyStatusEnum.OUTSIDE_PUBLICATION_PERIOD);
                 }
             }
+            if(isInsidePublicationPeriod && isNotSubmittedYet){
+                validResults.add(template);
+            }            
         }
+        return validResults;
     }
+
 }
