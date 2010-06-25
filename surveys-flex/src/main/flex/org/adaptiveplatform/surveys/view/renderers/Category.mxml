@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%"
+		 height="100%">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			private static var POSITIVE:String = "Positive";
+			private static var NEGATIVE:String = "Negative";
+			private static var IGNORE:String = "Ignore";
+			private static var CONCLUSION:String = "Conclusion";
+
+			import org.adaptiveplatform.surveys.view.FilledQuestionDetails;
+
+			override public function set data(o:Object):void {
+				super.data=o;
+				p.selected=(o.category as ArrayCollection).contains(POSITIVE);
+				n.selected=(o.category as ArrayCollection).contains(NEGATIVE);
+				i.selected=(o.category as ArrayCollection).contains(IGNORE);
+				c.selected=(o.category as ArrayCollection).contains(CONCLUSION);
+
+			}
+
+			protected function p_changeHandler(event:Event, tag:String):void {
+				if(event.target.selected){
+					(data.category as ArrayCollection).addItem(tag);
+				} else {
+					(data.category as ArrayCollection).removeItemAt((data.category as ArrayCollection).getItemIndex(tag));
+				}
+				(parentDocument as FilledQuestionDetails).addTag(data.category as ArrayCollection, data.filledSurveyId, this);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:CheckBox id="p"
+				 label="{resourceManager.getString('adaptive', 'positive')}"
+				 change="p_changeHandler(event, POSITIVE)"/>
+	<mx:CheckBox id="n"
+				 label="{resourceManager.getString('adaptive', 'negative')}"
+				 change="p_changeHandler(event, NEGATIVE)"/>
+	<mx:CheckBox id="i"
+				 label="{resourceManager.getString('adaptive', 'ignore')}"
+				 change="p_changeHandler(event, IGNORE)"/>
+	<mx:CheckBox id="c"
+				 label="{resourceManager.getString('adaptive', 'conclusion')}"
+				 change="p_changeHandler(event, CONCLUSION)"/>
+</mx:HBox>
