@@ -16,7 +16,7 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
 			import mx.rpc.events.FaultEvent;
-			
+
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
@@ -80,7 +80,7 @@
 						filledSurveys=research.submittedSurveys;
 						if (research.status)
 							status.text=research.status.name;
-						for each(var group:String in result.groups){
+						for each (var group:String in result.groups) {
 							groupNames.text+=group + ", ";
 						}
 					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
@@ -118,8 +118,8 @@
 			private function displayDuration(o:Object, col:Object):String {
 				var start:Date=o[col.dataField] as Date;
 				var end:Date=o["startDate"] as Date;
-				var duration:Number=(end.getTime() - start.getTime()) / 60000;
-				return duration + " minutes";
+				var duration:Number=(end.getTime() - start.getTime()) /60000;
+				return duration + " " + resourceManager.getString('adaptive', 'minutes');
 			}
 
 			private function showDate(value:Date):String {
@@ -136,7 +136,7 @@
 			 width="100%">
 		<mx:ApplicationControlBar width="100%">
 			<mx:VBox width="100%">
-				<mx:Form>
+				<mx:Form width="100%">
 					<mx:FormItem label="{resourceManager.getString('adaptive', 'researchName')}: ">
 						<mx:Label id="researchName"/>
 					</mx:FormItem>
@@ -146,8 +146,15 @@
 					<mx:FormItem label="{resourceManager.getString('adaptive', 'surveyTemplate')}: ">
 						<mx:Label id="templateName"/>
 					</mx:FormItem>
-					<mx:FormItem label="{resourceManager.getString('adaptive', 'groupName')}: ">
-						<mx:Label id="groupNames"/>
+					<mx:FormItem label="{resourceManager.getString('adaptive', 'groupName')}: "
+								 width="100%">
+						<mx:TextArea id="groupNames"
+									 wordWrap="true"
+									 width="100%"
+									 backgroundAlpha="0"
+									 editable="false"
+									 borderStyle="none"
+									 selectable="false"/>
 					</mx:FormItem>
 				</mx:Form>
 

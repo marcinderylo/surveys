@@ -8,10 +8,10 @@
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			
-			private static var POSITIVE:String = "Positive";
-			private static var NEGATIVE:String = "Negative";
-			private static var IGNORE:String = "Ignore";
-			private static var CONCLUSION:String = "Conclusion";
+			public static const POSITIVE:String = "Positive";
+			public static const NEGATIVE:String = "Negative";
+			public static const IGNORE:String = "Ignore";
+			public static const CONCLUSION:String = "Conclusion";
 
 			import org.adaptiveplatform.surveys.view.FilledQuestionDetails;
 

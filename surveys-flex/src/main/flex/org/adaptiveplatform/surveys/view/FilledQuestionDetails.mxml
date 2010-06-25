@@ -35,6 +35,7 @@
 			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
 			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			import org.adaptiveplatform.surveys.dto.generated.TagAnswerCommand;
+			import org.adaptiveplatform.surveys.view.renderers.Category;
 			import org.adaptiveplatform.surveys.view.renderers.CategoryRenderer;
 			import org.adaptiveplatform.surveys.view.renderers.CustomColumnRenderer;
 
@@ -55,14 +56,14 @@
 
 			[Bindable]
 			private var statistics:ArrayCollection=new ArrayCollection();
-			
+
 			[Bindable]
-			private var display:Boolean = false;
+			private var display:Boolean=false;
 
 			private var evaluationFacade:EvaluationFacade;
 
 			private function preinitialize():void {
-				height=(parentApplication as Main).viewstack.height*1.1;
+				height=1.2 * (parentApplication as Main).viewstack.height;
 				width=(parentApplication as Main).viewstack.width;
 			}
 
@@ -183,7 +184,7 @@
 
 			private function takeSnapshot(comp:DisplayObject):void {
 				display=true;
-				
+
 				(comp as UIComponent).setStyle("color", "#000000");
 				(comp as UIComponent).validateNow();
 
@@ -193,7 +194,7 @@
 				var bytes:ByteArray=(new PNGEncoder()).encode(bitmapData);
 				var fr:FileReference=new FileReference();
 				fr.save(bytes, "chart.png");
-				
+
 				display=false;
 				(comp as UIComponent).setStyle("color", "#ffffff");
 			}
@@ -277,7 +278,7 @@
 
 			private function filter(answer:Object):Boolean {
 				for each (var category:Object in categories.selectedItems) {
-					if (answer.category.contains(category.label))
+					if (answer.category.contains(category.tag))
 						return true;
 				}
 				return false;
@@ -292,25 +293,25 @@
 	<mx:ArrayCollection id="arrColl">
 		<mx:source>
 			<mx:Array id="items">
-				<mx:Object label="Positive"
+				<mx:Object label="{resourceManager.getString('adaptive', 'positive')}"
 						   id="positive"
 						   sel="true"
-						   tag="pozytywne"
+						   tag="{Category.POSITIVE}"
 						   source="assets/images/positive.png"/>
-				<mx:Object label="Negative"
+				<mx:Object label="{resourceManager.getString('adaptive', 'negative')}"
 						   id="negative"
 						   sel="true"
-						   tag="negatywne"
+						   tag="{Category.NEGATIVE}"
 						   source="assets/images/negative.png"/>
-				<mx:Object label="Conclusion"
+				<mx:Object label="{resourceManager.getString('adaptive', 'conclusion')}"
 						   id="conclusion"
 						   sel="true"
-						   tag="wniosek"
+						   tag="{Category.CONCLUSION}"
 						   source="assets/images/conclusion.png"/>
-				<mx:Object label="Ignore"
+				<mx:Object label="{resourceManager.getString('adaptive', 'ignore')}"
 						   id="ignore"
 						   sel="false"
-						   tag="ignoruj"
+						   tag="{Category.IGNORE}"
 						   source="assets/images/ignore.png"/>
 			</mx:Array>
 		</mx:source>
@@ -376,7 +377,9 @@
 										 canDropLabels="false">
 							<mx:labelRenderer>
 								<mx:Component>
-									<mx:TextArea toolTip="{this.myTip}" width="100" wordWrap="true">
+									<mx:TextArea toolTip="{this.myTip}"
+												 width="100"
+												 wordWrap="true">
 										<mx:Script>
 											<![CDATA[
 												[Bindable]
@@ -387,11 +390,11 @@
 														return;
 													myTip=value.text;
 													var length:int=value.text.toString().length;
-												/* 	if (length > 20) {
-														text=value.text.toString().substr(0, 20) + "...";
-													} else { */
-														text=value.text;
-													/* } */
+													/* 	if (length > 20) {
+													   text=value.text.toString().substr(0, 20) + "...";
+													 } else { */
+													text=value.text;
+												/* } */
 												}
 											]]>
 										</mx:Script>
@@ -411,7 +414,7 @@
 						   id="legend"
 						   visible="{!display}"
 						   includeInLayout="{!display}"/>
-				
+
 				<mx:Legend dataProvider="{chart}"
 						   id="printlegend"
 						   direction="horizontal"
@@ -432,28 +435,28 @@
 							 editable="true"
 							 enter="{displaySearchResult()}"
 							 dataProvider="{research.questions.getItemAt(currentQuestionNumber).searchPhrases}"/>
-				<mx:Image buttonMode="true"
-						  toolTip="{resourceManager.getString('adaptive', 'find')}"
-						  source="@Embed(source='/assets/icons/search.png')"
-						  click="{displaySearchResult()}"/>
-				<mx:Image buttonMode="true"
-						  toolTip="{resourceManager.getString('adaptive', 'reset')}"
-						  source="@Embed(source='/assets/icons/clear.png')"
-						  click="{phrase.text = ''; displaySearchResult()}"/>
+				<mx:Button width="40"
+						   toolTip="{resourceManager.getString('adaptive', 'find')}"
+						   icon="@Embed(source='/assets/icons/search.png')"
+						   click="{displaySearchResult()}"/>
+				<mx:Button width="40"
+						   toolTip="{resourceManager.getString('adaptive', 'reset')}"
+						   icon="@Embed(source='/assets/icons/clear.png')"
+						   click="{phrase.text = ''; displaySearchResult()}"/>
 				<mx:Spacer width="100%"/>
 				<combocheck:ComboCheck id="categories"
 									   dataProvider="{items}"
 									   labelField="label"
 									   addItem="onAddItem()"
 									   prompt="{resourceManager.getString('adaptive', 'selectCategory')}"/>
-				<mx:Image buttonMode="true"
-						  toolTip="{resourceManager.getString('adaptive', 'find')}"
-						  source="@Embed(source='/assets/icons/search.png')"
-						  click="filterByCategory()"/>
-				<mx:Image buttonMode="true"
-						  toolTip="{resourceManager.getString('adaptive', 'reset')}"
-						  source="@Embed(source='/assets/icons/clear.png')"
-						  click="{userAnswers.filterFunction=null;userAnswers.refresh()}"/>
+				<mx:Button width="40"
+						   toolTip="{resourceManager.getString('adaptive', 'find')}"
+						   icon="@Embed(source='/assets/icons/search.png')"
+						   click="filterByCategory()"/>
+				<mx:Button width="40"
+						   toolTip="{resourceManager.getString('adaptive', 'reset')}"
+						   icon="@Embed(source='/assets/icons/clear.png')"
+						   click="{userAnswers.filterFunction=null;userAnswers.refresh()}"/>
 			</mx:HBox>
 
 			<mx:DataGrid id="answerList"
