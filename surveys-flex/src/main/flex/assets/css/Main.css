@@ -58,7 +58,14 @@ Panel, Alert, TitleWindow
 .printlegend
 {
 	color: #000000;
-	font-weight:normal;
+	fontWeight:normal;
+}
+
+LegendItem
+{
+	color: #ffffff;
+	fontSize:14;
+	fontWeight:normal;
 }
 
 ApplicationControlBar

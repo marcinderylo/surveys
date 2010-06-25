@@ -37,6 +37,10 @@
 				}
 				return open;
 			}
+			
+			public function set question(d:Object):void {
+				data = d;
+			}
 		]]>
 	</mx:Script>
 </mx:Image>

@@ -10,7 +10,8 @@
 				xmlns:components="adaptlearning.view.components.*"
 				preinitialize="preinitialize()"
 				xmlns:combocheck="org.adaptiveplatform.surveys.view.components.combocheck.*"
-				xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
+				xmlns:components1="org.adaptiveplatform.surveys.view.components.*"
+				xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -26,12 +27,13 @@
 			import mx.graphics.codec.PNGEncoder;
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
-			
+
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
 			import org.adaptiveplatform.surveys.dto.generated.CommentQuestionCommand;
 			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
+			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
 			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
 			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			import org.adaptiveplatform.surveys.dto.generated.TagAnswerCommand;
@@ -57,12 +59,15 @@
 			private var statistics:ArrayCollection=new ArrayCollection();
 
 			[Bindable]
+			private var commentedQuestion:Boolean=false;
+
+			[Bindable]
 			private var display:Boolean=false;
 
 			private var evaluationFacade:EvaluationFacade;
 
 			private function preinitialize():void {
-				height=1.2 * (parentApplication as Main).viewstack.height;
+				height=(parentApplication as Main).viewstack.height;
 				width=(parentApplication as Main).viewstack.width;
 			}
 
@@ -92,6 +97,13 @@
 			}
 
 			private function createStatistics():void {
+
+				if (questions.getItemAt(currentQuestionNumber).type.equals(QuestionTypeEnum.OPEN) || research.submittedSurveys.length == 0) {
+					info.text="Brak danych do wyświetlenia dla tego pytania";
+				} else {
+					info.text="";
+				}
+				commentedQuestion=questions.getItemAt(currentQuestionNumber).requiredComment();
 
 				userAnswers=new ArrayCollection();
 				var groups:Dictionary=new Dictionary();
@@ -319,20 +331,21 @@
 		<mx:Button click="previous()"
 				   icon="@Embed(source='/assets/icons/previous.png')"
 				   toolTip="{resourceManager.getString('adaptive', 'previous')}"/>
-		<mx:Spacer width="100%"/>
-		<mx:Image click="takeStatistic()"
-				  source="@Embed(source='/assets/icons/statistics.png')"
-				  buttonMode="true"
-				  toolTip="{resourceManager.getString('adaptive', 'takeStatsToolTip')}"
-				  visible="{navigator.selectedIndex==1}"
-				  includeInLayout="{navigator.selectedIndex==1}"/>
-		<mx:Image click="takeSnapshot(chartSnaphot)"
-				  source="@Embed(source='/assets/icons/camera.png')"
-				  buttonMode="true"
-				  toolTip="{resourceManager.getString('adaptive', 'takeSnapshotToolTip')}"
-				  visible="{navigator.selectedIndex==0}"
-				  includeInLayout="{navigator.selectedIndex==0}"/>
-		<mx:Spacer width="100%"/>
+		<mx:HBox width="100%"
+				 horizontalAlign="center"
+				 verticalAlign="middle">
+			<mx:Label enabled="false"
+					  id="info"
+					  visible="{navigator.selectedIndex==0}"
+					  includeInLayout="{navigator.selectedIndex==0}"/>
+			<renderers:QuestionTypeItemRenderer question="{questions.getItemAt(currentQuestionNumber)}"
+												visible="{navigator.selectedIndex!=0}"
+												includeInLayout="{navigator.selectedIndex!=0}"/>
+			<mx:Label enabled="false"
+					  text="{questions.getItemAt(currentQuestionNumber).text}"
+					  visible="{navigator.selectedIndex!=0}"
+					  includeInLayout="{navigator.selectedIndex!=0}"/>
+		</mx:HBox>
 		<mx:Button click="next()"
 				   icon="@Embed(source='/assets/icons/next.png')"
 				   toolTip="{resourceManager.getString('adaptive', 'next')}"/>
@@ -348,7 +361,30 @@
 			<mx:VBox width="40%"
 					 height="100%"
 					 paddingLeft="10">
-				<components1:DisplayAnswerQuestionComponent question="{questions.getItemAt(currentQuestionNumber)}"/>
+				<!--<components1:DisplayAnswerQuestionComponent question="{questions.getItemAt(currentQuestionNumber)}"/>-->
+				<mx:Button click="takeSnapshot(chartSnaphot)"
+						   id="takeStatistics"
+						   icon="@Embed(source='/assets/icons/camera.png')"
+						   label="{resourceManager.getString('adaptive', 'takeSnapshotToolTip')}"
+						   toolTip="{resourceManager.getString('adaptive', 'takeSnapshotToolTip')}"/>
+				<mx:HBox verticalAlign="top"
+						 width="100%">
+					<renderers:QuestionTypeItemRenderer question="{questions.getItemAt(currentQuestionNumber)}"/>
+					<mx:TextArea enabled="false"
+								 htmlText="{questions.getItemAt(currentQuestionNumber).text}"
+								 width="100%"
+								 wordWrap="true"
+								 backgroundAlpha="0"
+								 editable="false"
+								 borderStyle="none"
+								 selectable="false"
+								 horizontalScrollPolicy="off"/>
+				</mx:HBox>
+				<mx:Legend dataProvider="{chart}"
+						   direction="horizontal"
+						   id="legend"
+						   visible="{!display}"
+						   includeInLayout="{!display}"/>
 			</mx:VBox>
 
 			<mx:VBox width="60%"
@@ -377,8 +413,14 @@
 							<mx:labelRenderer>
 								<mx:Component>
 									<mx:TextArea toolTip="{this.myTip}"
-												 width="100"
-												 wordWrap="true">
+												 width="100%"
+												 wordWrap="true"
+												 backgroundAlpha="0"
+												 editable="false"
+												 borderStyle="none"
+												 selectable="false"
+												 horizontalScrollPolicy="off"
+												 verticalScrollPolicy="off">
 										<mx:Script>
 											<![CDATA[
 												[Bindable]
@@ -408,11 +450,6 @@
 						<mx:LinearAxis/>
 					</mx:horizontalAxis>
 				</mx:BarChart>
-				<mx:Legend dataProvider="{chart}"
-						   direction="horizontal"
-						   id="legend"
-						   visible="{!display}"
-						   includeInLayout="{!display}"/>
 
 				<mx:Legend dataProvider="{chart}"
 						   id="printlegend"
@@ -427,7 +464,12 @@
 				 verticalGap="0"
 				 width="100%"
 				 height="100%">
-			<mx:HBox width="100%">
+			<mx:HBox width="100%"
+					 verticalAlign="middle">
+				<mx:Button click="takeStatistic()"
+						   icon="@Embed(source='/assets/icons/statistics.png')"
+						   label="{resourceManager.getString('adaptive', 'takeStatsToolTip')}"
+						   toolTip="{resourceManager.getString('adaptive', 'takeStatsToolTip')}"/>
 				<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
 				<mx:ComboBox id="phrase"
 							 width="200"
@@ -442,6 +484,7 @@
 						   toolTip="{resourceManager.getString('adaptive', 'reset')}"
 						   icon="@Embed(source='/assets/icons/clear.png')"
 						   click="{phrase.text = ''; displaySearchResult()}"/>
+
 				<mx:Spacer width="100%"/>
 				<combocheck:ComboCheck id="categories"
 									   dataProvider="{items}"
@@ -476,14 +519,20 @@
 									   labelFunction="displayDate"
 									   width="100"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
-									   dataField="answer"/>
+									   dataField="answer"
+									   visible="{!questions.getItemAt(currentQuestionNumber).type.equals(QuestionTypeEnum.OPEN)}"/>
+					<!--<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
+									   dataField="comment"
+									   visible="{questions.getItemAt(currentQuestionNumber).type.equals(QuestionTypeEnum.OPEN)}"/>-->
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.comment')}"
 									   dataField="comment"
+									   visible="{commentedQuestion}"
 									   minWidth="150"
 									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'category')}"
 									   dataField="category"
-									   itemRenderer="{new ClassFactory(Category)}"/>
+									   itemRenderer="{new ClassFactory(Category)}"
+									   visible="{commentedQuestion}"/>
 				</mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>
