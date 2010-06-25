@@ -67,13 +67,16 @@
 			<mx:Label text="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList')}" />
 			<mx:DataGrid id="lastDocumentsList" 
 				doubleClickEnabled="true" itemDoubleClick="showActivity(event)"
-				width="100%" height="100%">
+				width="100%" height="100%" resizableColumns="false">
 				<mx:columns>
-					<mx:DataGridColumn dataField="name" headerText="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList.name')}" />
-					<mx:DataGridColumn dataField="type" 
+					<mx:DataGridColumn dataField="type" width="40"
 						itemRenderer="{new ClassFactory(DocumentTypeRenderer)}"
 						headerText="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList.type')}"/>
-					<mx:DataGridColumn dataField="creationDate" headerText="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList.creationDate')}">
+					<mx:DataGridColumn dataField="name"
+						headerText="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList.name')}" />
+					<mx:DataGridColumn dataField="creationDate" 
+						headerText="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList.creationDate')}"
+						width="130">
 						<mx:itemRenderer>
 							<mx:Component>
 								<renderers:DateTimeRenderer fieldName="creationDate" />
@@ -87,12 +90,16 @@
 				<mx:Box direction="vertical" horizontalAlign="center" verticalAlign="middle" borderStyle="solid" 
 		                paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10" width="100%" height="100%">
 					<mx:Button id="gotoSurveysBtn" label="{resourceManager.getString('adaptive', 'evalStartPage.goToSurveys')}" 
-						click="{views.goto(View.SURVEY_PUBLICATION)}" height="30%" width="50%"/>
+						click="{views.goto(View.SURVEY_PUBLICATION)}" 
+						icon="@Embed('/assets/icons/survey.png')"
+						height="30%" width="50%"/>
 		        </mx:Box>
 				<mx:Box direction="vertical" horizontalAlign="center" verticalAlign="middle" borderStyle="solid" 
 		                paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10" width="100%" height="100%">
 						<mx:Button id="gotoResearchBtn" label="{resourceManager.getString('adaptive', 'evalStartPage.goToResearches')}"
-							click="{views.goto(View.RESEARCH_LIST)}" height="30%" width="50%"/>			
+							click="{views.goto(View.RESEARCH_LIST)}" 
+							icon="@Embed('/assets/icons/research.png')"
+							height="30%" width="50%"/>			
 		        </mx:Box>
 		</mx:VBox>
 	</mx:HBox>
