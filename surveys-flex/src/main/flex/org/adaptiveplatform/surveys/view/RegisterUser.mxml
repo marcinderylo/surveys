@@ -76,7 +76,7 @@
 		<validators:EqualStringsValidator source="{email2}" property="text" repeatedValue="{user.email}" notEqualErrorMsg="Emails not equal" listener="{email2}" trigger="{email2}" triggerEvent="change" />
 	</mx:Array>
 
-	<mx:Form width="400" >
+	<mx:Form width="600" height="100%">
 		<mx:FormItem width="100%" horizontalAlign="center" direction="horizontal">
 			<mx:Image buttonMode="true" toolTip="{resourceManager.getString('adaptive', 'selectPhoto')}" source="@Embed(source='/assets/icons/user1.png')"/>
 		</mx:FormItem>		
