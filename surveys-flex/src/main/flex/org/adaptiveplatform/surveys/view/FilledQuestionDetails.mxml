@@ -36,7 +36,6 @@
 			import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 			import org.adaptiveplatform.surveys.dto.generated.TagAnswerCommand;
 			import org.adaptiveplatform.surveys.view.renderers.Category;
-			import org.adaptiveplatform.surveys.view.renderers.CategoryRenderer;
 			import org.adaptiveplatform.surveys.view.renderers.CustomColumnRenderer;
 
 			[Bindable]
@@ -484,7 +483,7 @@
 									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'category')}"
 									   dataField="category"
-									   itemRenderer="{new ClassFactory(CategoryRenderer)}"/>
+									   itemRenderer="{new ClassFactory(Category)}"/>
 				</mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>
