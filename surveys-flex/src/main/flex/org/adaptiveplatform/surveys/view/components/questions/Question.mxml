@@ -17,13 +17,38 @@
 			import org.adaptiveplatform.surveys.dto.generated.QuestionTypeEnum;
 			
 			[Bindable]
-			public var requireComment:Boolean;
+			private var _questionType:QuestionTypeEnum;
+
+			public function set questionType(value:QuestionTypeEnum):void{
+				_questionType = value;
+				if( value.equals( QuestionTypeEnum.MULTIPLE_CHOICE ) ){
+						questionAnswersPreview.selectedIndex = 2;
+				}
+				if( value.equals( QuestionTypeEnum.OPEN ) ){
+						questionAnswersPreview.selectedIndex = 0;
+				}
+				if( value.equals( QuestionTypeEnum.SINGLE_CHOICE ) ){
+					if( QuestionStyleEnum.SINGLE_TYPE.equals(_questionStyle) ){
+						questionAnswersPreview.selectedIndex = 1;
+					}else{
+						questionAnswersPreview.selectedIndex = 3;
+					}
+				}
+			}
 			
 			[Bindable]
-			public var questionType:QuestionTypeEnum;
+			private var _questionStyle:QuestionStyleEnum;
 			
-			[Bindable]
-			public var questionStyle:QuestionStyleEnum;
+			public function set questionStyle(value:QuestionStyleEnum):void{
+				_questionStyle = value;
+				if( _questionType.equals(QuestionTypeEnum.SINGLE_CHOICE) ){
+					if( QuestionStyleEnum.SINGLE_TYPE.equals(_questionStyle) ){
+						questionAnswersPreview.selectedIndex = 1;
+					}else{
+						questionAnswersPreview.selectedIndex = 3;
+					}				
+				}
+			}
 			
 			private var bindings:ArrayCollection = new ArrayCollection();
 			
@@ -32,40 +57,14 @@
 			
 			private function create():void{
 				questionStyle = QuestionStyleEnum.SINGLE_TYPE;
-				createBindings();
-				for(var i:int = 0; i < 4; i++){
+				for(var i:int = 1; i <= 4; i++){
 					var answer:SurveyQuestionAnswerDto = new SurveyQuestionAnswerDto();
 					answer.text = resourceManager.getString('adaptive', 'createQuestion.typeView.exampleAns') + i;
+					answer.selected = i < 3;
 					exampleAnswers.addItem( answer );
 				}
 			}
-			
-			private function createBindings():void{
-				bindings.addItem( BindingUtils.bindSetter( function():void{
-					if( QuestionStyleEnum.SINGLE_TYPE.equals(questionStyle) ){
-						questionAnswersPreview.selectedIndex = 1;
-					}else{
-						questionAnswersPreview.selectedIndex = 3;
-					}
-				}, this, "questionStyle" ) );
-				bindings.addItem( BindingUtils.bindSetter( function():void{
-					switch( questionType ){
-						case QuestionTypeEnum.MULTIPLE_CHOICE:
-							questionAnswersPreview.selectedIndex = 2;
-							break;
-						case QuestionTypeEnum.OPEN:
-							questionAnswersPreview.selectedIndex = 0;
-							break;
-						case QuestionTypeEnum.SINGLE_CHOICE:
-							if( QuestionStyleEnum.SINGLE_TYPE.equals(questionStyle) ){
-								questionAnswersPreview.selectedIndex = 1;
-							}else{
-								questionAnswersPreview.selectedIndex = 3;
-							}
-					}
-				}, this, "questionType" ) );
-			}
-			
+						
 			private function remove():void{
 				for each( var watcher:ChangeWatcher in bindings){
 					watcher.unwatch();
@@ -75,24 +74,32 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Box label="Question preview" width="100%" height="100%">
-		<mx:VBox width="100%" height="100%" >
-			<mx:Label text="{resourceManager.getString('adaptive', 'createQuestion.typeView.previewText')}" textAlign="center" width="100%" />
-			<mx:HRule width="100%"/>
-				<mx:TextArea id="questionExampleText" change="{questionExampleText.text = resourceManager.getString('adaptive', 'createQuestion.typeView.exampleQuest')}" 
+	<mx:VBox width="100%" height="100%" paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5" >
+		<mx:Label text="{resourceManager.getString('adaptive', 'createQuestion.typeView.previewText')}" width="100%" textAlign="center"/>
+		<mx:VBox horizontalAlign="center" verticalAlign="middle"  
+			borderStyle="solid" width="100%" height="100%" 
+			paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5">
+				<mx:TextArea id="questionExampleText" editable="false"
 					text="{resourceManager.getString('adaptive', 'createQuestion.typeView.exampleQuest')}" width="100%"/>
-				<mx:ViewStack id="questionAnswersPreview" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+				
+				<mx:ViewStack id="questionAnswersPreview" 
+					width="100%" height="100%" 
+					paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
 					<questions:OpenType/>
 					<questions:SingleSelectionType answers="{exampleAnswers}" verticalScrollPolicy="off"/>
 					<questions:MultipleSelectionType answers="{exampleAnswers}" verticalScrollPolicy="off"/>
 					<questions:FourToggleType answers="{exampleAnswers}" verticalScrollPolicy="off"/>
 				</mx:ViewStack>
-				<mx:HBox width="100%" includeInLayout="{requireComment &amp;&amp; (!questionType.equals(QuestionTypeEnum.OPEN))}" visible="{requireComment &amp;&amp; (!questionType.equals(QuestionTypeEnum.OPEN))}" >
+				<mx:Label id="commentLabel" 
+					includeInLayout="{!_questionType.equals(QuestionTypeEnum.OPEN)}" 
+					visible="{!_questionType.equals(QuestionTypeEnum.OPEN)}"
+					text="{resourceManager.getString('adaptive', 'surveyFilling.comment')}:" />
+				<mx:HBox width="100%">
 					<mx:TextArea id="comment" text="{resourceManager.getString('adaptive', 'createQuestion.typeView.commentText')}" 
-						change="{comment.text=resourceManager.getString('adaptive', 'createQuestion.typeView.commentText')}" width="100%" height="100%"/>
+						visible="{!_questionType.equals(QuestionTypeEnum.OPEN)}" includeInLayout="{!_questionType.equals(QuestionTypeEnum.OPEN)}"
+						editable="false" width="100%" height="100%"/>
 				</mx:HBox>
-			<mx:HRule width="100%"/>
 		</mx:VBox>
-	</mx:Box>
+	</mx:VBox>
 	
 </mx:Canvas>

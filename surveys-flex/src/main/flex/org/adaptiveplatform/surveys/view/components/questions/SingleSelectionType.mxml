@@ -11,6 +11,6 @@
 	</mx:Script>
 
 	<mx:Repeater id="answersComponent" dataProvider="{answers}" width="100%">
-		<mx:RadioButton label="{ (answersComponent.currentItem as SurveyQuestionAnswerDto).text}" />
+		<mx:RadioButton label="{ (answersComponent.currentItem as SurveyQuestionAnswerDto).text}" enabled="false"/>
 	</mx:Repeater>
 </mx:VBox>

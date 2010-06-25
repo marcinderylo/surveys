@@ -4,11 +4,11 @@
 	creationComplete="onCreationComplete()" 
 	remove="onRemove()"
 	width="100%"
-	maxHeight="600">
+	maxHeight="610" xmlns:controls="org.adaptiveplatform.surveys.view.controls.*">
     
     <mx:Script>
         <![CDATA[
-			import org.adaptiveplatform.surveys.view.components.questions.RequireCommentEvent;
+        	import org.adaptiveplatform.surveys.dto.generated.QuestionAnswerDto;
 			import org.adaptiveplatform.surveys.view.events.AnswerEvent;
 			
 			import flash.events.Event;
@@ -54,12 +54,16 @@
             		if(value != null){
             			questionText.htmlText = value.text;
             			createAnswersComponents(value.answers);
+            			changeComponentsVisibility();
             		}
             	}, this, "question") );
             	watchers.addItem( BindingUtils.bindSetter( function( value:QuestionTypeEnum ):void{
             		if(QuestionTypeEnum.OPEN.equals(value) ){
             			questionText.percentHeight = 100;
             		}else{
+            			if( question.answers.length == 0 ){
+            				addTwoExamples();
+            			}
             			questionText.percentHeight = 20;            			
             		}
             		changeComponentsVisibility();
@@ -67,36 +71,32 @@
             	
             }
             
-            private var _requireComment:Boolean = false;
-            
-            public function set requiresComment(value:Boolean):void{
-            		_requireComment = value;
-					changeComponentsVisibility();
+            private function addTwoExamples():void{
+            	question.answers.addItem( new AnswerTemplateDto() );
+            	question.answers.addItem( new AnswerTemplateDto() );
+       			createAnswersComponents( question.answers );
+            	changeComponentsVisibility();
             }
             
             private function changeComponentsVisibility():void{
-	            	for each( var answerChild:NewAnswerQuestion in answersList.getChildren()){
-	            		answerChild.requireCommentControls.visible = !requiresComment;
-	            		answerChild.requireCommentControls.includeInLayout = !requiresComment;
-	            		answerChild.excludeOthersControls.visible = (!requiresComment) && (!question.type.equals(QuestionTypeEnum.SINGLE_CHOICE));
-	            		answerChild.excludeOthersControls.includeInLayout = (!requiresComment) && (!question.type.equals(QuestionTypeEnum.SINGLE_CHOICE));
-	            		answerChild.answer.requiresComment = requiresComment;
-	            		answerChild.answer.excludesOtherAnswers = !answerChild.excludeOthersControls.visible;
-	            		answerChild.questionType = question.type;
-	            		
-	            	} 
+	            for each( var answerChild:NewAnswerQuestion in answersList.getChildren()){
+	            	answerChild.excludeOthersControls.visible = !question.type.equals(QuestionTypeEnum.SINGLE_CHOICE);
+	            	answerChild.excludeOthersControls.includeInLayout = !question.type.equals(QuestionTypeEnum.SINGLE_CHOICE);
+	            	answerChild.questionType = question.type;	
+	            } 
             }
             
-            [Bindable]
             public function get requiresComment():Boolean{
-            	return _requireComment;
+            	return requireCommentCheckbox.selected;
             }
             
             private function createAnswersComponents(answers:ArrayCollection):void{
+            	var requireCommentAnswers:Boolean = true;
             	for each(var _answer:AnswerTemplateDto in answers){
             		createAnswerComponent(_answer);
-            		
+            		requireCommentAnswers = requireCommentAnswers && _answer.requiresComment;
             	}
+            	requireCommentCheckbox.selected = requireCommentAnswers;
             }
             
             private function createAnswerComponent(answer:AnswerTemplateDto):void{
@@ -105,13 +105,9 @@
             		answerComponent.percentWidth = 100;
             		answerComponent.editMode = true;
             		answerComponent.questionType = question.type;
-            		answerComponent.requiresCommentGlobal = this.requiresComment;
             		answerComponent.addEventListener( AnswerEvent.REMOVE_ANSWER_EVENT, removeAnswerHandler );
-            		answerComponent.addEventListener( RequireCommentEvent.REQUIRE_COMMENT_CHECKED, function(event:RequireCommentEvent):void{
-            			answerComponent.dispatchEvent(event);
-            		});
+            		answerComponent.addEventListener( AnswerEvent.REQUIRE_COMMENT_ANSWER_EVENT, checkRestRequireComment);
             		answersList.addChild(answerComponent);
-            		changeComponentsVisibility();
             }
             
             private function onRemove():void{
@@ -157,6 +153,7 @@
 			
 			private function addAnswerByClick(event:MouseEvent):void{
 				var _newAnswer:AnswerTemplateDto = new AnswerTemplateDto();
+				_newAnswer.requiresComment = requireCommentCheckbox.selected;
 				createAnswerComponent(_newAnswer);
 				question.answers.addItem(_newAnswer);
 			}
@@ -182,6 +179,23 @@
 				var errArray:Array = Validator.validateAll( validatorArr.toArray() );
 				return errArray.length == 0;
 			}
+			
+			public function checkRestRequireComment(event:AnswerEvent):void{
+				var questionRequireComment:Boolean = true;
+				for each( var answerChild:NewAnswerQuestion in answersList.getChildren()){
+					if( !answerChild.requiresComment.selected ){
+						questionRequireComment = false;
+					}
+				}
+				requireCommentCheckbox.selected = questionRequireComment;
+			}
+			
+			private function changeRequireCheckbox(e:Event):void{
+            	for each(var _answer:AnswerTemplateDto in question.answers){
+            		_answer.requiresComment = requireCommentCheckbox.selected;
+            	}
+			}
+
             
         ]]>
     </mx:Script>
@@ -194,8 +208,7 @@
     		 		id="questionText"
     		 		text="{question.text}"
     		 		change="questionTextChange(event)"
-    		 		width="100%"
-    		 		height="100%"
+    		 		width="100%" height="100%"
     		 		/>
     		 		<mx:VBox includeInLayout="{!question.type.equals(QuestionTypeEnum.OPEN)}" 
 					    	visible="{!question.type.equals(QuestionTypeEnum.OPEN)}" height="100%" width="100%" >
@@ -207,6 +220,11 @@
 	    		 		</mx:VBox>
 	    	
 		    			<mx:HBox width="100%" height="40">
+				    		<mx:CheckBox id="requireCommentCheckbox" paddingLeft="5"
+				    			visible="{!question.type.equals(QuestionTypeEnum.OPEN)}" 
+				    			textAlign="right" click="changeRequireCheckbox(event)" 
+								label="{resourceManager.getString('adaptive', 'createQuestion.typeView.comment')}" 
+								width="100%"/>
 		    				<mx:Spacer width="100%" />
 							<mx:Button label="{resourceManager.getString('adaptive', 'addAnswer')}"
 								   toolTip="{resourceManager.getString('adaptive', 'addAnswer')}"

@@ -217,22 +217,6 @@
     <mx:StringValidator id="surveyTemplateNameValidator" source="{surveyName}" property="text" required="true" />
 	
 	<mx:VBox x="0" y="0" height="100%" width="100%">
-			<mx:MenuBar id="myMenuBar" labelField="@label" width="100%" itemClick="menuHandler(event)">
-			     <mx:XMLList>
-			         <menuitem label="{resourceManager.getString('adaptive', 'createQuestion.menu.survey')}">
-			             <menuitem data="save" label="{resourceManager.getString('adaptive', 'createQuestion.menu.save')}"/>
-		                 <menuitem data="createCopy" label="{resourceManager.getString('adaptive', 'createQuestion.menu.cloneSurvey')}" 
-		                 	visible="{isEditMode}"/>
-				         <menuitem label="{resourceManager.getString('adaptive', 'createQuestion.menu.question')}">
-				             <menuitem data="addNewQuestion" label="{resourceManager.getString('adaptive', 'createQuestion.menu.addQuestion')}" />
-			                 <menuitem data="editSelectedQuestion" label="{resourceManager.getString('adaptive', 'createQuestion.menu.editQuestion')}" 
-			                 	visible="{isEditMode}"/>
-				             <menuitem data="deleteSelectedQuestion" label="{resourceManager.getString('adaptive', 'createQuestion.menu.removeQuestion')}"/>
-				         </menuitem>
-			             <menuitem data="exit" label="{resourceManager.getString('adaptive', 'createQuestion.menu.exit')}"/>
-			         </menuitem>
-			     </mx:XMLList>
-			</mx:MenuBar>
 			<mx:ApplicationControlBar width="100%">
 				<mx:Label text="{resourceManager.getString('adaptive', 'surveyName')}:" width="100"/>
 				<mx:TextInput id="surveyName" width="100%"/> 

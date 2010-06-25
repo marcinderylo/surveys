@@ -248,8 +248,8 @@ CheckBox
 	selectedUpIcon:Embed(source='/assets/images/CheckBox_selectedUpIcon.png');
 	selectedOverIcon:Embed(source='/assets/images/CheckBox_selectedDownIcon.png');
 	selectedDownIcon:Embed(source='/assets/images/CheckBox_selectedOverIcon.png');
-	disabledIcon:Embed(source='/assets/images/CheckBox_selectedDisabledIcon.png');
-	selectedDisabledIcon:Embed(source='/assets/images/CheckBox_disabledIcon.png');
+	disabledIcon:Embed(source='/assets/images/CheckBox_disabledIcon.png');
+	selectedDisabledIcon:Embed(source='/assets/images/CheckBox_selectedDisabledIcon.png');
 	textRollOverColor:#dddddd;
 	textSelectedColor:#aaaaaa;
 	color: #ffffff;

@@ -2,11 +2,14 @@
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:controls="org.adaptiveplatform.surveys.view.controls.*"
 	height="34"
+	creationComplete="create()"
 	width="100%">
 
 		<mx:Script>
 			<![CDATA[
-				import org.adaptiveplatform.surveys.view.components.questions.RequireCommentEvent;
+				import org.adaptiveplatform.surveys.dto.generated.QuestionAnswerDto;
+				import mx.utils.ObjectUtil;
+				import mx.controls.Alert;
 				import org.adaptiveplatform.surveys.view.events.AnswerEvent;
 				
 				import org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto;
@@ -21,6 +24,11 @@
 				private var _questionType:QuestionTypeEnum;
 				
 				private var _requiresCommentGlobal:Boolean = false;
+				
+				private function create():void{
+					requiresComment.selected = answer.requiresComment;
+					excludesOtherAnswers.selected = answer.excludesOtherAnswers || answer.requiresComment;
+				}
 				
 				public function set questionType(value:QuestionTypeEnum):void{
 	            	if( excludeOthersControls != null ){
@@ -60,13 +68,18 @@
 				
 				public function set answer(value:AnswerTemplateDto):void{
 					if( _answer != value ){
+						_answer = new AnswerTemplateDto();
+						_answer.excludesOtherAnswers = value.excludesOtherAnswers;
+						_answer.id = value.id;
+						_answer.requiresComment = value.requiresComment;
+						_answer.text = value.text;
 						_answer = value;
 					}
 				}
 				
 				private function addAnswer(event:MouseEvent):void{
-					answer.excludesOtherAnswers = excludesOtherAnswers.selected || requiresComment.selected;
 					answer.requiresComment = requiresComment.selected;
+					answer.excludesOtherAnswers = excludesOtherAnswers.selected || requiresComment.selected;
 					answer.text = answerText.text;
 					dispatchEvent(new AnswerEvent( AnswerEvent.ADD_ANSWER_EVENT ,answer));
 					answer = new AnswerTemplateDto;
@@ -74,6 +87,15 @@
 
 				private function removeAnswer(event:MouseEvent):void{
 					dispatchEvent(new AnswerEvent( AnswerEvent.REMOVE_ANSWER_EVENT ,answer));					
+				}
+				
+				private function changeRequiresCommentCheckbox(e:Event):void{
+					answer.requiresComment = requiresComment.selected;
+					dispatchEvent( new AnswerEvent(AnswerEvent.REQUIRE_COMMENT_ANSWER_EVENT, answer) );						
+				}
+				
+				private function changeExcludesOthersCheckbox(e:Event):void{
+					answer.excludesOtherAnswers = excludesOtherAnswers.selected;
 				}
 
 			]]>
@@ -94,17 +116,18 @@
 			<mx:HBox id="requireCommentControls" visible="{!requiresCommentGlobal || (questionType != QuestionTypeEnum.SINGLE_CHOICE)}" 
 				includeInLayout="{!requiresCommentGlobal ||(questionType != QuestionTypeEnum.SINGLE_CHOICE)}" >
 				<mx:Label text="{resourceManager.getString('adaptive', 'comment')}: "/>
-				<controls:MultilineCheckbox id="requiresComment" 
-					selected="{answer.requiresComment}" 
-					change="{answer.requiresComment = requiresComment.selected}"
+				<mx:CheckBox id="requiresComment" 
+					selected="{answer.requiresComment}"
+					change="changeRequiresCommentCheckbox(event)"
 					labelPlacement="top"/>
 			</mx:HBox>
 			<mx:HBox id="excludeOthersControls" visible="{!requiresCommentGlobal }" 
 				includeInLayout="{!requiresCommentGlobal}">
 				<mx:Label text="{resourceManager.getString('adaptive', 'disallowsOther')}: "/>
-				<controls:MultilineCheckbox id="excludesOtherAnswers" 
-					change="{answer.excludesOtherAnswers = excludesOtherAnswers.selected}"
-					selected="{answer.excludesOtherAnswers}" 
+				<mx:CheckBox id="excludesOtherAnswers" 
+					selected="{answer.excludesOtherAnswers || answer.requiresComment}" 
+					enabled="{!answer.requiresComment}"
+					change="changeExcludesOthersCheckbox(event)"
 					labelPlacement="top"/>
 			</mx:HBox>
 			<mx:Image 

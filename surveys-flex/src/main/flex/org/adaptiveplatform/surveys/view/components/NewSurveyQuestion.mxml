@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
-	width="600"
+	width="610"
 	showCloseButton="true"
 	creationComplete="create()"
+	title="{resourceManager.getString('adaptive', 'createQuestion.typeView')}"
 	close="{PopUpManager.removePopUp(this)}"
     xmlns:components="adaptlearning.view.components.*" xmlns:components1="org.adaptiveplatform.surveys.view.components.*">
     
     <mx:Script>
     	<![CDATA[
-			import org.adaptiveplatform.surveys.view.components.questions.RequireCommentEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -51,11 +51,7 @@
             }
             
             public function create():void{
-            	questionTypeView.addEventListener( RequireCommentEvent.REQUIRE_COMMENT_CHECKED, function(event:RequireCommentEvent):void{
-            		questionDataView.requiresComment = event.requireComment;
-            		requireComment = event.requireComment;
-            	});
-            	this.label = getTitle();
+            	this.title = getTitle();
             }
             
             private function copyQuestionTepmlate( questionTemplate:QuestionTemplateDto):void{
@@ -82,45 +78,44 @@
             			answer.text = answerTemplate.text;
             			question.answers.addItem( answer );
             		}
-            		questionTypeView.question = questionTemplate;
             		questionTypeView.question = question;
             		questionDataView.question = question;
             	}
             	questionCreation.selectedIndex = editMode ? 1 : 0;
             }
             	
-            	private function saveQuestion():void{
-            		if( requireComment ){
-            			for each( var answerQuestion:AnswerTemplateDto in question.answers ){
-            				answerQuestion.requiresComment = true;
-            				answerQuestion.excludesOtherAnswers = true;
-            			}
-            		}
-            		if( editMode ){
-            			var editedItemIndex:int = survey.questions.getItemIndex( editedQuestion );
-						survey.questions.removeItemAt( editedItemIndex );
-						survey.questions.addItemAt( question, editedItemIndex);
-            		}else{
-            			survey.questions.addItem(question);
-            		}
-            		if( question.type.equals(QuestionTypeEnum.OPEN) ){
-            			question.answers = new ArrayCollection();
-            		}
-            		PopUpManager.removePopUp(this);
+            private function saveQuestion():void{
+            	for each( var answerQuestion:AnswerTemplateDto in question.answers ){
+            		answerQuestion.requiresComment = answerQuestion.requiresComment || questionDataView.requireCommentCheckbox.selected;
+            		answerQuestion.excludesOtherAnswers = answerQuestion.requiresComment || answerQuestion.excludesOtherAnswers;
             	}
+
+           		if( editMode ){
+           			var editedItemIndex:int = survey.questions.getItemIndex( editedQuestion );
+					survey.questions.removeItemAt( editedItemIndex );
+					survey.questions.addItemAt( question, editedItemIndex);
+           		}else{
+           			survey.questions.addItem(question);
+           		}
+           		if( question.type.equals(QuestionTypeEnum.OPEN) ){
+           			question.answers = new ArrayCollection();
+           		}
+           		PopUpManager.removePopUp(this);
+           	}
             	
-            	private function saveAndExit():void{
-            		if( questionDataView.validate() ){
-            			saveQuestion();
-            		}
-            	}
+           	private function saveAndExit():void{
+           		if( questionDataView.validate() ){
+           			saveQuestion();
+           		}
+           	}
             
     	]]>
     </mx:Script>
     
     <mx:VBox width="100%" height="100%">
-		<mx:ViewStack id="questionCreation" width="100%" height="100%" creationPolicy="all" change="{this.title = getTitle() }">
-			<components1:NewQuestionType id="questionTypeView" question="{question}" requireComment="{requireComment}"/>
+		<mx:ViewStack id="questionCreation" width="100%" height="100%" creationPolicy="all" 
+			change="{this.title = getTitle() }">
+			<components1:NewQuestionType id="questionTypeView" question="{question}"/>
 			<components1:NewQuestionData id="questionDataView" survey="{survey}" question="{question}" />
 		</mx:ViewStack>
 		<mx:HBox width="100%">

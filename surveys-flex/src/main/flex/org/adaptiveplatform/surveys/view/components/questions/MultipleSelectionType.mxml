@@ -12,7 +12,7 @@
 	</mx:Script>
 
 	<mx:Repeater id="answersComponent" dataProvider="{answers}" width="100%">
-		<mx:CheckBox label="{ (answersComponent.currentItem as SurveyQuestionAnswerDto).text}" />
+		<mx:CheckBox label="{ (answersComponent.currentItem as SurveyQuestionAnswerDto).text}" enabled="false"/>
 	</mx:Repeater>
 
 </mx:VBox>

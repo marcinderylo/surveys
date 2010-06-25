@@ -6,7 +6,8 @@ package org.adaptiveplatform.surveys.view.events
 	
 	public class AnswerEvent extends Event
 	{
-		
+
+		public static const REQUIRE_COMMENT_ANSWER_EVENT:String = "requireCommentAnswerEvent";		
 		public static const ADD_ANSWER_EVENT:String = "addAnswerEvent";
 		public static const REMOVE_ANSWER_EVENT:String = "removeAnswerEvent";
 		private var _answer:AnswerTemplateDto;
