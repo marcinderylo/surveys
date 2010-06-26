@@ -3,7 +3,7 @@
 		 width="100%"
 		 height="100%"
 		 verticalAlign="middle"
-		 horizontalAlign="center">
+		 horizontalAlign="center" xmlns:validators="org.adaptiveplatform.surveys.view.validators.*">
 	<mx:Script>
 		<![CDATA[
 			import org.adaptiveplatform.surveys.view.ResearchWizzard;
@@ -24,6 +24,9 @@
 			}
 		]]>
 	</mx:Script>
+	<validators:DatePeriodValidator id="timePeriodValidator" startDate="{start.text}" source="{end}" 
+									property="text" errorMessage="{resourceManager.getString('adaptive', 'timePeriodValidatorText')}" required="false"/>
+	
 	<mx:Form>
 		<mx:FormItem label="{resourceManager.getString('adaptive', 'researchName')}:"
 					 required="true">

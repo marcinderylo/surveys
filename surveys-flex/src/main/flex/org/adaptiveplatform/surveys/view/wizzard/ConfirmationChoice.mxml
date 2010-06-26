@@ -25,6 +25,16 @@
 
 			public function set groups(groups:ArrayCollection):void {
 				_groups=new ArrayCollection();
+				start.hours = 0;
+				start.minutes = 0;
+				start.seconds = 0;
+				start.milliseconds = 0;
+				
+				end.hours = 23;
+				end.minutes = 59;
+				end.seconds = 59;
+				end.milliseconds = 999;
+				
 				for each (var group:StudentGroupDto in groups) {
 					var groupCommand:Object={"id": group.id, "groupName": group.groupName, "validFrom": start ? new Date(start) : null, "validTo": end ? new Date(end) : null};
 					_groups.addItem(groupCommand);
