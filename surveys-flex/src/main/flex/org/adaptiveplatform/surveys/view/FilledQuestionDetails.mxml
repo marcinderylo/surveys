@@ -59,10 +59,13 @@
 			private var statistics:ArrayCollection=new ArrayCollection();
 
 			[Bindable]
-			private var commentedQuestion:Boolean=false;
+			private var display:Boolean=false;
 
 			[Bindable]
-			private var display:Boolean=false;
+			private var open:Boolean=false;
+
+			[Bindable]
+			private var withComment:Boolean=false;
 
 			private var evaluationFacade:EvaluationFacade;
 
@@ -103,7 +106,8 @@
 				} else {
 					info.text="";
 				}
-				commentedQuestion=questions.getItemAt(currentQuestionNumber).requiredComment();
+				open=questions.getItemAt(currentQuestionNumber).type.equals(QuestionTypeEnum.OPEN);
+				withComment=questions.getItemAt(currentQuestionNumber).requiredComment() && !open;
 
 				userAnswers=new ArrayCollection();
 				var groups:Dictionary=new Dictionary();
@@ -366,7 +370,8 @@
 						   id="takeStatistics"
 						   icon="@Embed(source='/assets/icons/camera.png')"
 						   label="{resourceManager.getString('adaptive', 'takeSnapshotToolTip')}"
-						   toolTip="{resourceManager.getString('adaptive', 'takeSnapshotToolTip')}"/>
+						   toolTip="{resourceManager.getString('adaptive', 'takeSnapshotToolTip')}"
+						   visible="{!open}"/>
 				<mx:HBox verticalAlign="top"
 						 width="100%">
 					<renderers:QuestionTypeItemRenderer question="{questions.getItemAt(currentQuestionNumber)}"/>
@@ -401,7 +406,8 @@
 							 height="100%"
 							 type="100%"
 							 showDataTips="true"
-							 fontSize="12">
+							 fontSize="12"
+							 visible="{!open}">
 					<mx:verticalAxis>
 						<mx:CategoryAxis categoryField="group"
 										 id="ha1"/>
@@ -520,19 +526,23 @@
 									   width="100"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
 									   dataField="answer"
-									   visible="{!questions.getItemAt(currentQuestionNumber).type.equals(QuestionTypeEnum.OPEN)}"/>
-					<!--<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
+									   id="answerColumn"
+									   visible="{!open}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'answer')}"
 									   dataField="comment"
-									   visible="{questions.getItemAt(currentQuestionNumber).type.equals(QuestionTypeEnum.OPEN)}"/>-->
+									   id="openColumn"
+									   visible="{open}"
+									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.comment')}"
 									   dataField="comment"
-									   visible="{commentedQuestion}"
+									   visible="{withComment}"
 									   minWidth="150"
 									   itemRenderer="{new ClassFactory(CustomColumnRenderer)}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'category')}"
 									   dataField="category"
+									   width="200"
 									   itemRenderer="{new ClassFactory(Category)}"
-									   visible="{commentedQuestion}"/>
+									   visible="{questions.getItemAt(currentQuestionNumber).requiredComment()}"/>
 				</mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 width="100%"
-		 height="100%">
+		 height="100%"
+		 paddingLeft="10">
 
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
-			
-			public static const POSITIVE:String = "Positive";
-			public static const NEGATIVE:String = "Negative";
-			public static const IGNORE:String = "Ignore";
-			public static const CONCLUSION:String = "Conclusion";
+
+			public static const POSITIVE:String="Positive";
+			public static const NEGATIVE:String="Negative";
+			public static const IGNORE:String="Ignore";
+			public static const CONCLUSION:String="Conclusion";
 
 			import org.adaptiveplatform.surveys.view.FilledQuestionDetails;
 
@@ -21,11 +22,10 @@
 				n.selected=(o.category as ArrayCollection).contains(NEGATIVE);
 				i.selected=(o.category as ArrayCollection).contains(IGNORE);
 				c.selected=(o.category as ArrayCollection).contains(CONCLUSION);
-
 			}
 
-			protected function p_changeHandler(event:Event, tag:String):void {
-				if(event.target.selected){
+			protected function clickHandler(event:Event, tag:String):void {
+				if (event.target.selected) {
 					(data.category as ArrayCollection).addItem(tag);
 				} else {
 					(data.category as ArrayCollection).removeItemAt((data.category as ArrayCollection).getItemIndex(tag));
@@ -35,16 +35,32 @@
 		]]>
 	</mx:Script>
 
-	<mx:CheckBox id="p"
-				 label="{resourceManager.getString('adaptive', 'positive')}"
-				 change="p_changeHandler(event, POSITIVE)"/>
-	<mx:CheckBox id="n"
-				 label="{resourceManager.getString('adaptive', 'negative')}"
-				 change="p_changeHandler(event, NEGATIVE)"/>
-	<mx:CheckBox id="i"
-				 label="{resourceManager.getString('adaptive', 'ignore')}"
-				 change="p_changeHandler(event, IGNORE)"/>
-	<mx:CheckBox id="c"
-				 label="{resourceManager.getString('adaptive', 'conclusion')}"
-				 change="p_changeHandler(event, CONCLUSION)"/>
+	<mx:Button toggle="true"
+			   id="p"
+			   toolTip="{resourceManager.getString('adaptive', 'positive')}"
+			   click="clickHandler(event, POSITIVE)"
+			   upSkin="@Embed(source='assets/images/positiveGray.png')"
+			   overSkin="@Embed(source='assets/images/positiveGray.png')"
+			   skin="@Embed(source='assets/images/positive.png')"/>
+	<mx:Button toggle="true"
+			   id="n"
+			   toolTip="{resourceManager.getString('adaptive', 'negative')}"
+			   click="clickHandler(event, NEGATIVE)"
+			   upSkin="@Embed(source='assets/images/negativeGray.png')"
+			   overSkin="@Embed(source='assets/images/negativeGray.png')"
+			   skin="@Embed(source='assets/images/negative.png')"/>
+	<mx:Button toggle="true"
+			   id="c"
+			   toolTip="{resourceManager.getString('adaptive', 'conclusion')}"
+			   click="clickHandler(event, CONCLUSION)"
+			   upSkin="@Embed(source='assets/images/conclusionGray.png')"
+			   overSkin="@Embed(source='assets/images/conclusionGray.png')"
+			   skin="@Embed(source='assets/images/conclusion.png')"/>
+	<mx:Button toggle="true"
+			   id="i"
+			   toolTip="{resourceManager.getString('adaptive', 'ignore')}"
+			   click="clickHandler(event, IGNORE)"
+			   upSkin="@Embed(source='assets/images/ignoreGray.png')"
+			   overSkin="@Embed(source='assets/images/ignoreGray.png')"
+			   skin="@Embed(source='assets/images/ignore.png')"/>
 </mx:HBox>
