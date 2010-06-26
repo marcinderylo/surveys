@@ -39,28 +39,28 @@
 			   id="p"
 			   toolTip="{resourceManager.getString('adaptive', 'positive')}"
 			   click="clickHandler(event, POSITIVE)"
-			   upSkin="@Embed(source='assets/images/positiveGray.png')"
-			   overSkin="@Embed(source='assets/images/positiveGray.png')"
-			   skin="@Embed(source='assets/images/positive.png')"/>
+			   upSkin="@Embed(source='/assets/images/positiveGray.png')"
+			   overSkin="@Embed(source='/assets/images/positiveGray.png')"
+			   skin="@Embed(source='/assets/images/positive.png')"/>
 	<mx:Button toggle="true"
 			   id="n"
 			   toolTip="{resourceManager.getString('adaptive', 'negative')}"
 			   click="clickHandler(event, NEGATIVE)"
-			   upSkin="@Embed(source='assets/images/negativeGray.png')"
-			   overSkin="@Embed(source='assets/images/negativeGray.png')"
-			   skin="@Embed(source='assets/images/negative.png')"/>
+			   upSkin="@Embed(source='/assets/images/negativeGray.png')"
+			   overSkin="@Embed(source='/assets/images/negativeGray.png')"
+			   skin="@Embed(source='/assets/images/negative.png')"/>
 	<mx:Button toggle="true"
 			   id="c"
 			   toolTip="{resourceManager.getString('adaptive', 'conclusion')}"
 			   click="clickHandler(event, CONCLUSION)"
-			   upSkin="@Embed(source='assets/images/conclusionGray.png')"
-			   overSkin="@Embed(source='assets/images/conclusionGray.png')"
-			   skin="@Embed(source='assets/images/conclusion.png')"/>
+			   upSkin="@Embed(source='/assets/images/conclusionGray.png')"
+			   overSkin="@Embed(source='/assets/images/conclusionGray.png')"
+			   skin="@Embed(source='/assets/images/conclusion.png')"/>
 	<mx:Button toggle="true"
 			   id="i"
 			   toolTip="{resourceManager.getString('adaptive', 'ignore')}"
 			   click="clickHandler(event, IGNORE)"
-			   upSkin="@Embed(source='assets/images/ignoreGray.png')"
-			   overSkin="@Embed(source='assets/images/ignoreGray.png')"
-			   skin="@Embed(source='assets/images/ignore.png')"/>
+			   upSkin="@Embed(source='/assets/images/ignoreGray.png')"
+			   overSkin="@Embed(source='/assets/images/ignoreGray.png')"
+			   skin="@Embed(source='/assets/images/ignore.png')"/>
 </mx:HBox>
