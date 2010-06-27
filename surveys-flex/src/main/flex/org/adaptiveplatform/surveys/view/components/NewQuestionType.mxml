@@ -59,8 +59,8 @@
 			<controls:MultilineButtonSimple id="multiple_choice" label="{resourceManager.getString('adaptive', 'createQuestion.qType.multi')}" width="100%" height="100%" buttonDown="showMultipleChoicePreview()"/>
 		</mx:HBox>
 		<mx:HBox width="100%" visible="{question.type == QuestionTypeEnum.SINGLE_CHOICE}">
-			<mx:RadioButton label="standard" buttonDown="showSingleChoicePreview()" width="100%" selected="{question.style == QuestionStyleEnum.SINGLE_TYPE.name}"/>
-			<mx:RadioButton label="przycisk" buttonDown="showFourTogglePreview()" width="100%" selected="{question.style == QuestionStyleEnum.FOUR_TOGGLE.name}"/>
+			<mx:RadioButton label="{resourceManager.getString('adaptive','createQuestion.typeView.simple')}" buttonDown="showSingleChoicePreview()" width="100%" selected="{question.style == QuestionStyleEnum.SINGLE_TYPE.name}"/>
+			<mx:RadioButton label="{resourceManager.getString('adaptive','createQuestion.typeView.fourtoggle')}" buttonDown="showFourTogglePreview()" width="100%" selected="{question.style == QuestionStyleEnum.FOUR_TOGGLE.name}"/>
 		</mx:HBox>
 		<questions:Question id="questionTypePreview" questionType="{question.type}"
 			width="100%" height="100%"/>
