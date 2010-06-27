@@ -42,10 +42,10 @@
 			public function set questionStyle(value:QuestionStyleEnum):void{
 				_questionStyle = value;
 				if( _questionType.equals(QuestionTypeEnum.SINGLE_CHOICE) ){
-					if( QuestionStyleEnum.SINGLE_TYPE.equals(_questionStyle) ){
-						questionAnswersPreview.selectedIndex = 1;
-					}else{
+					if( QuestionStyleEnum.FOUR_TOGGLE.equals(_questionStyle) ){
 						questionAnswersPreview.selectedIndex = 3;
+					}else{
+						questionAnswersPreview.selectedIndex = 1;
 					}				
 				}
 			}

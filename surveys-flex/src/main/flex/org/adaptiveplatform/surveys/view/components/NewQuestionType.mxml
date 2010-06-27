@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="400" 
-	xmlns:questions="org.adaptiveplatform.surveys.view.components.questions.*" xmlns:controls="org.adaptiveplatform.surveys.view.controls.*">
+	xmlns:questions="org.adaptiveplatform.surveys.view.components.questions.*" 
+	xmlns:controls="org.adaptiveplatform.surveys.view.controls.*"
+	creationComplete="create()">
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.utils.StringUtil;
 			import org.adaptiveplatform.surveys.QuestionStyleEnum;
 			
 			import mx.events.FlexEvent;
@@ -13,6 +16,14 @@
 			
 			[Bindable]
 			public var question:QuestionTemplateDto;
+			
+			private function create():void{
+				if( QuestionStyleEnum.FOUR_TOGGLE.name == question.style ){
+					showFourTogglePreview();					
+				}else{
+					showSingleChoicePreview();
+				}
+			}
 			
 			private function showOpenTypePreview():void{
 				question.type = QuestionTypeEnum.OPEN;
@@ -46,8 +57,12 @@
 			<controls:MultilineButtonSimple id="open_type" label="{resourceManager.getString('adaptive', 'createQuestion.qType.openType')}" width="100%" height="100%" buttonDown="showOpenTypePreview()"/>
 			<controls:MultilineButtonSimple id="single_choice_single" label="{resourceManager.getString('adaptive', 'createQuestion.qType.single')}" width="100%" height="100%" buttonDown="showSingleChoicePreview()"/>
 			<controls:MultilineButtonSimple id="multiple_choice" label="{resourceManager.getString('adaptive', 'createQuestion.qType.multi')}" width="100%" height="100%" buttonDown="showMultipleChoicePreview()"/>
-			<controls:MultilineButtonSimple id="single_choice_four" label="{resourceManager.getString('adaptive', 'createQuestion.qType.ftoggleBtn')}" width="100%" height="100%" buttonDown="showFourTogglePreview()"/>
 		</mx:HBox>
-		<questions:Question id="questionTypePreview" questionType="{question.type}" width="100%" height="100%"/>
+		<mx:HBox width="100%" visible="{question.type == QuestionTypeEnum.SINGLE_CHOICE}">
+			<mx:RadioButton label="standard" buttonDown="showSingleChoicePreview()" width="100%" selected="{question.style == QuestionStyleEnum.SINGLE_TYPE.name}"/>
+			<mx:RadioButton label="przycisk" buttonDown="showFourTogglePreview()" width="100%" selected="{question.style == QuestionStyleEnum.FOUR_TOGGLE.name}"/>
+		</mx:HBox>
+		<questions:Question id="questionTypePreview" questionType="{question.type}"
+			width="100%" height="100%"/>
 	</mx:VBox>
 </mx:VBox>
