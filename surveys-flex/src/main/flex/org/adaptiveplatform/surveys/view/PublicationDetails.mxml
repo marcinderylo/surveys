@@ -16,11 +16,12 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
 			import mx.rpc.events.FaultEvent;
-
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
+			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
 			import org.adaptiveplatform.surveys.dto.generated.ResearchDto;
 			import org.adaptiveplatform.surveys.view.components.PublishDatesDialog;
 			import org.adaptiveplatform.surveys.view.components.ToolTipQuestionDetails;
@@ -114,12 +115,15 @@
 			private function displayDate(o:Object, col:Object):String {
 				return DateField.dateToString(o[col.dataField], "DD/MM/YYYY");
 			}
-
+			
 			private function displayDuration(o:Object, col:Object):String {
-				var start:Date=o[col.dataField] as Date;
-				var end:Date=o["startDate"] as Date;
-				var duration:Number=(end.getTime() - start.getTime()) /60000;
-				return duration + " " + resourceManager.getString('adaptive', 'minutes');
+				var filledSurvey:FilledSurveyDto =FilledSurveyDto(o);
+				
+				var duration:Number=filledSurvey.submitDate.getTime() - filledSurvey.startDate.getTime();
+				if(duration < 60000){
+					return resourceManager.getString('adaptive', 'lessThanOneMinute');
+				}
+				return (duration / 60000) + " " + resourceManager.getString('adaptive', 'minutes');
 			}
 
 			private function showDate(value:Date):String {

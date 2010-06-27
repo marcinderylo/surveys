@@ -47,7 +47,7 @@
 			}
 
 			private function userCreated(ignore:Object = null):void {
-				Alert.show("user created successfully");
+				view.goto(View.LOGIN,user.email);	
 				clearFields();
 			}
 
@@ -96,7 +96,7 @@
 			<mx:TextInput id="password2" width="100%" displayAsPassword="true"/>
 		</mx:FormItem>
 		<mx:FormItem horizontalAlign="right" direction="horizontal" width="100%">
-			<mx:Button id="register" label="{resourceManager.getString('adaptive', 'register')}" click="registerClicked(event)" width="50%"/>
+			<mx:Button id="register" label="{resourceManager.getString('adaptive', 'doRegister')}" click="registerClicked(event)" width="50%"/>
 			<mx:Button label="{resourceManager.getString('adaptive', 'login')}" click="loginClicked(event)" width="50%"/>
 		</mx:FormItem>
 	</mx:Form>

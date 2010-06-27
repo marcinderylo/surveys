@@ -26,8 +26,12 @@
 				updateLocale( initialLocale );	
 			}
 			
-			public function initializeView(ignore:* = null):void {
-				username.text = "";
+			public function initializeView(login:String = null):void {
+				if(login==null){
+					username.text = "";	
+				}else{
+					username.text = login;
+				}
 				password.text = "";
 			}
 
@@ -104,7 +108,6 @@
 					 change="languageComboBoxChanged(event)"/>
 	</mx:HBox>
 	<mx:Form defaultButton="{loginBtn}" width="400">
-		<mx:FormHeading label="{resourceManager.getString('adaptive', 'login')}"/>
 		<mx:FormItem label="{resourceManager.getString('adaptive', 'email')}" width="100%">
 			<mx:TextInput id="username" width="100%"/>
 		</mx:FormItem>
