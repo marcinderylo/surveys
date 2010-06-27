@@ -76,7 +76,7 @@
 						headerText="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList.name')}" />
 					<mx:DataGridColumn dataField="creationDate" 
 						headerText="{resourceManager.getString('adaptive', 'evalStartPage.lastDocumentsList.creationDate')}"
-						width="130">
+						width="150">
 						<mx:itemRenderer>
 							<mx:Component>
 								<renderers:DateTimeRenderer fieldName="creationDate" />
