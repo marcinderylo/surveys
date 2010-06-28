@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
@@ -188,23 +189,24 @@ public class SurveyTestFixtureBuilder {
     }
 
     public FilledSurvey startFilling(Long templateId, Long groupId, UserAccount student) {
-        Session session = sf.openSession();
-        Transaction tx = session.beginTransaction();
-
         UserDto userDto = new UserDto();
         userDto.setId(student.getId());
+        return startFilling(templateId, groupId, userDto);
+    }
 
-        SurveyPublication publication = (SurveyPublication) session.createQuery(
+    public FilledSurvey startFilling(Long templateId, Long groupId, UserDto userDto) throws
+            HibernateException {
+        Session session = sf.openSession();
+        Transaction tx = session.beginTransaction();
+        SurveyPublication publication =
+                (SurveyPublication) session.createQuery(
                 "FROM SurveyPublication s WHERE s.surveyTemplate.id = :templateId "
                 + "AND s.studentGroup.id = :groupId").setParameter(
                 "templateId",
                 templateId).setParameter("groupId", groupId).
                 uniqueResult();
-
-        FilledSurvey filledSurvey = new FilledSurvey(publication,
-                userDto);
+        FilledSurvey filledSurvey = new FilledSurvey(publication, userDto);
         filledSurvey.startFilling();
-
         filledSurveysIds.add((Long) session.save(filledSurvey));
         tx.commit();
         session.close();

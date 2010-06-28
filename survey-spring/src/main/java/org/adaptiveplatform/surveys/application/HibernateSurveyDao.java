@@ -254,21 +254,23 @@ public class HibernateSurveyDao implements SurveyDao {
                     }
                 }
             }
-            if (template.getStatus() == null) {
 
-                if (template.isFillable(new Date())) {
-                    template.setStatus(SurveyStatusEnum.PENDING);
-                    isInsidePublicationPeriod = true;
-                } else {
-                    template.setStatus(
-                            SurveyStatusEnum.OUTSIDE_PUBLICATION_PERIOD);
-                }
+            if (template.isFillable(new Date())) {
+                isInsidePublicationPeriod = true;
+                setStatusIfNoneYet(template, SurveyStatusEnum.PENDING);
+            } else {
+                setStatusIfNoneYet(template, SurveyStatusEnum.OUTSIDE_PUBLICATION_PERIOD);
             }
-            if(isInsidePublicationPeriod && isNotSubmittedYet){
+            if (isInsidePublicationPeriod && isNotSubmittedYet) {
                 validResults.add(template);
-            }            
+            }
         }
         return validResults;
     }
 
+    private void setStatusIfNoneYet(PublishedSurveyTemplateDto template, SurveyStatusEnum status) {
+        if (template.getStatus() == null) {
+            template.setStatus(status);
+        }
+    }
 }

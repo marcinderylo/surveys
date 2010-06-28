@@ -164,8 +164,7 @@ public class SurveyDaoTest extends AbstractTestNGSpringContextTests {
             Exception {
         studentIsLoggedIn();
         // when
-        List<PublishedSurveyTemplateDto> surveys = dao.queryPublishedTemplates(
-                studentQuery());
+        List<PublishedSurveyTemplateDto> surveys = dao.queryPublishedTemplates(studentQuery());
         // then
         assertSurveyIsNotInTheList(surveys, filledTemplateId);
         assertSurveyFillingIsNotStarted(getSurveyTemplate(surveys, notFilledTemplateId));
@@ -181,6 +180,20 @@ public class SurveyDaoTest extends AbstractTestNGSpringContextTests {
         // then
         assertCollectionSize(surveys, 1);
         assertFalse(firstOf(surveys).isFilled());
+    }
+
+    @Test
+    public void shouldStudentSeeStartedButNotYetSubmittedSurveys() throws Exception {
+        fixture.startFilling(notFilledTemplateId, groupId, userDto(userId));
+        studentIsLoggedIn();
+        List<PublishedSurveyTemplateDto> surveys = dao.queryPublishedTemplates(studentQuery());
+        assertCollectionSize(surveys, 1);
+    }
+
+    private UserDto userDto(Long id) {
+        UserDto user = new UserDto();
+        user.setId(id);
+        return user;
     }
 
     private void studentIsLoggedIn() {
