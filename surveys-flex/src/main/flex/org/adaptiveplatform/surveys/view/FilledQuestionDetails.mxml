@@ -28,7 +28,7 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
 			import mx.utils.StringUtil;
-
+			
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
@@ -212,8 +212,13 @@
 			}
 
 			private function takeSnapshot(comp:DisplayObject):void {
-				display=true;
+				
+				var legendItemCSS:CSSStyleDeclaration;
+				legendItemCSS = StyleManager.getStyleDeclaration("Legend");
+				legendItemCSS.setStyle("color", "#000000");
 
+				display=true;
+				
 				(comp as UIComponent).setStyle("color", "#000000");
 				(comp as UIComponent).validateNow();
 
@@ -559,7 +564,7 @@
 
 	</mx:TabNavigator>
 
-	<mx:VBox width="800"
+	<mx:VBox width="1000"
 			 height="100%"
 			 paddingLeft="10"
 			 horizontalAlign="left"
@@ -570,6 +575,11 @@
 				  text="{currentQuestionNumber+1}. {questions.getItemAt(currentQuestionNumber).text}"
 				  includeInLayout="{display}"
 				  visible="{display}"/>
+		<mx:Legend dataProvider="{printChart}"
+				   id="printlegend"
+				   direction="horizontal"
+				   visible="{display}"
+				   includeInLayout="{display}"/>
 		<mx:BarChart width="100%"
 					 height="100%"
 					 type="100%"
@@ -583,13 +593,6 @@
 				<mx:LinearAxis/>
 			</mx:horizontalAxis>
 		</mx:BarChart>
-
-		<mx:Legend dataProvider="{printChart}"
-				   id="printlegend"
-				   direction="horizontal"
-				   styleName="printlegend"
-				   visible="{display}"
-				   includeInLayout="{display}"/>
 
 	</mx:VBox>
 
