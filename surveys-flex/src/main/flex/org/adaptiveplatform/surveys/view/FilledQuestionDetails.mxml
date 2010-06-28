@@ -214,8 +214,9 @@
 			private function takeSnapshot(comp:DisplayObject):void {
 				
 				var legendItemCSS:CSSStyleDeclaration;
-				legendItemCSS = StyleManager.getStyleDeclaration("Legend");
+				legendItemCSS = StyleManager.getStyleDeclaration("LegendItem");
 				legendItemCSS.setStyle("color", "#000000");
+				printlegend.invalidateDisplayList();
 
 				display=true;
 				
@@ -231,6 +232,7 @@
 
 				display=false;
 				(comp as UIComponent).setStyle("color", "#ffffff");
+				legendItemCSS.setStyle("color", "#ffffff");
 			}
 
 			private function takeStatistic():void {

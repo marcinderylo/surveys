@@ -21,8 +21,6 @@
 
 			private var views:ViewController;
 
-			private var evaluationDao:EvaluationDao;
-
 			private var evaluationFacade:EvaluationFacade;
 
 			[Bindable]
@@ -33,9 +31,12 @@
 				range.researchName.text="";
 				if (survey.surveyList)
 					survey.surveyList.selectedItems=[];
-				if(group.groupList){
+				if (group.groupList) {
 					group.resetGroup();
 					group.selectedGroups.removeAll();
+				}
+				if (survey) {
+					survey.resetSurvey();
 				}
 				range.start.selectedDate=null;
 				range.end.selectedDate=null;
@@ -57,7 +58,6 @@
 
 			private function onCreationComplete():void {
 				views=ContextFactory.context.view;
-				evaluationDao=ContextFactory.context.service.evaluationDao;
 				evaluationFacade=ContextFactory.context.service.evaluationFacade;
 				researchCommand=new PrepareResearchCommand();
 			}

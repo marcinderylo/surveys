@@ -55,15 +55,9 @@ Panel, Alert, TitleWindow
 	font-weight:bold;
 }
 
-.printlegend
-{
-	color: #000000;
-	fontWeight:normal;
-}
-
 LegendItem
 {
-	color: #ffffff;
+	color: #000000;
 	fontSize:14;
 	fontWeight:normal;
 }

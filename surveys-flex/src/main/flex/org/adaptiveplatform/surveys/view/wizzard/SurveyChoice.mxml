@@ -30,18 +30,18 @@
 			private var surveyFacade:SurveyFacade;
 
 			private function onCreationComplete():void {
-				surveyDao=ContextFactory.context.service.surveyDao;
 				surveyFacade=ContextFactory.context.service.surveyFacade;
 				resetSurvey();
 			}
 
-			private function resetSurvey():void {
+			public function resetSurvey():void {
 				surveyTemplateQuery=new SurveyTemplateQuery();
 				surveys=new ArrayCollection();
 				findSurveys();
 			}
 
 			protected function findSurveys():void {
+				surveyDao=ContextFactory.context.service.surveyDao;
 				surveyDao.queryTemplates(surveyTemplateQuery) //
 					.onSuccess(function(result:ArrayCollection):void {
 						surveys=result;
