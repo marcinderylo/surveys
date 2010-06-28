@@ -34,9 +34,13 @@ if (!isNaN(explicitWidth))
 {
 var tempIcon:IFlexDisplayObject = getCurrentIcon();
 var w:Number = explicitWidth;
-if (tempIcon)
-w -= tempIcon.width + getStyle("horizontalGap") + getStyle("paddingLeft") + getStyle("paddingRight");
+var h:Number = explicitHeight;
+if (tempIcon){
+	w -= tempIcon.width + getStyle("horizontalGap") + getStyle("paddingLeft") + getStyle("paddingRight");
+	h -= tempIcon.height + getStyle("horizontalHeight") + getStyle("paddingTop") + getStyle("paddingBottom");
+}
 textField.width = w;
+textField.height = h;
 }
 super.measure();
 }
@@ -44,8 +48,9 @@ override public function measureText(s:String):TextLineMetrics
 {
 textField.text = s;
 var lineMetrics:TextLineMetrics = textField.getLineMetrics(0);
+lineMetrics.leading = 0;
 lineMetrics.width = textField.textWidth + 4;
-lineMetrics.height = textField.textHeight + 4;
+lineMetrics.height = textField.numLines * textField.getLineMetrics(0).height + 4;
 return lineMetrics;
 }
 }
