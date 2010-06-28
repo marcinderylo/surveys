@@ -108,6 +108,10 @@
 						<mx:Button label="{resourceManager.getString('adaptive', 'btn.send')}" click="submit()" toolTip="{resourceManager.getString('adaptive', 'btn.saveExit')}"/>					
 					</mx:HBox>
 				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('adaptive', 'surveyCreating.survey.description')}" />
+					<mx:TextArea id="surveyDescription" width="100%" text="{survey.description}"/>
+				</mx:HBox>
 			</mx:VBox>
 		</mx:ApplicationControlBar>
 		<components:SurveyQuestionsScrollPane id="questions"
