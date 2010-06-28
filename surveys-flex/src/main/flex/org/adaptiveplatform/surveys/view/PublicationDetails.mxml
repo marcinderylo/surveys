@@ -81,6 +81,7 @@
 						filledSurveys=research.submittedSurveys;
 						if (research.status)
 							status.text=research.status.name;
+						groupNames.text="";
 						for each (var group:String in result.groups) {
 							groupNames.text+=group + ", ";
 						}

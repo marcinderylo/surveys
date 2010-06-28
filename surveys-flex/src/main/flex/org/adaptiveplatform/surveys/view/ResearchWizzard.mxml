@@ -33,8 +33,10 @@
 				range.researchName.text="";
 				if (survey.surveyList)
 					survey.surveyList.selectedItems=[];
-				if(group.groupList)
+				if(group.groupList){
 					group.resetGroup();
+					group.selectedGroups.removeAll();
+				}
 				range.start.selectedDate=null;
 				range.end.selectedDate=null;
 			}

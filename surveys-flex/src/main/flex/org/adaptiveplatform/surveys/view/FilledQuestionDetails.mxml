@@ -27,6 +27,7 @@
 			import mx.graphics.codec.PNGEncoder;
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
+			import mx.utils.StringUtil;
 
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ContextFactory;
@@ -141,6 +142,7 @@
 
 				}
 				var mySeries:Array=new Array();
+				var myPrintSeries:Array=new Array();
 
 				for (var i:int=0; i < research.templateDto.questions.getItemAt(currentQuestionNumber).answers.length; i++) {
 					var serie:BarSeries=new BarSeries();
@@ -150,10 +152,22 @@
 					serie.setStyle("labelPosition", "inside");
 					serie.maxBarWidth=15;
 					mySeries.push(serie);
+					
+					var printSerie:BarSeries=new BarSeries();
+					printSerie.xField=(i + 1).toString();
+					printSerie.displayName=research.templateDto.questions.getItemAt(currentQuestionNumber).answers.getItemAt(i).text; //resourceManager.getString('adaptive', 'answerLabel') + " " + (i + 1);
+					printSerie.labelField=(i + 1).toString();
+					printSerie.setStyle("labelPosition", "inside");
+					printSerie.maxBarWidth=15;
+					myPrintSeries.push(printSerie);
+					
 				}
 				chart.series=mySeries;
 				chart.dataProvider=statistics;
 				chart.validateNow();
+				printChart.series=myPrintSeries;
+				printChart.dataProvider=statistics;
+				printChart.validateNow()
 			}
 
 			private function getSelected(list:ArrayCollection):String {
@@ -222,7 +236,7 @@
 				for (var i:int=0; i < question.answers.length; i++) {
 					spreadsheetText+=i + "\t";
 				}
-				spreadsheetText=trim(spreadsheetText);
+				spreadsheetText=StringUtil.trim(spreadsheetText);
 				spreadsheetText+="\n";
 				for each (var filledSurvey:FilledSurveyDto in filledSurveys) {
 					answers=filledSurvey.questions.getItemAt(currentQuestionNumber).answers;
@@ -235,16 +249,12 @@
 						}
 					}
 					count++;
-					spreadsheetText=trim(spreadsheetText);
+					spreadsheetText=StringUtil.trim(spreadsheetText);
 					spreadsheetText+="\n";
 				}
-				spreadsheetText=trim(spreadsheetText);
+				spreadsheetText=StringUtil.trim(spreadsheetText);
 				System.setClipboard(spreadsheetText);
 				Alert.show(resourceManager.getString('adaptive', 'copyToClipBoardAlert'));
-			}
-
-			private function trim(text:String):String {
-				return text.substr(0, text.length - 1);
 			}
 
 			/*  private function filterByPhrase(object:Object):Boolean {
@@ -256,13 +266,14 @@
 			private function displaySearchResult():void {
 				//answerList.dataProvider.filterFunction = filterByPhrase;
 				answerList.dataProvider.refresh();
-				phrase.dataProvider.addItem(phrase.text);
-				savePhrase(phrase.text);
+				if (StringUtil.trim(phrase.text) != "") {
+					phrase.dataProvider.addItem(phrase.text);
+					savePhrase(phrase.text);
+				}
 			}
 
 			private function savePhrase(text:String):void {
 				evaluationFacade.rememberSearchPhrase(research.id, currentQuestionNumber + 1, text).onSuccess(function(o:Object):void {
-						trace("success"); //todo
 					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
 			}
 
@@ -387,20 +398,13 @@
 				</mx:HBox>
 				<mx:Legend dataProvider="{chart}"
 						   direction="horizontal"
-						   id="legend"
-						   visible="{!display}"
-						   includeInLayout="{!display}"/>
+						   id="legend"/>
 			</mx:VBox>
 
 			<mx:VBox width="60%"
 					 height="100%"
 					 paddingLeft="10"
-					 horizontalAlign="right"
-					 id="chartSnaphot">
-				<mx:Label id="chartTitle"
-						  text="{questions.getItemAt(currentQuestionNumber).text}"
-						  includeInLayout="{display}"
-						  visible="{display}"/>
+					 horizontalAlign="right">
 				<mx:BarChart id="chart"
 							 width="100%"
 							 height="100%"
@@ -456,13 +460,6 @@
 						<mx:LinearAxis/>
 					</mx:horizontalAxis>
 				</mx:BarChart>
-
-				<mx:Legend dataProvider="{chart}"
-						   id="printlegend"
-						   direction="horizontal"
-						   styleName="printlegend"
-						   visible="{display}"
-						   includeInLayout="{display}"/>
 
 			</mx:VBox>
 		</mx:HBox>
@@ -561,5 +558,39 @@
 		</mx:VBox>
 
 	</mx:TabNavigator>
+
+	<mx:VBox width="800"
+			 height="100%"
+			 paddingLeft="10"
+			 horizontalAlign="left"
+			 id="chartSnaphot"
+			 visible="{display}"
+			 includeInLayout="false">
+		<mx:Label id="chartTitle"
+				  text="{currentQuestionNumber+1}. {questions.getItemAt(currentQuestionNumber).text}"
+				  includeInLayout="{display}"
+				  visible="{display}"/>
+		<mx:BarChart width="100%"
+					 height="100%"
+					 type="100%"
+					 fontSize="12"
+					 id="printChart">
+			<mx:verticalAxis>
+				<mx:CategoryAxis categoryField="group"/>
+			</mx:verticalAxis>
+
+			<mx:horizontalAxis>
+				<mx:LinearAxis/>
+			</mx:horizontalAxis>
+		</mx:BarChart>
+
+		<mx:Legend dataProvider="{printChart}"
+				   id="printlegend"
+				   direction="horizontal"
+				   styleName="printlegend"
+				   visible="{display}"
+				   includeInLayout="{display}"/>
+
+	</mx:VBox>
 
 </mx:TitleWindow>
