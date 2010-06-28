@@ -62,6 +62,7 @@
 			
 			private function reset():void {
 				surveyName.text = "";
+				surveyDescription.text = "";
 				surveyTemplateQuery = new SurveyTemplateQuery();
 				survey = new SurveyTemplateDto();
 				survey.questions = new ArrayCollection();
@@ -126,7 +127,7 @@
 			private function submit():void {
 				if( isCreationValid() ){
 					surveyFacade.createTemplate(prepareCreateCommand())
-						.onSuccess( function(id:Number):void{ survey.id = id } )
+						.onSuccess( function(id:Number):void{ survey.id = id, survey.description = surveyDescription.text } )
 						.onFault(BusinessExceptionHandler.displayAlert(resourceManager));
 				}
 			}
@@ -147,10 +148,11 @@
 			}
 			
 			private function prepareCreateCommand():CreateSurveyTemplateCommand{
-					var createCommand:CreateSurveyTemplateCommand = new CreateSurveyTemplateCommand();
-					createCommand.name = surveyName.text;
-					createCommand.questions = survey.questions;
-					return createCommand;			
+				var createCommand:CreateSurveyTemplateCommand = new CreateSurveyTemplateCommand();
+				createCommand.name = surveyName.text;
+				createCommand.questions = survey.questions;
+				createCommand.description = surveyDescription.text;
+				return createCommand;			
 			}
 			
 			private function isCreationValid():Boolean{
@@ -225,23 +227,31 @@
 	
 	<mx:VBox x="0" y="0" height="100%" width="100%">
 			<mx:ApplicationControlBar width="100%">
-				<mx:Label text="{resourceManager.getString('adaptive', 'surveyName')}:" width="100"/>
-				<mx:TextInput id="surveyName" width="100%"/> 
-				<mx:Button toolTip="{resourceManager.getString('adaptive', 'addQuestion')}"
-						   label="{resourceManager.getString('adaptive', 'addQuestion')}"
-						   icon="@Embed(source='/assets/icons/add.png')"
-						   click="addQuestion()"/>
-				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
-						   label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
-						   visible="{ !isNaN(survey.id) }"
-						   includeInLayout="{ !isNaN(survey.id) }"
-						   click="submit()" height="100%"/>
-				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.save')}"
-						   label="{resourceManager.getString('adaptive', 'btn.save')}"
-						   click="update()" height="100%"/>
-				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.exit')}"
-						   label="{resourceManager.getString('adaptive', 'btn.exit')}"
-						   click="exit()" height="100%"/>
+				<mx:VBox width="100%">
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('adaptive', 'surveyName')}:" width="100"/>
+						<mx:TextInput id="surveyName" width="100%"/> 
+						<mx:Button toolTip="{resourceManager.getString('adaptive', 'addQuestion')}"
+								   label="{resourceManager.getString('adaptive', 'addQuestion')}"
+								   icon="@Embed(source='/assets/icons/add.png')"
+								   click="addQuestion()"/>
+						<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
+								   label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
+								   visible="{ !isNaN(survey.id) }"
+								   includeInLayout="{ !isNaN(survey.id) }"
+								   click="submit()" height="100%"/>
+						<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.save')}"
+								   label="{resourceManager.getString('adaptive', 'btn.save')}"
+								   click="update()" height="100%"/>
+						<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.exit')}"
+								   label="{resourceManager.getString('adaptive', 'btn.exit')}"
+								   click="exit()" height="100%"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('adaptive', 'surveyCreating.survey.description')}" />
+						<mx:TextArea id="surveyDescription" width="100%" text="{survey.description}"/>
+					</mx:HBox>
+				</mx:VBox>
 			</mx:ApplicationControlBar>
 			<mx:DataGrid dataProvider="{survey.questions}" width="100%" height="100%"
 				 draggableColumns="false" sortableColumns="true" rowHeight="26" dragEnabled="true" dropEnabled="true"
