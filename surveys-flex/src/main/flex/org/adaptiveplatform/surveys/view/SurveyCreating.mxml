@@ -87,11 +87,11 @@
 			private function update():void {
 				if( isCreationValid() ){
 					survey.questions = questionsList.dataProvider as ArrayCollection;
-					if( isNaN(survey.id ) ){
-						submit();
-					}else{
+					if( !isNaN(survey.id) ){
 						surveyFacade.updateTemplate( survey.id, prepareCreateCommand())
 							.onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+					}else{
+						submit();
 					}
 				}
 			}
@@ -125,10 +125,9 @@
 			
 			private function submit():void {
 				if( isCreationValid() ){
-					if(!nameAlreadyExists()){
-						surveyFacade.createTemplate(prepareCreateCommand())
-							.onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-					}
+					surveyFacade.createTemplate(prepareCreateCommand())
+						.onSuccess( function(id:Number):void{ survey.id = id } )
+						.onFault(BusinessExceptionHandler.displayAlert(resourceManager));
 				}
 			}
 			
@@ -234,8 +233,8 @@
 						   click="addQuestion()"/>
 				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
 						   label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
-						   visible="{isEditMode}"
-						   includeInLayout="{isEditMode}"
+						   visible="{ !isNaN(survey.id) }"
+						   includeInLayout="{ !isNaN(survey.id) }"
 						   click="submit()" height="100%"/>
 				<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.save')}"
 						   label="{resourceManager.getString('adaptive', 'btn.save')}"
