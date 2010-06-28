@@ -4,6 +4,7 @@
 		   creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
+			import mx.events.CloseEvent;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -132,7 +133,14 @@
 			}
 			
 			private function exit():void{
-				ContextFactory.context.view.goto(View.BACK);
+				Alert.show( resourceManager.getString('adaptive', 'createQuestion.exitWarningMessage'), 
+					resourceManager.getString('adaptive', 'createQuestion.warning'), 3, this, alertHandler );
+			}
+
+			private function alertHandler(event:CloseEvent):void{
+				if( event.detail == Alert.YES ){
+					ContextFactory.context.view.goto(View.BACK);					
+				}
 			}
 			
 			private function addQuestion():void{
