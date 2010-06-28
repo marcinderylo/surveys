@@ -87,7 +87,9 @@
             private function saveQuestion():void{
             	for each( var answerQuestion:AnswerTemplateDto in question.answers ){
             		answerQuestion.requiresComment = answerQuestion.requiresComment || questionDataView.requireCommentCheckbox.selected;
-            		answerQuestion.excludesOtherAnswers = answerQuestion.requiresComment || answerQuestion.excludesOtherAnswers;
+            		answerQuestion.excludesOtherAnswers = answerQuestion.requiresComment 
+            			|| answerQuestion.excludesOtherAnswers 
+            			|| question.type.equals(QuestionTypeEnum.SINGLE_CHOICE);
             	}
 
            		if( editMode ){
