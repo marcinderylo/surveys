@@ -99,4 +99,5 @@
 			survey="{survey}"
 			isQuestionsAnsweredList="{isQuestionsAnsweredList}"/>
 	</mx:Repeater>
+	<mx:Spacer width="100%" height="100%" />
 </mx:VBox>
