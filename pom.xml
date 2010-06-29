@@ -8,19 +8,19 @@
 	<name>Surveys ROOT</name>
 	<inceptionYear>2009</inceptionYear>
 	<url>http://adaptiveplatform.org/confluence/display/SURV/Home</url>
-	
+
 	<issueManagement>
 		<system>Jira</system>
 		<url>http://adaptiveplatform.org/jira/browse/SURV</url>
 	</issueManagement>
-	
+
 	<scm>
 		<connection>http://svn.xp-dev.com/svn/adaptive/</connection>
 		<developerConnection>http://svn.xp-dev.com/svn/adaptive/</developerConnection>
 		<tag>trunk</tag>
 		<url>http://adaptiveplatform.org/fisheye/browse/Surveys</url>
 	</scm>
-	
+
 	<properties>
 		<surveys.version>${project.version}</surveys.version>
 		<codegenerator.version>${project.version}</codegenerator.version>
@@ -28,7 +28,7 @@
 		<spring-security.version>3.0.2.RELEASE</spring-security.version>
 		<flexsdk.version>3.5.0.12683</flexsdk.version>
 	</properties>
-	
+
 	<repositories>
 		<repository>
 			<id>central</id>
@@ -46,8 +46,12 @@
 			<id>JBoss</id>
 			<url>http://repository.jboss.com/maven2</url>
 		</repository>
+		<repository>
+			<id>codehaus</id>
+			<url>http://repository.codehaus.org</url>
+		</repository>
 	</repositories>
-	
+
 	<modules>
 		<module>core-api</module>
 		<module>core-spring</module>
@@ -56,7 +60,7 @@
 		<module>surveys-flex</module>
 		<module>surveys-web</module>
 	</modules>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>
