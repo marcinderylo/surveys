@@ -7,6 +7,8 @@
 
 	<mx:Script>
 		<![CDATA[
+			import org.adaptiveplatform.surveys.view.UsersList;
+			import org.adaptiveplatform.surveys.dto.generated.UserDto;
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
 			import mx.controls.List;
@@ -21,9 +23,6 @@
 			[Bindable]
 			private var group:StudentGroupDto;
 			
-			[Bindable]
-			private var selectedItems:Array;
-			
 			public override function set data(value:Object):void{
 				group = value as StudentGroupDto;
 				this.text = group.groupName;
@@ -36,15 +35,16 @@
 			
 			private function dragDrop(event:DragEvent):void
 			{
-				dragDropFunction( selectedItems, data);
+				dragDropFunction( data);
 			}
 			
 			private function dragEnter(event:DragEvent):void{
 				var groupGrid:DataGrid = event.dragInitiator as DataGrid;
-				selectedItems = (event.dragInitiator as DataGrid).selectedItems;
-				groupGrid.selectedIndex = (groupGrid.dataProvider as ArrayCollection).getItemIndex( data );
+				var selectedGroup:int = (groupGrid.dataProvider as ArrayCollection).getItemIndex( data );
+  				groupGrid.selectedIndex = selectedGroup;
   				DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
   				DragManager.showFeedback(DragManager.COPY);
+  				groupGrid.selectedIndex = selectedGroup;
 			}
 						
 			[Bindable]

@@ -6,6 +6,7 @@
 	verticalAlign="middle" verticalScrollPolicy="off" horizontalScrollPolicy="off">
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Label;
@@ -74,6 +75,9 @@
 			[Bindable]
 			[Embed(source="/assets/icons/down.png")]
 			public var downIcon:Class;
+			
+			[Bindable]
+			private var selectedUsers:Array = new Array();
 			
 			private var selectedIndex:Number=-1;
 
@@ -157,10 +161,12 @@
 				users.refresh();
 			}
 
-			private function addToGroup(param:Array = null):void {
-				var usersToAdd:Array = param != null ? param : userList.selectedItems; 
-				if (usersToAdd.length === 0 || groupList.selectedIndex < 0)
+			private function addToGroup():void {
+				var usersToAdd:Array = userList.selectedItems.length == 0 ? selectedUsers : userList.selectedItems; 
+				if (usersToAdd.length === 0 || groupList.selectedIndex < 0){
+					Alert.show("addToGroup no user selected");
 					return;
+				}
 
 				var currentRole:String = role.dataProvider.getItemAt(role.selectedIndex).value;
 				var currentGroup:StudentGroupDto = groupList.selectedItem as StudentGroupDto;
@@ -216,9 +222,10 @@
 				return false;
 			}
 			
-			public function addToGroupByDrag(users:Array, group:StudentGroupDto):void{
+			public function addToGroupByDrag( group:StudentGroupDto):void{
 				groupList.selectedIndex = groupList.dataProvider.getItemIndex(group);
-				addToGroup(users);
+//				selectedUsers = userList.selectedItems;
+				addToGroup();
 			}
 			
             public function dragEnterHandler(event:DragEvent):void {
@@ -294,6 +301,14 @@
 					displayDetails();
 				}
 			}
+			
+			private function startDragHandler(event:DragEvent):void{
+				selectedUsers = [];
+//				for each( var i:Number in userList.selectedIndices ){
+//					selectedUsers.push( i );
+//				}
+				selectedUsers = userList.selectedItems;
+			}
 		]]>
 	</mx:Script>
 	<mx:Resize id="resize"/>
@@ -318,7 +333,7 @@
 				   icon="@Embed(source='/assets/icons/clear.png')"/>
 		</mx:ApplicationControlBar>
 		<mx:DataGrid id="userList" width="100%" height="100%" dataProvider="{users}" selectable="true"
-					 rowHeight="26" allowMultipleSelection="true" dragEnabled="true">
+					 rowHeight="26" allowMultipleSelection="true" dragEnabled="true" dragStart="startDragHandler(event)">
 			<mx:columns>
 				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'name')}" dataField="name"/>
 				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'email')}" dataField="email"/>
