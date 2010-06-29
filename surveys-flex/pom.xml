@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>surveys-flex</artifactId>
-	<version>0.1.M2-SNAPSHOT</version>
+	<version>0.2.final-SNAPSHOT</version>
 	<packaging>swf</packaging>
 	<name>Surveys - Flex GUI</name>
 	<parent>
 		<groupId>org.adaptiveplatform.surveys</groupId>
 		<artifactId>surveys</artifactId>
-		<version>0.1.M2-SNAPSHOT</version>
+		<version>0.2.final-SNAPSHOT</version>
 	</parent>
 
 	<properties>

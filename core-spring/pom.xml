@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>core-spring</artifactId>
-	<version>0.1.M2-SNAPSHOT</version>
+	<version>0.2.final-SNAPSHOT</version>
 	<name>Surveys - core implementation and configuration</name>
 	<parent>
 		<groupId>org.adaptiveplatform.surveys</groupId>
 		<artifactId>surveys</artifactId>
-		<version>0.1.M2-SNAPSHOT</version>
+		<version>0.2.final-SNAPSHOT</version>
 	</parent>
 
 	<build>

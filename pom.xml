@@ -4,7 +4,7 @@
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>surveys</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.M2-SNAPSHOT</version>
+	<version>0.2.final-SNAPSHOT</version>
 	<name>Surveys ROOT</name>
 	<inceptionYear>2009</inceptionYear>
 	<url>http://adaptiveplatform.org/confluence/display/SURV/Home</url>
@@ -23,7 +23,7 @@
 
 	<properties>
 		<surveys.version>${project.version}</surveys.version>
-		<codegenerator.version>${project.version}</codegenerator.version>
+		<codegenerator.version>0.2.final-SNAPSHOT</codegenerator.version>
 		<spring.version>3.0.2.RELEASE</spring.version>
 		<spring-security.version>3.0.2.RELEASE</spring-security.version>
 		<flexsdk.version>3.5.0.12683</flexsdk.version>
