@@ -164,7 +164,6 @@
 			private function addToGroup():void {
 				var usersToAdd:Array = userList.selectedItems.length == 0 ? selectedUsers : userList.selectedItems; 
 				if (usersToAdd.length === 0 || groupList.selectedIndex < 0){
-					Alert.show("addToGroup no user selected");
 					return;
 				}
 
