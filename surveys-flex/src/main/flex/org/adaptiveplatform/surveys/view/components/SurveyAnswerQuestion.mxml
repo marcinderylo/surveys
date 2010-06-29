@@ -83,8 +83,10 @@
 				for each( var answer:SurveyQuestionAnswerDto in question.answers ){
 					var checkBox:AnswerCheckBox = new AnswerCheckBox();
 					checkBox.answer = answer;
-//					checkBox.addEventListener(Event.CHANGE, uncheckButtonsThatDisallow );
-					checkBox.addEventListener(MouseEvent.CLICK, uncheckButtonsThatDisallow );
+					checkBox.addEventListener(MouseEvent.CLICK, 
+						function(event:MouseEvent):void{
+							uncheckButtonsThatDisallow(event.target.answer as SurveyQuestionAnswerDto);
+						} );
 					content.addChild( checkBox );
 				}
 			}
@@ -187,10 +189,19 @@
 				}
 			}
 
-			public function uncheckButtonsThatDisallow(evt:Event):void{
+			public function uncheckButtonsThatDisallow(_questAns:SurveyQuestionAnswerDto):void{
 				for each (var questionAnswer:SurveyQuestionAnswerDto in question.answers) {
+					if( _questAns != questionAnswer ){
+						if( _questAns.disallowsOtherAnswers || _questAns.requiresComment ){
+							// disallow all
+							questionAnswer.selected = false;
+						}else{
+							//disallow only this which disallows other
+							questionAnswer.selected = !(questionAnswer.disallowsOtherAnswers || questionAnswer.requiresComment);
+						}
+					}
 					if( questionAnswer.disallowsOtherAnswers || questionAnswer.requiresComment ){
-						questionAnswer.selected = false;
+						questionAnswer.selected = _questAns == questionAnswer;
 					}
 					question.answers.itemUpdated(questionAnswer);
 				}
