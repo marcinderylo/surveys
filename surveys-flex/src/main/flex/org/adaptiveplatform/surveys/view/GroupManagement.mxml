@@ -177,17 +177,17 @@
 				changeGoupCommand.groupId = currentGroup.id;
 
 				for each (var user:UserDto in usersToAdd) {
-					if( !isNotInGroup(user, currentGroup.evaluators) &&
-							!isNotInGroup(user, currentGroup.administrators) &&
-								!isNotInGroup(user, currentGroup.students) )
-					{
+//					if( !isNotInGroup(user, currentGroup.evaluators) &&
+//							!isNotInGroup(user, currentGroup.administrators) &&
+//								!isNotInGroup(user, currentGroup.students) )
+//					{
 						var addMembersCommand:AddGroupMemberCommand = new AddGroupMemberCommand();
 						addMembersCommand.email = user.email;
 						addMembersCommand.role = currentRole;
 						findGroups();
 						changeGoupCommand.addMembers.addItem(addMembersCommand);
 						
-					}
+//					}
 				}
 				changeMembers();
 				userList.selectedItems = [];
