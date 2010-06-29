@@ -121,8 +121,8 @@
 					change="changeRequiresCommentCheckbox(event)"
 					labelPlacement="top"/>
 			</mx:HBox>
-			<mx:HBox id="excludeOthersControls" visible="{!requiresCommentGlobal }" 
-				includeInLayout="{!requiresCommentGlobal}">
+			<mx:HBox id="excludeOthersControls" visible="{ (questionType != QuestionTypeEnum.SINGLE_CHOICE)}" 
+				includeInLayout="{ (questionType != QuestionTypeEnum.SINGLE_CHOICE) }">
 				<mx:Label text="{resourceManager.getString('adaptive', 'disallowsOther')}: "/>
 				<mx:CheckBox id="excludesOtherAnswers" 
 					selected="{answer.excludesOtherAnswers || answer.requiresComment}" 
