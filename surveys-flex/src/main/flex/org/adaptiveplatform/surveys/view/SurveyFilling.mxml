@@ -110,7 +110,7 @@
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('adaptive', 'surveyCreating.survey.description')}" />
-					<mx:TextArea id="surveyDescription" width="100%" text="{survey.description}"/>
+					<mx:TextArea id="surveyDescription" editable="false" width="100%" text="{survey.description}"/>
 				</mx:HBox>
 			</mx:VBox>
 		</mx:ApplicationControlBar>
