@@ -39,7 +39,6 @@
 				view = ContextFactory.context.view;
 				surveyDao = ContextFactory.context.service.surveyDao;
 				surveyFacade = ContextFactory.context.service.surveyFacade;
-				reset();
 			}
 			
 			public function initializeView(ignore:* = null):void {
