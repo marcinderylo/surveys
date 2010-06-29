@@ -32,7 +32,6 @@
 				var destination:String = "surveys-web/messagebroker/amf";
 				var channelUrl:String = getChannel();
 				channelUrl = channelUrl + destination;
-				Alert.show("trying to connect to " + channelUrl);
 				ContextFactory.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
 //				ContextFactory.initializeMockContext(new ViewStackViewController(viewstack));
 			}
