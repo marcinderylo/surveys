@@ -102,7 +102,7 @@
 	</mx:Script>
 	<mx:HBox>
 		<mx:Label id="langLabel" text="{resourceManager.getString('adaptive', 'language')}"/>
-		<mx:ComboBox id="langCmbBox"
+		<mx:ComboBox id="langCmbBox" visible="false"
 					dataProvider="{locales}"
 					 labelFunction="languageComboBoxLabelFunction"
 					 change="languageComboBoxChanged(event)"/>
@@ -119,8 +119,4 @@
 			<mx:Button label="{resourceManager.getString('adaptive', 'register')}" click="view.goto(View.REGISTER_USER)" width="50%"/>
 		</mx:FormItem>
 	</mx:Form>
-	<mx:Label text="{resourceManager.getString('adaptive', 'try')}:"/>
-	<mx:Label text="john@doe.com / doe (user)"/>
-	<mx:Label text="eval@adapt.com / eval (evaluator)"/>
-	<mx:Label text="keyser@soze.com / soze (super user)"/>
 </mx:VBox>

@@ -2,8 +2,7 @@
 <mx:Label xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
 	dragDrop="dragDrop(event)" 
 	dragEnter="dragEnter(event)"
-	text="{group.groupName}">
-
+	text="{group==null?'':group.groupName}">
 
 	<mx:Script>
 		<![CDATA[

@@ -5,8 +5,10 @@
 		<![CDATA[
 			import mx.controls.Alert;
 			import mx.core.Application;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import mx.events.CloseEvent;
+			
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.application.ContextFactory;
 			import org.adaptiveplatform.surveys.view.View;
 			[Bindable]
 			private var loggedUser:String;
@@ -33,8 +35,15 @@
 			}
 
 			private function logout():void {
-				authentication.logout().onSuccessGoto(View.LOGIN);
-				reloadApplication();
+				Alert.show(resourceManager.getString('adaptive', 'logout.confirmation'),
+					null,Alert.YES | Alert.NO, Application.application as Application,
+					function(eventObj:CloseEvent):void{
+						if (eventObj.detail==Alert.YES) {
+							authentication.logout().onSuccessGoto(View.LOGIN);
+							reloadApplication();
+						}
+					});
+				
 			}
 		]]>
 	</mx:Script>

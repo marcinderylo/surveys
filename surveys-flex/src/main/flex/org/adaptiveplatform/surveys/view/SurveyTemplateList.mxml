@@ -132,7 +132,7 @@
 		<components:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyName')}" dataField="name" />
 			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupName')}" dataField="groupName"/>
-			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'filled')}">
+			<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'filled')}" width="40">
 				<mx:itemRenderer>
 					<mx:Component>
 						<mx:Image source="{outerDocument.surveyFilled(data)}" horizontalAlign="center" toolTip="{outerDocument.surveyFilledTooltip(data)}"/>
