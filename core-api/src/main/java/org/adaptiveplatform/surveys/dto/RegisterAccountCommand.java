@@ -4,10 +4,6 @@ import java.io.Serializable;
 
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
-
-/**
- * @author Rafal
- */
 @RemoteObject
 public class RegisterAccountCommand implements Serializable {
 	private static final long serialVersionUID = -3059429636827523198L;
@@ -17,7 +13,6 @@ public class RegisterAccountCommand implements Serializable {
 	private String email;
 
 	public RegisterAccountCommand() {
-        // to be used rather by serialization framework
 	}
 
 	public RegisterAccountCommand(String name, String password, String email) {

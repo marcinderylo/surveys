@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>surveys-flex</artifactId>
-	<version>0.2.final-SNAPSHOT</version>
+	<version>0.9</version>
 	<packaging>swf</packaging>
 	<name>Surveys - Flex GUI</name>
 	<parent>
 		<groupId>org.adaptiveplatform.surveys</groupId>
 		<artifactId>surveys</artifactId>
-		<version>0.2.final-SNAPSHOT</version>
+		<version>0.9</version>
 	</parent>
 
 	<properties>
@@ -39,7 +39,7 @@
 						<locale>en_US</locale>
 						<locale>pl_PL</locale>
 					</compiledLocales>
-					<resourceBundlePath>${basedir}/locale/{locale}</resourceBundlePath>
+					<resourceBundlePath>${basedir}/src/main/locale/{locale}</resourceBundlePath>
 					<sourceFile>Main.mxml</sourceFile>
 				</configuration>
 			</plugin>
@@ -82,9 +82,7 @@
 							<goal>wrapper</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>
-								${project.build.sourceDirectory}
-                                </outputDirectory>
+							<outputDirectory>${project.build.directory}/wrapper</outputDirectory>
 							<htmlName>index</htmlName>
 							<parameters>
 								<title>Surveys</title>
@@ -112,6 +110,12 @@
 								<includeClass>*Dao</includeClass>
 								<includeClass>*Enum</includeClass>
 							</includeJavaClasses>
+							<extraOptions>
+							<translatePackages>
+								org.adaptiveplatform.surveys.application=org.adaptiveplatform.surveys.application.generated			
+								org.adaptiveplatform.surveys.dto=org.adaptiveplatform.surveys.dto.generated							
+							</translatePackages>
+							</extraOptions>
 						</configuration>
 					</execution>
 				</executions>

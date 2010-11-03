@@ -102,7 +102,7 @@
 	</mx:Script>
 	<mx:HBox>
 		<mx:Label id="langLabel" text="{resourceManager.getString('adaptive', 'language')}"/>
-		<mx:ComboBox id="langCmbBox" visible="false"
+		<mx:ComboBox id="langCmbBox"
 					dataProvider="{locales}"
 					 labelFunction="languageComboBoxLabelFunction"
 					 change="languageComboBoxChanged(event)"/>

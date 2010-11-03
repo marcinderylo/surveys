@@ -4,6 +4,9 @@ import org.springframework.flex.core.ExceptionTranslator;
 
 import flex.messaging.MessageException;
 
+/**
+ * Translates java exceptions to flex exceptions.
+ */
 public class GenericExceptionTranslator implements ExceptionTranslator {
 
 	private final String errorCode;

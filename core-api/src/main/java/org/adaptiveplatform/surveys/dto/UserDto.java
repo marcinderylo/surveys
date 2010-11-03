@@ -37,7 +37,7 @@ public class UserDto implements Serializable {
 	@JoinTable(name = "USER_ACCOUNTS_PRIVILEGES", joinColumns = @JoinColumn(name = "USER_ACCOUNT"))
 	@Column(name = "PRIVILEGE")
 	private List<String> roles = new ArrayList<String>();
-
+	
 	public Long getId() {
 		return id;
 	}

@@ -6,9 +6,7 @@
 	<mx:Metadata>
 		[ResourceBundle("adaptive")]
 	</mx:Metadata>
-	
-	<!--<reflexutil:ReflexUtil />-->
-	
+
 	<mx:Style source="/assets/css/Main.css"/>
 	<mx:Script>
 		<![CDATA[
@@ -33,7 +31,6 @@
 				var channelUrl:String = getChannel();
 				channelUrl = channelUrl + destination;
 				ContextFactory.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
-//				ContextFactory.initializeMockContext(new ViewStackViewController(viewstack));
 			}
 			
 		  	private function getChannel():String {
@@ -60,8 +57,6 @@
 			}
 
 			private function onViewChange(event:IndexChangedEvent):void {
-//				breadCrumbs.updateViewPath();
-				// FIXME global login/logout events
 				navigation.onUpdateComplete();
 				userInfo.onUpdateComplete();
 				navigation.visible = navigationVisible();
@@ -101,6 +96,5 @@
 				<view:EvaluatorStartPage id="evaluatorStartPage" label="evaluatorStartPage" updateComplete="onUpdateComplete(event)" />
 			</mx:ViewStack>
 		</mx:Panel>
-		<mx:Image source="@Embed(source='/assets/images/baner_projektu.png')" width="50%" horizontalAlign="center"/>
 	</mx:VBox>
 </mx:Application>

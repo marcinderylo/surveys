@@ -11,21 +11,12 @@
 	<fileSets>
 		<fileSet>
 			<directory>
-				${project.build.directory}
-			 </directory>
+				${project.build.directory}/wrapper
+			</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
 				<exclude>
-					**/*.as
-				</exclude>
-				<exclude>
-					**/*.mxml
-				</exclude>
-				<exclude>
-					**/*.swf.cache
-				</exclude>
-				<exclude>
-					**/.svn/**
+					template.zip
 				</exclude>
 			</excludes>
 		</fileSet>

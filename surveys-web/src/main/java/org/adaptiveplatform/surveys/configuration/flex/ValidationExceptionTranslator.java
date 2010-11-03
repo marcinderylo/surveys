@@ -5,6 +5,9 @@ import org.springframework.flex.core.ExceptionTranslator;
 
 import flex.messaging.MessageException;
 
+/**
+ * Translates java validation exceptions to flex exceptions.
+ */
 public class ValidationExceptionTranslator implements ExceptionTranslator {
 
 	@Override
