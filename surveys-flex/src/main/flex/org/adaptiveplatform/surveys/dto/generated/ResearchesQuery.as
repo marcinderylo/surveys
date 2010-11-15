@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.ResearchesQuery")]
     public class ResearchesQuery extends ResearchesQueryBase{
+    
+    	public function ResearchesQuery(){
+		}
 	}
 }

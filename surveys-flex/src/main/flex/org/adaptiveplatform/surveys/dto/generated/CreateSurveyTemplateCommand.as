@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.CreateSurveyTemplateCommand")]
     public class CreateSurveyTemplateCommand extends CreateSurveyTemplateCommandBase{
+    
+    	public function CreateSurveyTemplateCommand(){
+		}
 	}
 }

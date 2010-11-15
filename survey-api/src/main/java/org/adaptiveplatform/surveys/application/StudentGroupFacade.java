@@ -1,11 +1,14 @@
 package org.adaptiveplatform.surveys.application;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.adaptiveplatform.adapt.commons.validation.constraints.ValidId;
 import org.adaptiveplatform.codegenerator.api.RemoteService;
 import org.adaptiveplatform.surveys.dto.ChangeGroupMembersCommand;
 import org.adaptiveplatform.surveys.dto.ChangeSurveyPublicationCommand;
 import org.adaptiveplatform.surveys.dto.CreateStudentGroupCommand;
 import org.adaptiveplatform.surveys.dto.PublishSurveyTemplateCommand;
-
 
 /**
  * @author Marcin Deryło
@@ -13,18 +16,18 @@ import org.adaptiveplatform.surveys.dto.PublishSurveyTemplateCommand;
 @RemoteService
 public interface StudentGroupFacade {
 
-    Long createGroup(CreateStudentGroupCommand command);
+	Long createGroup(@NotNull @Valid CreateStudentGroupCommand command);
 
-    /**
-     * {@link PublishSurveyTemplateCommand}
-     */
-    void assignSurveyTemplate(PublishSurveyTemplateCommand command);
+	/**
+	 * {@link PublishSurveyTemplateCommand}
+	 */
+	void assignSurveyTemplate(@NotNull @Valid PublishSurveyTemplateCommand command);
 
-    void removeSurveyTemplate(Long publishedSurveyTemplateId);
+	void removeSurveyTemplate(@ValidId Long publishedSurveyTemplateId);
 
-    void changeSurveyPublication(ChangeSurveyPublicationCommand command);
+	void changeSurveyPublication(@NotNull @Valid ChangeSurveyPublicationCommand command);
 
-    void changeGroupMembers(ChangeGroupMembersCommand command);
+	void changeGroupMembers(@NotNull @Valid ChangeGroupMembersCommand command);
 
-    void removeGroup(Long groupId);
+	void removeGroup(@ValidId Long groupId);
 }

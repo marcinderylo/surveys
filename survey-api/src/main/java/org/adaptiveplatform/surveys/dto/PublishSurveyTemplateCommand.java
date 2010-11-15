@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.adaptiveplatform.adapt.commons.validation.constraints.ValidId;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
 /**
@@ -34,14 +38,17 @@ public class PublishSurveyTemplateCommand {
 	 */
 	private Date expirationDate;
 
-        public Set<Integer> getSurveyTemplateIds() {
-                return surveyTemplateIds;
-        }
+	@NotNull
+	@Size(min = 1)
+	public Set<Integer> getSurveyTemplateIds() {
+		return surveyTemplateIds;
+	}
 
-        public void setSurveyTemplateIds(Set<Integer> surveyTemplateIds) {
-                this.surveyTemplateIds = surveyTemplateIds;
-        }
+	public void setSurveyTemplateIds(Set<Integer> surveyTemplateIds) {
+		this.surveyTemplateIds = surveyTemplateIds;
+	}
 
+	@ValidId
 	public Long getGroupId() {
 		return groupId;
 	}

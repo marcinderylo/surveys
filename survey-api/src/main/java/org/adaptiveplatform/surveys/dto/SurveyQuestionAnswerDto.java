@@ -10,7 +10,6 @@ import javax.persistence.Table;
 import org.adaptiveplatform.codegenerator.api.RemoteExclude;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
-
 @RemoteObject
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
@@ -33,8 +32,8 @@ public class SurveyQuestionAnswerDto implements Serializable {
 	private Boolean selected;
 	@Column(name = "REQUIRES_COMMENT")
 	private Boolean requiresComment;
-        @Column(name = "DISALLOWS_OTHER_ANSWERS")
-        private Boolean disallowsOtherAnswers;
+	@Column(name = "DISALLOWS_OTHER_ANSWERS")
+	private Boolean disallowsOtherAnswers;
 
 	public SurveyQuestionAnswerDto() {
 		requiresComment = Boolean.FALSE;
@@ -77,13 +76,13 @@ public class SurveyQuestionAnswerDto implements Serializable {
 		this.requiresComment = requiresComment;
 	}
 
-        public Boolean getDisallowsOtherAnswers() {
-                return disallowsOtherAnswers;
-        }
+	public Boolean getDisallowsOtherAnswers() {
+		return disallowsOtherAnswers;
+	}
 
-        public void setDisallowsOtherAnswers(Boolean disallowsOtherAnswers) {
-                this.disallowsOtherAnswers = disallowsOtherAnswers;
-        }
+	public void setDisallowsOtherAnswers(Boolean disallowsOtherAnswers) {
+		this.disallowsOtherAnswers = disallowsOtherAnswers;
+	}
 
 	@Override
 	public String toString() {

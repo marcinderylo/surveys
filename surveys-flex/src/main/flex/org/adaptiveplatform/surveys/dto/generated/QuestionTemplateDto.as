@@ -6,7 +6,10 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.QuestionTemplateDto")]
     public class QuestionTemplateDto extends QuestionTemplateDtoBase{
-		
+    
+    	public function QuestionTemplateDto(){
+		}
+	
 		public function requiredComment():Boolean {
 			if(type.equals(QuestionTypeEnum.OPEN)){
 				return true;

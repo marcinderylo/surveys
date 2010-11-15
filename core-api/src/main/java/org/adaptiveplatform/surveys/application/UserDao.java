@@ -2,6 +2,8 @@ package org.adaptiveplatform.surveys.application;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.adaptiveplatform.codegenerator.api.RemoteService;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.dto.UserQuery;
@@ -12,5 +14,5 @@ public interface UserDao {
 
 	UserDto getByEmail(String email);
 
-	List<UserDto> query(UserQuery query);
+	List<UserDto> query(@Valid UserQuery query);
 }

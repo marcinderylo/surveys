@@ -1,7 +1,7 @@
 package org.adaptiveplatform.surveys.application {
-
 	
 	import mx.collections.ArrayCollection;
+	import org.adaptiveplatform.communication.ResultHandler;
 
 	public interface AuthenticationService {
 		function login(username:String, password:String):ResultHandler;

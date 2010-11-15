@@ -4,6 +4,8 @@ package org.adaptiveplatform.surveys.application {
 	import mx.messaging.ChannelSet;
 	import mx.messaging.channels.AMFChannel;
 	
+	import org.adaptiveplatform.communication.RemoteService;
+	import org.adaptiveplatform.communication.RemoteServiceImpl;
 	import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
 	import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
 	import org.adaptiveplatform.surveys.application.generated.RemoteEvaluationDao;
@@ -24,34 +26,46 @@ package org.adaptiveplatform.surveys.application {
 
 	public class ServiceLocatorRemote implements ServiceLocator {
 
-		private var channels:ChannelSet;
-
-		private var _authentication:AuthenticationService;
-		private var _userFacade:UserFacade;
-		private var _userDao:UserDao;
-		private var _surveyFacade:SurveyFacade;
-		private var _surveyDao:SurveyDao;
-		private var _studentGroupFacade:StudentGroupFacade;
-		private var _studentGroupDao:StudentGroupDao;
-		private var _evaluationFacade:EvaluationFacade;
-		private var _evaluationDao:EvaluationDao;
+		private var _authentication:AuthenticationServiceRemote;
+		private var _userFacade:RemoteUserFacade;
+		private var _userDao:RemoteUserDao;
+		private var _surveyFacade:RemoteSurveyFacade;
+		private var _surveyDao:RemoteSurveyDao;
+		private var _studentGroupFacade:RemoteStudentGroupFacade;
+		private var _studentGroupDao:RemoteStudentGroupDao;
+		private var _evaluationFacade:RemoteEvaluationFacade;
+		private var _evaluationDao:RemoteEvaluationDao;
 		
 		public function ServiceLocatorRemote(channelName:String, channelUrl:String) {
-			channels = new ChannelSet();
-			var channel:Channel = new AMFChannel(channelName, channelUrl);
-			channels.addChannel(channel);
+			var channels:ChannelSet = createChannels(channelName, channelUrl);
+			var remoteService:RemoteServiceImpl = new RemoteServiceImpl();
+			remoteService.channelSet=channels;
 
 			_authentication = new AuthenticationServiceRemote(channels);
-			_userFacade = new RemoteUserFacade(channels);
-			_userDao = new RemoteUserDao(channels);
-			_surveyFacade = new RemoteSurveyFacade(channels);
-			_surveyDao = new RemoteSurveyDao(channels);
-			_studentGroupFacade = new RemoteStudentGroupFacade(channels);
-			_studentGroupDao = new RemoteStudentGroupDao(channels);
-			_evaluationFacade = new RemoteEvaluationFacade(channels);
-			_evaluationDao = new RemoteEvaluationDao(channels);
+			_userFacade = new RemoteUserFacade();
+			_userFacade.remoteService = remoteService;
+			_userDao = new RemoteUserDao();
+			_userDao.remoteService = remoteService;
+			_surveyFacade = new RemoteSurveyFacade();
+			_surveyFacade.remoteService = remoteService;
+			_surveyDao = new RemoteSurveyDao();
+			_surveyDao.remoteService = remoteService;
+			_studentGroupFacade = new RemoteStudentGroupFacade();
+			_studentGroupFacade.remoteService = remoteService;
+			_studentGroupDao = new RemoteStudentGroupDao();
+			_studentGroupDao.remoteService = remoteService;
+			_evaluationFacade = new RemoteEvaluationFacade();
+			_evaluationFacade.remoteService = remoteService;
+			_evaluationDao = new RemoteEvaluationDao();
+			_evaluationDao.remoteService = remoteService;
 		}
-
+		private function createChannels(channelName:String, channelUrl:String):ChannelSet{
+			var channelSet:ChannelSet=new ChannelSet();
+			var channel:Channel=new AMFChannel(channelName, channelUrl);
+			channelSet.addChannel(channel);
+			return channelSet;
+		}
+		
 		public function get authentication():AuthenticationService {
 			return _authentication;
 		}

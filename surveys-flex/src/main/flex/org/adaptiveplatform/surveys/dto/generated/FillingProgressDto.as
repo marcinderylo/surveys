@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.FillingProgressDto")]
     public class FillingProgressDto extends FillingProgressDtoBase{
+    
+    	public function FillingProgressDto(){
+		}
 	}
 }

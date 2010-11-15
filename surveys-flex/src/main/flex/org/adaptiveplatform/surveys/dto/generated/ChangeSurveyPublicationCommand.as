@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.ChangeSurveyPublicationCommand")]
     public class ChangeSurveyPublicationCommand extends ChangeSurveyPublicationCommandBase{
+    
+    	public function ChangeSurveyPublicationCommand(){
+		}
 	}
 }

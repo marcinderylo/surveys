@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.adaptiveplatform.codegenerator.api.RemoteObject;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import org.adaptiveplatform.adapt.commons.validation.constraints.NonBlank;
+import org.adaptiveplatform.adapt.commons.validation.constraints.ValidId;
+import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
 /**
  *
@@ -14,32 +18,36 @@ import org.adaptiveplatform.codegenerator.api.RemoteObject;
 @RemoteObject
 public class PrepareResearchCommand implements Serializable {
 
-    private String name;
-    private Long surveyTemplateId;
-    private List<AddGroupToResearchCommand> groupsToAdd =
-            new ArrayList<AddGroupToResearchCommand>();
+	private String name;
+	private Long surveyTemplateId;
+	private List<AddGroupToResearchCommand> groupsToAdd = new ArrayList<AddGroupToResearchCommand>();
 
-    public String getName() {
-        return name;
-    }
+	@NonBlank
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Long getSurveyTemplateId() {
-        return surveyTemplateId;
-    }
+	@NotNull
+	@ValidId
+	public Long getSurveyTemplateId() {
+		return surveyTemplateId;
+	}
 
-    public void setSurveyTemplateId(Long surveyTemplateId) {
-        this.surveyTemplateId = surveyTemplateId;
-    }
+	public void setSurveyTemplateId(Long surveyTemplateId) {
+		this.surveyTemplateId = surveyTemplateId;
+	}
 
-    public List<AddGroupToResearchCommand> getGroupsToAdd() {
-        return groupsToAdd;
-    }
+	@NotNull
+	@Size(min = 1)
+	public List<AddGroupToResearchCommand> getGroupsToAdd() {
+		return groupsToAdd;
+	}
 
-    public void setGroupsToAdd(List<AddGroupToResearchCommand> addGroupCommands) {
-        this.groupsToAdd = addGroupCommands;
-    }
+	public void setGroupsToAdd(List<AddGroupToResearchCommand> addGroupCommands) {
+		this.groupsToAdd = addGroupCommands;
+	}
 }

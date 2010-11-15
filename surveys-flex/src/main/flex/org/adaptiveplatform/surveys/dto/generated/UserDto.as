@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.UserDto")]
     public class UserDto extends UserDtoBase{
+    
+    	public function UserDto(){
+		}
 	}
 }

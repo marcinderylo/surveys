@@ -1,9 +1,9 @@
 package org.adaptiveplatform.surveys.application.mock {
 	import mx.collections.ArrayCollection;
 	
-	import org.adaptiveplatform.surveys.application.FaultResultHandler;
-	import org.adaptiveplatform.surveys.application.ResultHandler;
-	import org.adaptiveplatform.surveys.application.SuccessResultHandler;
+	import org.adaptiveplatform.communication.FaultResultHandler;
+	import org.adaptiveplatform.communication.ResultHandler;
+	import org.adaptiveplatform.communication.SuccessResultHandler;
 	import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 	import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
 	import org.adaptiveplatform.surveys.dto.generated.CreateSurveyTemplateCommand;

@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.FilledSurveyQuery")]
     public class FilledSurveyQuery extends FilledSurveyQueryBase{
+    
+    	public function FilledSurveyQuery(){
+		}
 	}
 }

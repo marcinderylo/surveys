@@ -1,6 +1,8 @@
 package org.adaptiveplatform.surveys.dto;
 
+import org.adaptiveplatform.adapt.commons.validation.constraints.NonBlank;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
+import org.apache.bval.constraints.Email;
 
 /**
  * @author Marcin Deryło
@@ -25,6 +27,7 @@ public class AddGroupMemberCommand {
 		this.role = role;
 	}
 
+	@NonBlank
 	public String getRole() {
 		return role;
 	}
@@ -33,6 +36,7 @@ public class AddGroupMemberCommand {
 		this.role = role;
 	}
 
+	@Email
 	public String getEmail() {
 		return email;
 	}

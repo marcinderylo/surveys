@@ -1,5 +1,6 @@
 package org.adaptiveplatform.surveys
 {
+	import org.adaptiveplatform.communication.Enum;
 	
 	public class QuestionStyleEnum extends Enum
 	{
@@ -9,6 +10,5 @@ package org.adaptiveplatform.surveys
 		public function QuestionStyleEnum(name:String = null) {
 			super(name);
 		}
-
 	}
 }

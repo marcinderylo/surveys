@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
 
 import org.adaptiveplatform.surveys.db.SqlScriptImporter;
 import org.adaptiveplatform.surveys.domain.Role;
@@ -300,7 +301,7 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         assertCollectionSize(groups, 2);
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {ConstraintViolationException.class})
     public void cantCreateGroupWithPureWhitespaceName() throws Exception {
         authenticatedAsTeacher();
         groupFacade.createGroup(new CreateStudentGroupCommand(" \n \t  "));

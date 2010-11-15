@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>surveys-flex</artifactId>
-	<version>0.9</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<packaging>swf</packaging>
 	<name>Surveys - Flex GUI</name>
 	<parent>
 		<groupId>org.adaptiveplatform.surveys</groupId>
 		<artifactId>surveys</artifactId>
-		<version>0.9</version>
+		<version>0.9.1-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -59,14 +59,9 @@
 						<type>pom</type>
 					</dependency>
 					<dependency>
-						<groupId>org.adaptiveplatform.codegenerator</groupId>
-						<artifactId>codegenerator-impl</artifactId>
-						<version>${codegenerator.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.adaptiveplatform.codegenerator</groupId>
-						<artifactId>codegenerator-impl</artifactId>
-						<version>${codegenerator.version}</version>
+						<groupId>org.adaptiveplatform.flex2java</groupId>
+						<artifactId>as3-codegenerator</artifactId>
+						<version>${flex2java.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>org.slf4j</groupId>
@@ -176,6 +171,11 @@
 		<dependency>
 			<groupId>org.adaptiveplatform.surveys</groupId>
 			<artifactId>survey-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.adaptiveplatform.flex2java</groupId>
+			<artifactId>flex2java-flex</artifactId>
+			<type>swc</type>
 		</dependency>
 
 		<!-- test -->

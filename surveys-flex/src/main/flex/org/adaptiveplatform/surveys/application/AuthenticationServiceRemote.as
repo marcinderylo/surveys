@@ -4,6 +4,10 @@ package org.adaptiveplatform.surveys.application {
 	import mx.messaging.ChannelSet;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.Fault;
+	
+	import org.adaptiveplatform.communication.AsyncTokenResultHandler;
+	import org.adaptiveplatform.communication.FaultResultHandler;
+	import org.adaptiveplatform.communication.ResultHandler;
 
 	public class AuthenticationServiceRemote implements AuthenticationService {
 

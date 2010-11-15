@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>core-api</artifactId>
-	<version>0.9</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<name>Surveys - Core API</name>
 	<parent>
 		<groupId>org.adaptiveplatform.surveys</groupId>
 		<artifactId>surveys</artifactId>
-		<version>0.9</version>
+		<version>0.9.1-SNAPSHOT</version>
 	</parent>
 
 	<build>
@@ -31,8 +31,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.adaptiveplatform.codegenerator</groupId>
+			<groupId>org.adaptiveplatform.flex2java</groupId>
 			<artifactId>codegenerator-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.adaptiveplatform.commons</groupId>
+			<artifactId>commons-validation</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>

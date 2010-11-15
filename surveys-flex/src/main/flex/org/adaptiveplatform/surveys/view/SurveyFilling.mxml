@@ -50,7 +50,7 @@
 
 			private function submit():void {
 				if(allQuestionAnswerred()){
-					surveyFacade.submit(survey.id).onSuccessGoto(View.SURVEY_TEMPLATE_LIST);
+					surveyFacade.submit(survey.id).onSuccess(views.gotoOnSuccess(View.SURVEY_TEMPLATE_LIST));
 				}else{
 					var questionsNumbersNotAnswerred:String = new String();
 					for( var i:int; i < isQuestionsAnsweredList.length; i++ ){

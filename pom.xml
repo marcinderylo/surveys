@@ -4,7 +4,7 @@
 	<groupId>org.adaptiveplatform.surveys</groupId>
 	<artifactId>surveys</artifactId>
 	<packaging>pom</packaging>
-	<version>0.9</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<name>Surveys ROOT</name>
 	<inceptionYear>2009</inceptionYear>
 	<url>http://adaptiveplatform.org/confluence/display/SURV/Home</url>
@@ -23,34 +23,11 @@
 
 	<properties>
 		<surveys.version>${project.version}</surveys.version>
-		<codegenerator.version>0.9</codegenerator.version>
+		<flex2java.version>0.9</flex2java.version>
 		<spring.version>3.0.2.RELEASE</spring.version>
 		<spring-security.version>3.0.2.RELEASE</spring-security.version>
 		<flexsdk.version>3.5.0.12683</flexsdk.version>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>central</id>
-			<url>http://repo2.maven.org/maven2</url>
-		</repository>
-		<repository>
-			<id>org.springframework.maven.milestone</id>
-			<url>http://maven.springframework.org/milestone </url>
-		</repository>
-		<repository>
-			<id>sonatype-flexmojos</id>
-			<url>http://repository.sonatype.org/content/groups/flexgroup/</url>
-		</repository>
-		<repository>
-			<id>JBoss</id>
-			<url>http://repository.jboss.com/maven2</url>
-		</repository>
-		<repository>
-			<id>codehaus</id>
-			<url>http://repository.codehaus.org</url>
-		</repository>
-	</repositories>
 
 	<modules>
 		<module>core-api</module>
@@ -67,11 +44,19 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.0.2</version>
+					<version>2.3.2</version>
 					<configuration>
 						<source>1.6</source>
 						<target>1.6</target>
 						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.3</version>
+					<configuration>
+					  <encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -291,9 +276,20 @@
 
 			<!-- application modules -->
 			<dependency>
-				<groupId>org.adaptiveplatform.codegenerator</groupId>
+				<groupId>org.adaptiveplatform.flex2java</groupId>
 				<artifactId>codegenerator-api</artifactId>
-				<version>${surveys.version}</version>
+				<version>${flex2java.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.adaptiveplatform.flex2java</groupId>
+				<artifactId>flex2java-flex</artifactId>
+				<version>${flex2java.version}</version>
+				<type>swc</type>
+			</dependency>
+			<dependency>
+				<groupId>org.adaptiveplatform.commons</groupId>
+				<artifactId>commons-validation</artifactId>
+				<version>0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.adaptiveplatform.surveys</groupId>
@@ -395,4 +391,31 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>http://repo2.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>org.springframework.maven.milestone</id>
+			<url>http://maven.springframework.org/milestone </url>
+		</repository>
+		<repository>
+			<id>sonatype-flexmojos</id>
+			<url>http://repository.sonatype.org/content/groups/flexgroup/</url>
+		</repository>
+		<repository>
+			<id>JBoss</id>
+			<url>http://repository.jboss.com/maven2</url>
+		</repository>
+		<repository>
+			<id>codehaus</id>
+			<url>http://repository.codehaus.org</url>
+		</repository>
+		<repository>
+			<id>adapt</id>
+			<url>http://svn2.xp-dev.com/svn/adapt-m2repo</url>
+		</repository>
+	</repositories>
 </project>

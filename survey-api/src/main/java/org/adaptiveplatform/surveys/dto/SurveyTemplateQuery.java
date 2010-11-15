@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
-
 @RemoteObject
 public class SurveyTemplateQuery implements Serializable {
 	private static final long serialVersionUID = 1L;

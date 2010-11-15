@@ -3,9 +3,10 @@
 		 updateComplete="onUpdateComplete()">
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
-			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
+			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.UserRole;
+			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.view.View;
 
 			[Bindable]
@@ -28,11 +29,11 @@
 			}
 
 			public function onUpdateComplete():void {
-				usersVisible = authentication.inRole("ROLE_ADMINISTRATOR");
-				fillingSurveysVisible = authentication.inRole("ROLE_USER");
-				groupsManagementVisible = authentication.inRole("ROLE_TEACHER");
-				publicationOfSurveyVisible = authentication.inRole("ROLE_EVALUATOR");
-				evaluatorStartPageVisible = authentication.inRole("ROLE_EVALUATOR");
+				usersVisible = authentication.inRole(UserRole.ADMINISTRATOR);
+				fillingSurveysVisible = authentication.inRole(UserRole.USER);
+				groupsManagementVisible = authentication.inRole(UserRole.TEACHER);
+				publicationOfSurveyVisible = authentication.inRole(UserRole.EVALUATOR);
+				evaluatorStartPageVisible = authentication.inRole(UserRole.EVALUATOR);
 			}
 		]]>
 	</mx:Script>

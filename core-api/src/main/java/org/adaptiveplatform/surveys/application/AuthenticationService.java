@@ -1,5 +1,8 @@
 package org.adaptiveplatform.surveys.application;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.adaptiveplatform.surveys.dto.UserDto;
 
 public interface AuthenticationService {
@@ -8,5 +11,5 @@ public interface AuthenticationService {
 
 	UserDto getCurrentUser();
 
-	void userSecurityCheck(Long ownwerId);
+	void userSecurityCheck(@NotNull @Valid Long ownwerId);
 }

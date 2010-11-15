@@ -5,6 +5,7 @@ package org.adaptiveplatform.surveys.application {
 	import mx.resources.ResourceBundle;
 	import mx.resources.ResourceManager;
 	import mx.utils.StringUtil;
+	import org.adaptiveplatform.communication.RemoteBusinessExceptionParametersUnmarshaller;
 	
 	public class RemoteBusinessExceptionParametersUnmarshallerTest extends TestCase	{
 		

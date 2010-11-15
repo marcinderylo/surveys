@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.AddGroupMemberCommand")]
     public class AddGroupMemberCommand extends AddGroupMemberCommandBase{
+    
+    	public function AddGroupMemberCommand(){
+		}
 	}
 }

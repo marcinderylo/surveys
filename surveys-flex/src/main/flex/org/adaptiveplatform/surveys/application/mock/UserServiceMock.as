@@ -2,9 +2,10 @@ package org.adaptiveplatform.surveys.application.mock {
 
 	import mx.collections.ArrayCollection;
 	
-	import org.adaptiveplatform.surveys.application.FaultResultHandler;
-	import org.adaptiveplatform.surveys.application.ResultHandler;
-	import org.adaptiveplatform.surveys.application.SuccessResultHandler;
+	import org.adaptiveplatform.communication.FaultResultHandler;
+	import org.adaptiveplatform.communication.ResultHandler;
+	import org.adaptiveplatform.communication.SuccessResultHandler;
+	import org.adaptiveplatform.surveys.application.UserRole;
 	import org.adaptiveplatform.surveys.application.generated.UserDao;
 	import org.adaptiveplatform.surveys.application.generated.UserFacade;
 	import org.adaptiveplatform.surveys.dto.generated.RegisterAccountCommand;
@@ -20,7 +21,7 @@ package org.adaptiveplatform.surveys.application.mock {
 		public function UserServiceMock() {
 			registerUser(createRegisterAccountCommand("jim@jim.com", "jim", "j"));
 			registerUser(createRegisterAccountCommand("bob@bob.com", "bob", "b"));
-			users["bob@bob.com"].roles.add("ROLE_ADMINISTRATOR");
+			users["bob@bob.com"].roles.addItem(UserRole.ADMINISTRATOR);
 		}
 
 		public function registerUser(registerAccountCommand:RegisterAccountCommand):ResultHandler {
@@ -33,7 +34,7 @@ package org.adaptiveplatform.surveys.application.mock {
 					user.name = registerAccountCommand.name;
 					user.id = ++id;
 					user.roles = new ArrayCollection();
-					user.roles.addItem("ROLE_USER");
+					user.roles.addItem(UserRole.USER);
 					users[user.email] = user;
 					return new SuccessResultHandler(registerAccountCommand.email);
 				} else {

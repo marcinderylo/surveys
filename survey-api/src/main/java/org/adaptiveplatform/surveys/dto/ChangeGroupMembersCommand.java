@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.adaptiveplatform.adapt.commons.validation.constraints.ValidId;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
 /**
@@ -11,7 +12,7 @@ import org.adaptiveplatform.codegenerator.api.RemoteObject;
  */
 @RemoteObject
 public class ChangeGroupMembersCommand implements Serializable {
-	
+
 	private Long groupId;
 	/**
 	 * Emails of the users to be removed from the group.
@@ -27,6 +28,7 @@ public class ChangeGroupMembersCommand implements Serializable {
 		this.addMembers = addMembers;
 	}
 
+	@ValidId
 	public Long getGroupId() {
 		return groupId;
 	}

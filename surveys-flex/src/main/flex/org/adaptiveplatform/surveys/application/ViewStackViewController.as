@@ -1,11 +1,12 @@
 package org.adaptiveplatform.surveys.application {
-	import org.adaptiveplatform.surveys.view.View;
-
 	import flash.events.Event;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.containers.ViewStack;
 	import mx.events.IndexChangedEvent;
+	import mx.rpc.events.ResultEvent;
+	
+	import org.adaptiveplatform.surveys.view.View;
 
 	public class ViewStackViewController implements ViewController {
 
@@ -42,7 +43,13 @@ package org.adaptiveplatform.surveys.application {
 			}
 			throw new Error("view " + view + " not found");
 		}
-
+		
+		public function gotoOnSuccess(view:String, ... arguments):Function{
+			return function(... ignoredParameters):void {
+				ContextFactory.context.view.goto(view, arguments);
+			};
+		}
+		
 		public function get currentView():String {
 			return _currentView;
 		}

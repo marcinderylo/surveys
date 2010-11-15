@@ -6,5 +6,8 @@ package org.adaptiveplatform.surveys.dto.generated {
 	[Bindable]
 	[RemoteClass(alias="org.adaptiveplatform.surveys.dto.TagAnswerCommand")]
     public class TagAnswerCommand extends TagAnswerCommandBase{
+    
+    	public function TagAnswerCommand(){
+		}
 	}
 }

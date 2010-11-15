@@ -9,16 +9,20 @@
 			
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
 			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.view.View;
 			[Bindable]
 			private var loggedUser:String;
 			[Bindable]
 			private var isAuthenticated:Boolean;
+			
+			private var views:ViewController;
 
 			private var authentication:AuthenticationService;
 
 			private function onCreationComplete():void {
 				authentication = ContextFactory.context.service.authentication;
+				views = ContextFactory.context.view;
 			}
 
 			public function onUpdateComplete():void {
@@ -39,11 +43,10 @@
 					null,Alert.YES | Alert.NO, Application.application as Application,
 					function(eventObj:CloseEvent):void{
 						if (eventObj.detail==Alert.YES) {
-							authentication.logout().onSuccessGoto(View.LOGIN);
+							authentication.logout().onSuccess(views.gotoOnSuccess(View.LOGIN));
 							reloadApplication();
 						}
 					});
-				
 			}
 		]]>
 	</mx:Script>
