@@ -18,7 +18,7 @@
 
 	<tx:annotation-driven />
 
-	<context:property-placeholder location="classpath:/jdbc.properties" />
+	<context:property-placeholder location="classpath:/jdbc.properties" order="2"/>
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="${jdbc.driverClassName}" />
@@ -29,6 +29,7 @@
 
 	<bean id="importSql" class="org.adaptiveplatform.surveys.db.SqlImporterBean">
 		<property name="importer" ref="sqlScriptImporter" />
+		<property name="tableBeingImported" value="ANSWERED_QUESTIONS" />
 		<property name="sqlScripts">
 			<list>
 				<value>createSchema.sql</value>

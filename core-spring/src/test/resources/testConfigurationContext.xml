@@ -20,6 +20,7 @@
 
 	<bean id="importSql" class="org.adaptiveplatform.surveys.db.SqlImporterBean">
 		<property name="importer" ref="sqlScriptImporter" />
+		<property name="tableBeingImported" value="ANSWERED_QUESTIONS" />
 		<property name="sqlScripts">
 			<list>
 				<value>createSchema.sql</value>
