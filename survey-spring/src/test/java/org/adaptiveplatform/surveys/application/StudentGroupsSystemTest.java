@@ -1,25 +1,23 @@
 package org.adaptiveplatform.surveys.application;
 
+import org.adaptiveplatform.surveys.dto.SetGroupSignUpModeCommand;
 import static org.adaptiveplatform.surveys.test.Asserts.assertCollectionSize;
 import static org.adaptiveplatform.surveys.test.Asserts.assertEmpty;
 import static org.adaptiveplatform.surveys.test.Asserts.expectException;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
-
+import static org.testng.Assert.assertTrue;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
-
 import org.adaptiveplatform.surveys.db.SqlScriptImporter;
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.dto.AddGroupMemberCommand;
 import org.adaptiveplatform.surveys.dto.ChangeGroupMembersCommand;
-import org.adaptiveplatform.surveys.dto.ChangeSurveyPublicationCommand;
 import org.adaptiveplatform.surveys.dto.CreateStudentGroupCommand;
 import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
+import org.adaptiveplatform.surveys.dto.GroupSignUpCommand;
 import org.adaptiveplatform.surveys.dto.StudentGroupDto;
 import org.adaptiveplatform.surveys.dto.StudentGroupQuery;
 import org.adaptiveplatform.surveys.exception.CantQueryGroupsAsEvaluatorException;
@@ -51,8 +49,6 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
     private StudentGroupFacade groupFacade;
     @Resource
     private StudentGroupDao groupDao;
-    @Resource
-    private SurveyDao surveyDao;
     @Resource
     private SurveyFacade surveyFacade;
 
@@ -280,8 +276,7 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         PublishedSurveyTemplateAlreadyFilledException.class})
     public void cantRemoveTemplateFromGroupIfItHasBeenFilledByStudents()
             throws Exception {
-        // given
-        authMock.authenticate(1L, "student@adapt.com", Role.USER);
+        authenticateAsStudent();
         surveyFacade.startFilling(1L);
         // when
         groupFacade.removeSurveyTemplate(1L);
@@ -317,20 +312,32 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         expectException();
     }
 
+    @Test
+    public void shouldBeAbleToOpenGroupForStudentToSignUpThemselves() throws Exception {
+        // given
+        final long groupId = 2L;
+        authenticatedAsTeacher();
+        groupFacade.setGroupSignUpMode(new SetGroupSignUpModeCommand(groupId, true));
+        // when
+        authenticateAsStudent();
+        groupFacade.signUpAsStudent(new GroupSignUpCommand(groupId));
+        // then
+        authenticatedAsTeacher();
+        final StudentGroupDto group = groupDao.getGroup(groupId);
+        assertTrue(group.getStudentsCanSignUp());
+        assertCollectionSize(group.getStudents(), 1);
+        assertEquals(first(group.getStudents()).getId(), id(1L));
+    }
+
     private void authenticatedAsTeacher() {
         // given
         authMock.authenticate(2L, "teacher@adapt.com",
                 Role.TEACHER, Role.USER);
     }
 
-    private static ChangeSurveyPublicationCommand changePublicationCmd(
-            Long publicationId, Date from, Date to) {
-        ChangeSurveyPublicationCommand cmd =
-                new ChangeSurveyPublicationCommand();
-        cmd.setPublicationId(publicationId);
-        cmd.setStartingDate(from);
-        cmd.setExpirationDate(to);
-        return cmd;
+    private void authenticateAsStudent() {
+        // given
+        authMock.authenticate(1L, "student@adapt.com", Role.USER, Role.STUDENT);
     }
 
     private static <T> T first(Collection<T> collection) {
@@ -366,4 +373,3 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         return cmd;
     }
 }
-

@@ -15,9 +15,9 @@ import javax.persistence.Table;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.AlreadyGroupMemberException;
 import org.adaptiveplatform.surveys.exception.NotEligibleForGroupRoleException;
+import org.adaptiveplatform.surveys.exception.SignupByAdministratorOnlyGroupException;
 import org.apache.commons.lang.Validate;
 import org.hibernate.annotations.CollectionOfElements;
-
 
 /**
  * @author Marcin Deryło
@@ -37,11 +37,19 @@ public class StudentGroup implements Serializable {
         @JoinColumn(name =
         "GROUP_ID")})
     private List<GroupMember> members = new ArrayList<GroupMember>();
+    @Column(name = "ALLOW_STUDENT_SIGNUP", nullable = false)
+    private Boolean allowStudentSignup = Boolean.FALSE;
 
     protected StudentGroup() {
         // To be used only by object persistence framework
     }
 
+    /**
+     * Creates a new students group, administered by given user.
+     * @param groupName name of the group (mandatory).
+     * @param user owner of the group. Must be a teacher. Will be granted the administrator role in
+     * this group.
+     */
     public StudentGroup(String groupName, UserDto user) {
         Validate.notNull(user, "Group has to be created by a user");
         validateIsInRole(user, Role.TEACHER);
@@ -60,14 +68,13 @@ public class StudentGroup implements Serializable {
 
     public boolean isGroupAdministrator(UserDto user) {
         GroupMember member = findUserMembership(user);
-        return member != null && GroupRole.GROUP_ADMINISTRATOR.equals(member.
-                getRole());
+        return member != null && GroupRole.GROUP_ADMINISTRATOR.equals(member.getRole());
     }
 
     /**
      * <p>Adds a new student to the group. He/she will be able to submit
      * answers to survey templates assigned to this group by it's evaluators.</p>
-     * <p>This action is allowed for administrators of this only.</p>
+     * <p>This action is allowed for administrators of this group only.</p>
      *
      * @param student
      */
@@ -111,8 +118,7 @@ public class StudentGroup implements Serializable {
     public void addMember(UserDto user, GroupRole role) {
         validateNotInGroupYet(user);
         if (!role.isEligible(user)) {
-            throw new NotEligibleForGroupRoleException(user.getName(), role.
-                    asPublicRole());
+            throw new NotEligibleForGroupRoleException(user.getName(), role.asPublicRole());
         }
         members.add(new GroupMember(user, role));
     }
@@ -133,8 +139,8 @@ public class StudentGroup implements Serializable {
     private void validateNotInGroupYet(UserDto user) {
         GroupMember member = findUserMembership(user);
         if (null != member) {
-            throw new AlreadyGroupMemberException(user.getEmail(), name, member.
-                    getRole().asPublicRole());
+            throw new AlreadyGroupMemberException(user.getEmail(), name, member.getRole().
+                    asPublicRole());
         }
     }
 
@@ -143,5 +149,24 @@ public class StudentGroup implements Serializable {
         Validate.notNull(member, "User '" + user.getName()
                 + "' is not a member of the group");
         members.remove(member);
+    }
+
+    /**
+     * Signs a student up into the group, if the group administrator allows it.
+     * @param student
+     */
+    public void signUpStudent(UserDto student) {
+        if (onlyAdministratorCanAddUsers()) {
+            throw new SignupByAdministratorOnlyGroupException(name);
+        }
+        addMember(student, GroupRole.STUDENT);
+    }
+
+    private boolean onlyAdministratorCanAddUsers() {
+        return !allowStudentSignup;
+    }
+
+    public void setStudentsCanSignUp(boolean studentsSignupAllowed) {
+        this.allowStudentSignup = studentsSignupAllowed;
     }
 }

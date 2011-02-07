@@ -40,7 +40,8 @@ public class StudentGroupDto implements Serializable {
     public static final class Query {
 
         public static final String GET_STUDENT_GROUP = "StudentGroupDto.getGroup";
-        public static final String GET_GROUP_NAMES_IN_RESEARCH = "StudentGroupDto.getGroupNamesInResearch";
+        public static final String GET_GROUP_NAMES_IN_RESEARCH =
+                "StudentGroupDto.getGroupNamesInResearch";
     }
     @Id
     @Column(name = "ID", insertable = false, updatable = false)
@@ -71,6 +72,8 @@ public class StudentGroupDto implements Serializable {
         @JoinColumn(name = "MEMBER_ID")})
     @WhereJoinTable(clause = "GROUP_ROLE = 'GROUP_ADMINISTRATOR'")
     private Set<UserDto> administrators = new HashSet<UserDto>();
+    @Column(name = "ALLOW_STUDENT_SIGNUP")
+    private Boolean studentsCanSignUp;
 
     public Long getId() {
         return id;
@@ -110,5 +113,13 @@ public class StudentGroupDto implements Serializable {
 
     public void setStudents(Set<UserDto> students) {
         this.students = students;
+    }
+
+    public Boolean getStudentsCanSignUp() {
+        return studentsCanSignUp;
+    }
+
+    public void setStudentsCanSignUp(Boolean studentsCanSignUp) {
+        this.studentsCanSignUp = studentsCanSignUp;
     }
 }

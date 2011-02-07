@@ -1,5 +1,6 @@
 package org.adaptiveplatform.surveys.application;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.adaptiveplatform.surveys.dto.StudentGroupQuery;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.CantQueryGroupsAsAdministratorException;
 import org.adaptiveplatform.surveys.exception.CantQueryGroupsAsEvaluatorException;
+import org.adaptiveplatform.surveys.exception.CantQueryGroupsAsStudentException;
 import org.adaptiveplatform.surveys.exception.NoSuchGroupException;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -71,21 +73,29 @@ public class HibernateStudentGroupDao implements StudentGroupDao {
                     throw new CantQueryGroupsAsEvaluatorException();
                 }
                 criteria.createAlias("evaluators", "usr");
+                criteria.add(Restrictions.eq("usr.id", caller.getId()));
+
                 break;
             case GROUP_ADMINISTRATOR:
                 if (!caller.getRoles().contains(Role.TEACHER)) {
                     throw new CantQueryGroupsAsAdministratorException();
                 }
                 criteria.createAlias("administrators", "usr");
+                criteria.add(Restrictions.eq("usr.id", caller.getId()));
+
+                break;
+            case STUDENT:
+                if (!caller.getRoles().contains(Role.STUDENT)) {
+                    throw new CantQueryGroupsAsStudentException();
+                }
                 break;
             default:// FIXME turn into validation exception
                 throw new IllegalArgumentException(
-                        "Can only query groups as GROUP_ADMINSTRATOR or EVALUATOR");
+                        "Can only query groups as STUDENT, GROUP_ADMINSTRATOR or EVALUATOR");
         }
-        criteria.add(Restrictions.eq("usr.id", caller.getId()));
         if (StringUtils.hasText(query.getGroupNamePattern())) {
-            criteria.add(Restrictions.ilike("groupName", query.
-                    getGroupNamePattern(), MatchMode.ANYWHERE));
+            criteria.add(Restrictions.ilike("groupName", query.getGroupNamePattern(),
+                    MatchMode.ANYWHERE));
         }
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.addOrder(Order.asc("groupName"));
@@ -93,7 +103,7 @@ public class HibernateStudentGroupDao implements StudentGroupDao {
         List<StudentGroupDto> groups = criteria.list();
 
         // need to anonymize groups for evaluators
-        if (GroupRoleEnum.EVALUATOR.equals(query.getRunAs())) {
+        if (resultsShouldBeAnonymized(query)) {
             for (StudentGroupDto group : groups) {
                 group.setStudents(Collections.EMPTY_SET);
                 group.setEvaluators(Collections.EMPTY_SET);
@@ -101,5 +111,10 @@ public class HibernateStudentGroupDao implements StudentGroupDao {
         }
 
         return groups;
+    }
+
+    private boolean resultsShouldBeAnonymized(StudentGroupQuery query) {
+        return Arrays.asList(GroupRoleEnum.EVALUATOR, GroupRoleEnum.STUDENT).contains(
+                query.getRunAs());
     }
 }
