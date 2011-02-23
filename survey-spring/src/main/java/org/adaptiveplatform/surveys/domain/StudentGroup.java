@@ -1,15 +1,12 @@
 package org.adaptiveplatform.surveys.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Collection;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Table;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
@@ -17,7 +14,6 @@ import org.adaptiveplatform.surveys.exception.AlreadyGroupMemberException;
 import org.adaptiveplatform.surveys.exception.NotEligibleForGroupRoleException;
 import org.adaptiveplatform.surveys.exception.SignupByAdministratorOnlyGroupException;
 import org.apache.commons.lang.Validate;
-import org.hibernate.annotations.CollectionOfElements;
 
 /**
  * @author Marcin Deryło
@@ -32,11 +28,8 @@ public class StudentGroup implements Serializable {
     private Long id;
     @Column(name = "GROUP_NAME")
     private String name;
-    @CollectionOfElements(targetElement = GroupMember.class)
-    @JoinTable(name = "STUDENT_GROUPS_MEMBERS", joinColumns = {
-        @JoinColumn(name =
-        "GROUP_ID")})
-    private List<GroupMember> members = new ArrayList<GroupMember>();
+    @Embedded
+    private GroupMemberships members = new GroupMemberships();
     @Column(name = "ALLOW_STUDENT_SIGNUP", nullable = false)
     private Boolean allowStudentSignup = Boolean.FALSE;
 
@@ -55,7 +48,7 @@ public class StudentGroup implements Serializable {
         validateIsInRole(user, Role.TEACHER);
         Validate.notEmpty(groupName, "Group name must not be empty");
         this.name = groupName;
-        members.add(new GroupMember(user, GroupRole.GROUP_ADMINISTRATOR));
+        members.addMemberWithRole(user, GroupRole.GROUP_ADMINISTRATOR);
     }
 
     public Long getId() {
@@ -67,8 +60,7 @@ public class StudentGroup implements Serializable {
     }
 
     public boolean isGroupAdministrator(UserDto user) {
-        GroupMember member = findUserMembership(user);
-        return member != null && GroupRole.GROUP_ADMINISTRATOR.equals(member.getRole());
+        return rolesOf(user).contains(GroupRole.GROUP_ADMINISTRATOR);
     }
 
     /**
@@ -83,9 +75,7 @@ public class StudentGroup implements Serializable {
     }
 
     public boolean isStudent(UserDto user) {
-        GroupMember member = findUserMembership(user);
-        return member != null && GroupRole.STUDENT.equals(
-                member.getRole());
+        return rolesOf(user).contains(GroupRole.STUDENT);
     }
 
     /**
@@ -111,8 +101,7 @@ public class StudentGroup implements Serializable {
     }
 
     public boolean isAssignedAsEvaluator(UserDto user) {
-        GroupMember member = findUserMembership(user);
-        return member != null && GroupRole.EVALUATOR.equals(member.getRole());
+        return rolesOf(user).contains(GroupRole.EVALUATOR);
     }
 
     public void addMember(UserDto user, GroupRole role) {
@@ -120,35 +109,30 @@ public class StudentGroup implements Serializable {
         if (!role.isEligible(user)) {
             throw new NotEligibleForGroupRoleException(user.getName(), role.asPublicRole());
         }
-        members.add(new GroupMember(user, role));
+        members.addMemberWithRole(user, role);
     }
 
     private static void validateIsInRole(UserDto user, String role) {
         Validate.isTrue(user.getRoles().contains(role));
     }
 
-    private GroupMember findUserMembership(UserDto user) {
-        for (GroupMember member : members) {
-            if (member.getUser().getId().equals(user.getId())) {
-                return member;
-            }
-        }
-        return null;
+    private Collection<GroupRole> rolesOf(UserDto user) {
+        return  members.getRoleOf(user);
     }
 
     private void validateNotInGroupYet(UserDto user) {
-        GroupMember member = findUserMembership(user);
-        if (null != member) {
-            throw new AlreadyGroupMemberException(user.getEmail(), name, member.getRole().
+        Collection<GroupRole> roles = rolesOf(user);
+        if (!roles.isEmpty()) {
+            throw new AlreadyGroupMemberException(user.getEmail(), name, roles.iterator().next().
                     asPublicRole());
         }
     }
 
     public void removeMember(UserDto user) {
-        GroupMember member = findUserMembership(user);
-        Validate.notNull(member, "User '" + user.getName()
+        Collection<GroupRole> roles = rolesOf(user);
+        Validate.isTrue(!roles.isEmpty(), "User '" + user.getName()
                 + "' is not a member of the group");
-        members.remove(member);
+        members.removeMember(user);
     }
 
     /**

@@ -13,6 +13,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.Table;
 
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
+import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.annotations.CollectionOfElements;
 
 
@@ -74,4 +75,8 @@ public class UserDto implements Serializable {
 	public String toString() {
 		return "UserDto [id=" + id + ", name=" + name + ", email=" + email + ", roles=" + roles + "]";
 	}
+
+    public boolean isSameAs(UserDto other) {
+        return ObjectUtils.equals(id, other.getId());
+    }
 }

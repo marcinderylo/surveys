@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.adaptiveplatform.surveys.dto.QuestionTypeEnum;
 import org.adaptiveplatform.surveys.exception.OpenQuestionHaveNoAnswersException;
-
-import org.apache.commons.lang.Validate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 

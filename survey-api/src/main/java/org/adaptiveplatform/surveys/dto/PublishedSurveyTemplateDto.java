@@ -22,16 +22,16 @@ import org.adaptiveplatform.codegenerator.api.RemoteObject;
 @NamedQueries({
     @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATE_IDS_IN_GROUPS,
     query = "SELECT sp.id FROM SurveyPublication sp JOIN sp.studentGroup g "
-    + "JOIN g.members m WHERE g.id IN (:groupIds) AND m.user = :user AND m.role = 'STUDENT'"),
+    + "JOIN g.members.members m WHERE g.id IN (:groupIds) AND m.user = :user AND m.role = 'STUDENT'"),
     @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATE_IDS,
-    query = "SELECT sp.id FROM SurveyPublication sp JOIN sp.studentGroup g JOIN g.members m "
+    query = "SELECT sp.id FROM SurveyPublication sp JOIN sp.studentGroup g JOIN g.members.members m "
     + "WHERE m.user = :user AND m.role = 'STUDENT'"),
     @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_SURVEY_TEMPLATE, query = "SELECT st "
     + "FROM PublishedSurveyTemplateDto st WHERE "
     + "st.templateId = :templateId AND " + "st.groupId = :groupId "
     + "AND (st.templateId IN (SELECT s.id FROM SurveyTemplate s WHERE (s.owner = :user) "
     + "OR s.id IN (SELECT sp.surveyTemplate.id FROM SurveyPublication sp "
-    + "JOIN sp.studentGroup g JOIN g.members m "
+    + "JOIN sp.studentGroup g JOIN g.members.members m "
     + "WHERE m.user = :user AND m.role = 'STUDENT') ))"),
     @NamedQuery(name = PublishedSurveyTemplateDto.Query.GET_IDS_IN_RESEARCH, query = "SELECT s.id FROM Research r "
     + "JOIN r.publishedSurveys s WHERE r.id = :id")
