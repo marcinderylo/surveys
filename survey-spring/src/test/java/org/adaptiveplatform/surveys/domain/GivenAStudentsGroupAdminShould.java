@@ -6,7 +6,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
-import org.adaptiveplatform.surveys.exception.AlreadyGroupMemberException;
+import org.adaptiveplatform.surveys.exception.ConflictingGroupRoleException;
 import org.adaptiveplatform.surveys.exception.NotEligibleForGroupRoleException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -65,7 +65,7 @@ public class GivenAStudentsGroupAdminShould {
         expectException();
     }
 
-    @Test(expectedExceptions = {AlreadyGroupMemberException.class})
+    @Test(expectedExceptions = {ConflictingGroupRoleException.class})
     public void notBeAbleToAddUserToGroupWithDifferentRoles() throws Exception {
         UserDto evaluator = evaluator();
         group.addStudent(evaluator);

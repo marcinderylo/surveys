@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -32,8 +33,8 @@ public class GroupMemberships implements Serializable {
         }
     }
 
-    Collection<GroupRole> getRoleOf(UserDto user) {
-        Collection<GroupRole> roles = Sets.newHashSet();
+    Set<GroupRole> getRoleOf(UserDto user) {
+        Set<GroupRole> roles = Sets.newHashSet();
         for (GroupMember member : members) {
             if (member.getUser().isSameAs(user)) {
                 roles.add(member.getRole());

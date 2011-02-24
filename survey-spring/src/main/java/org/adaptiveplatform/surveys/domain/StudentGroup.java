@@ -2,15 +2,17 @@ package org.adaptiveplatform.surveys.domain;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
-import org.adaptiveplatform.surveys.exception.AlreadyGroupMemberException;
+import org.adaptiveplatform.surveys.exception.ConflictingGroupRoleException;
 import org.adaptiveplatform.surveys.exception.NotEligibleForGroupRoleException;
 import org.adaptiveplatform.surveys.exception.SignupByAdministratorOnlyGroupException;
 import org.apache.commons.lang.Validate;
@@ -105,25 +107,38 @@ public class StudentGroup implements Serializable {
     }
 
     public void addMember(UserDto user, GroupRole role) {
-        validateNotInGroupYet(user);
+        validateUserIsEligibleForRole(role, user);
+        validateUserDoesntAlreadyHaveAConflictingRole(user, role);
+        members.addMemberWithRole(user, role);
+    }
+
+    private void validateUserIsEligibleForRole(GroupRole role, UserDto user) {
         if (!role.isEligible(user)) {
             throw new NotEligibleForGroupRoleException(user.getName(), role.asPublicRole());
         }
-        members.addMemberWithRole(user, role);
+    }
+
+    private void validateUserDoesntAlreadyHaveAConflictingRole(UserDto user, GroupRole groupRole) {
+        final Set<GroupRole> roles = rolesOf(user);
+        roles.add(groupRole);
+        if (roles.contains(groupRole.STUDENT) && (roles.contains(GroupRole.EVALUATOR) ||
+                roles.contains(GroupRole.GROUP_ADMINISTRATOR)) ) {
+            throw new ConflictingGroupRoleException(user.getEmail(), name, groupRole.asPublicRole());
+        }
     }
 
     private static void validateIsInRole(UserDto user, String role) {
         Validate.isTrue(user.getRoles().contains(role));
     }
 
-    private Collection<GroupRole> rolesOf(UserDto user) {
-        return  members.getRoleOf(user);
+    private Set<GroupRole> rolesOf(UserDto user) {
+        return members.getRoleOf(user);
     }
 
     private void validateNotInGroupYet(UserDto user) {
         Collection<GroupRole> roles = rolesOf(user);
         if (!roles.isEmpty()) {
-            throw new AlreadyGroupMemberException(user.getEmail(), name, roles.iterator().next().
+            throw new ConflictingGroupRoleException(user.getEmail(), name, roles.iterator().next().
                     asPublicRole());
         }
     }
