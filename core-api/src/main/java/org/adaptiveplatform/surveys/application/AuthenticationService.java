@@ -7,6 +7,8 @@ import org.adaptiveplatform.surveys.dto.UserDto;
 
 public interface AuthenticationService {
 
+	void login(String username, String password);
+	
 	boolean isAuthenticated();
 
 	UserDto getCurrentUser();

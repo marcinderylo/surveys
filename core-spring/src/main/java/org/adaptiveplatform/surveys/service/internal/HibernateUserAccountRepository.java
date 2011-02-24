@@ -3,18 +3,17 @@ package org.adaptiveplatform.surveys.service.internal;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.UserAccount;
-import org.adaptiveplatform.surveys.exception.security.NoSuchUserException;
 import org.adaptiveplatform.surveys.exception.security.EmailNotRegisteredException;
+import org.adaptiveplatform.surveys.exception.security.NoSuchUserException;
 import org.adaptiveplatform.surveys.service.UserAccountRepository;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository("userAccountRepository")
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional
 public class HibernateUserAccountRepository implements UserAccountRepository {
 
 	@Resource(name = "sessionFactory")

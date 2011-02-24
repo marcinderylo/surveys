@@ -18,17 +18,20 @@ public class SqlScriptImporter {
 
 	@Resource
 	private DataSource dataSource;
+
 	@Resource
 	private ResourceLoader resourceLoader;
 
 	public void executeScript(String resourcePath) throws IOException, SQLException {
+		org.springframework.core.io.Resource resource = resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX + resourcePath);
+		executeScript(resource.getInputStream());
+	}
+
+	public void executeScript(InputStream sqlScript) throws IOException, SQLException {
 		Connection connection = null;
 		try {
 			connection = dataSource.getConnection();
-
-			org.springframework.core.io.Resource resource = resourceLoader
-					.getResource(ResourceLoader.CLASSPATH_URL_PREFIX + resourcePath);
-			String scriptText = slurp(resource.getInputStream());
+			String scriptText = slurp(sqlScript);
 			connection.createStatement().execute(scriptText);
 		} finally {
 			JdbcUtils.closeConnection(connection);
@@ -63,4 +66,5 @@ public class SqlScriptImporter {
 		}
 		return out.toString();
 	}
+
 }

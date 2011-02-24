@@ -20,7 +20,7 @@ public class PublishedSurveyTemplateQuery implements Serializable {
     private String keyword;
     private Integer status;
     private Set<Integer> groupIds = new HashSet<Integer>();
-
+    
     public String getKeyword() {
         return keyword;
     }
@@ -36,7 +36,7 @@ public class PublishedSurveyTemplateQuery implements Serializable {
     public void setStatus(Integer status) {
         this.status = status;
     }
-
+    
     public GroupRoleEnum getRunAs() {
         return runAs;
     }

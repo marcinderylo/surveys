@@ -2,6 +2,7 @@ package org.adaptiveplatform.surveys.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.adaptiveplatform.adapt.commons.validation.constraints.ValidId;
@@ -19,6 +20,14 @@ public class ChangeGroupMembersCommand implements Serializable {
 	 */
 	private List<String> removeMembers = new ArrayList<String>();
 	private List<AddGroupMemberCommand> addMembers = new ArrayList<AddGroupMemberCommand>();
+
+	public ChangeGroupMembersCommand() {
+	}
+	
+	public ChangeGroupMembersCommand(Long groupId, AddGroupMemberCommand... addMembers) {
+		this.groupId = groupId;
+		this.addMembers = Arrays.asList(addMembers);
+	}
 
 	public List<AddGroupMemberCommand> getAddMembers() {
 		return addMembers;

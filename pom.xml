@@ -24,8 +24,8 @@
 	<properties>
 		<surveys.version>${project.version}</surveys.version>
 		<flex2java.version>0.9</flex2java.version>
-		<spring.version>3.0.2.RELEASE</spring.version>
-		<spring-security.version>3.0.2.RELEASE</spring-security.version>
+		<spring.version>3.0.5.RELEASE</spring.version>
+		<spring-security.version>3.0.5.RELEASE</spring-security.version>
 		<flexsdk.version>3.5.0.12683</flexsdk.version>
 	</properties>
 
@@ -338,8 +338,7 @@
 			<dependency>
 				<groupId>org.testng</groupId>
 				<artifactId>testng</artifactId>
-				<classifier>jdk15</classifier>
-				<version>5.10</version>
+				<version>5.14</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>

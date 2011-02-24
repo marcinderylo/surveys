@@ -21,60 +21,55 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-
 @Service("userDao")
 @RemotingDestination
 @Transactional(propagation = Propagation.SUPPORTS)
 public class HibernateUserDao implements UserDao {
 
-    @Resource(name = "sessionFactory")
-    private SessionFactory sessionFactory;
-    @Resource
-    private AuthenticationService authentication;
+	@Resource(name = "sessionFactory")
+	private SessionFactory sessionFactory;
+	@Resource
+	private AuthenticationService authentication;
 
-    @Secured({Role.USER, Role.EVALUATOR, Role.ADMINISTRATOR, Role.TEACHER})
-    @Override
-    public UserDto getUser(Long id) {
-        UserDto caller = authentication.getCurrentUser();
-        if (isUserAdministrator(caller) || caller.getId().equals(id)) {
-            Session session = sessionFactory.getCurrentSession();
-            return (UserDto) session.get(UserDto.class, id);
-        } else {
-            throw new NotAllowedToViewUserDetailsException();
-        }
-    }
+	@Secured({ Role.USER, Role.EVALUATOR, Role.ADMINISTRATOR, Role.TEACHER })
+	@Override
+	public UserDto getUser(Long id) {
+		UserDto caller = authentication.getCurrentUser();
+		if (isUserAdministrator(caller) || caller.getId().equals(id)) {
+			Session session = sessionFactory.getCurrentSession();
+			return (UserDto) session.get(UserDto.class, id);
+		} else {
+			throw new NotAllowedToViewUserDetailsException();
+		}
+	}
 
-    @RemotingExclude
-    @Override
-    public UserDto getByEmail(String email) {
-        // might want to apply security check #from getUser(Long)
-        Criteria criteria = sessionFactory.getCurrentSession().
-                createCriteria(UserDto.class);
-        criteria.add(Restrictions.naturalId().set(UserDto.EMAIL,
-                email));
-        return (UserDto) criteria.uniqueResult();
-    }
+	@RemotingExclude
+	@Override
+	public UserDto getByEmail(String email) {
+		UserDto caller = authentication.getCurrentUser();
+		if (isUserAdministrator(caller) || caller.getEmail().equals(email)) {
+			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(UserDto.class);
+			criteria.add(Restrictions.naturalId().set(UserDto.EMAIL, email));
+			return (UserDto) criteria.uniqueResult();
+		} else {
+			throw new NotAllowedToViewUserDetailsException();
+		}
+	}
 
-    @Secured({Role.ADMINISTRATOR, Role.TEACHER})
-    @Override
-    public List<UserDto> query(UserQuery query) {
-        Criteria criteria = sessionFactory.getCurrentSession().
-                createCriteria(UserDto.class);
-        if (query != null
-                && StringUtils.hasText(query.getNameContains())) {
-            criteria.add(Restrictions.or( // username or email contains query
-                    Restrictions.like(UserDto.USERNAME, "%" + query.
-                    getNameContains() + "%"), //
-                    Restrictions.like(UserDto.EMAIL, "%"
-                    + query.getNameContains() + "%")));
-        }
-        criteria.setResultTransformer(
-                DistinctRootEntityResultTransformer.INSTANCE);
-        return criteria.list();
-    }
+	@Secured({ Role.ADMINISTRATOR, Role.TEACHER })
+	@Override
+	public List<UserDto> query(UserQuery query) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(UserDto.class);
+		if (query != null && StringUtils.hasText(query.getNameContains())) {
+			criteria.add(Restrictions.or( // username or email contains query
+					Restrictions.like(UserDto.USERNAME, "%" + query.getNameContains() + "%"), //
+					Restrictions.like(UserDto.EMAIL, "%" + query.getNameContains() + "%")));
+		}
+		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
+		return criteria.list();
+	}
 
-    private boolean isUserAdministrator(UserDto user) {
-        return user.getRoles().contains(Role.ADMINISTRATOR) || user.getRoles().
-                contains(Role.TEACHER);
-    }
+	private boolean isUserAdministrator(UserDto user) {
+		return user.getRoles().contains(Role.ADMINISTRATOR) || user.getRoles().contains(Role.TEACHER);
+	}
 }

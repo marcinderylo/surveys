@@ -63,4 +63,9 @@ public class AuthenticationServiceMock implements AuthenticationService, UserDet
 		}
 		return new User(username, PASSWORD, true, true, true, true, authorities);
 	}
+
+	@Override
+	public void login(String username, String password) {
+		throw new RuntimeException("to be implemented"); // TODO implement
+	}
 }

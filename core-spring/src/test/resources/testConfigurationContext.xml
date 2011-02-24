@@ -11,19 +11,15 @@
 
 	<import resource="classpath:/configurationContext.xml" />
 
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="driverClass" value="${jdbc.driverClassName}" />
-		<property name="jdbcUrl" value="${jdbc.url}" />
-		<property name="user" value="${jdbc.username}" />
-		<property name="password" value="${jdbc.password}" />
-	</bean>
+	<context:property-placeholder location="classpath:/jdbc-hsql.properties"
+		order="1" />
 
 	<bean id="importSql" class="org.adaptiveplatform.surveys.db.SqlImporterBean">
 		<property name="importer" ref="sqlScriptImporter" />
 		<property name="tableBeingImported" value="ANSWERED_QUESTIONS" />
 		<property name="sqlScripts">
 			<list>
-				<value>createSchema.sql</value>
+				<value>createSchema-hsql.sql</value>
 			</list>
 		</property>
 	</bean>

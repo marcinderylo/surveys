@@ -19,7 +19,7 @@
 		<channel-definition id="my-amf"
 			class="mx.messaging.channels.AMFChannel">
 			<endpoint
-				url="http://localhost:8080/surveys-web/messagebroker/amf"
+				url="http://{server.name}:{server.port}/{context.root}/spring/messagebroker/amf"
 				class="flex.messaging.endpoints.AMFEndpoint" />
 			<properties>
 				<polling-enabled>false</polling-enabled>

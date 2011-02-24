@@ -143,7 +143,7 @@ public class StudentGroupFacadeImpl implements StudentGroupFacade {
     private void addGroupMembers(StudentGroup group, List<AddGroupMemberCommand> newMembers) {
         for (AddGroupMemberCommand addMemberCmd : newMembers) {
             UserDto user = getExistingByEmail(addMemberCmd.getEmail());
-            GroupRole role = GroupRole.valueOf(addMemberCmd.getRole());
+            GroupRole role = GroupRole.getByGroupRoleEnum(addMemberCmd.getRole());
             group.addMember(user, role);
         }
     }

@@ -17,6 +17,7 @@ public class AddGroupMemberCommand {
 	/**
 	 * Role the user should be added to the group with.
 	 */
+	// LATER change to GropRoleEnum
 	private String role;
 
 	public AddGroupMemberCommand() {
@@ -44,5 +45,4 @@ public class AddGroupMemberCommand {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
 }

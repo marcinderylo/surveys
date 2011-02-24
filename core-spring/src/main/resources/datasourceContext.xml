@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:property-placeholder location="classpath:/jdbc-psql.properties"
+		order="2" />
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<bean id="importSql" class="org.adaptiveplatform.surveys.db.SqlImporterBean">
+		<property name="tableBeingImported" value="ANSWERED_QUESTIONS" />
+		<property name="sqlScripts">
+			<list>
+				<value>classpath:/createSchema-${database}.sql</value>
+				<value>classpath:/manual-import.sql</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+		depends-on="importSql">
+		<property name="packagesToScan"
+			value="org.adaptiveplatform.surveys.domain, org.adaptiveplatform.surveys.dto" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="schemaUpdate" value="false" />
+		<property name="configLocation" value="classpath:/hibernate-${database}.cfg.xml" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+</beans>
