@@ -9,6 +9,8 @@ public interface AuthenticationService {
 
 	void login(String username, String password);
 	
+	void logout();
+	
 	boolean isAuthenticated();
 
 	UserDto getCurrentUser();

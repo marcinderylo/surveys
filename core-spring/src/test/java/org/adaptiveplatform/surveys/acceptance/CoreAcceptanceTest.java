@@ -1,5 +1,6 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import static org.adaptiveplatform.surveys.domain.UserAccountBuilder.user;
 import static org.testng.Assert.*;
 
 import java.util.Collections;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import org.adaptiveplatform.surveys.application.AuthenticationService;
 import org.adaptiveplatform.surveys.application.UserDao;
 import org.adaptiveplatform.surveys.application.UserFacade;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
 import org.adaptiveplatform.surveys.dto.UserDto;
@@ -34,6 +36,9 @@ public class CoreAcceptanceTest extends AbstractTestNGSpringContextTests {
 
 	private static final String ADMIN_EMAIL = "adaptserver@gmail.com";
 	private static final String ADMIN_PASSWORD = "adapt2010";
+
+	@Resource
+	private CoreFixtureBuilder fixture;
 
 	@Resource
 	private UserFacade userFacade;
@@ -106,9 +111,7 @@ public class CoreAcceptanceTest extends AbstractTestNGSpringContextTests {
 	@Test
 	public void shouldAdminBeAbleToQueryByName() throws Exception {
 		// given
-		notLoggedIn();
-		userFacade.registerUser(new RegisterAccountCommand("alice", "s3cr3t", "alice@adapt.pl"));
-		userFacade.registerUser(new RegisterAccountCommand("bob", "s3cr3t", "bob@adapt.pl"));
+		fixture.createUsers(user().withEmail("alice@adapt.pl"), user().withEmail("bob@adapt.pl"));
 		// when
 		logIn(ADMIN_EMAIL, ADMIN_PASSWORD);
 		UserQuery userQuery = new UserQuery();

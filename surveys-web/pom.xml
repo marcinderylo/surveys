@@ -62,6 +62,34 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jasperreports-maven-plugin</artifactId>
+				<configuration>
+					<sourceDirectory>src/main/reports</sourceDirectory>
+					<outputDirectory>target/classes</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile-reports</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>jasperreports</groupId>
+						<artifactId>jasperreports</artifactId>
+						<version>3.5.3</version>
+					</dependency>
+					<dependency>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+						<version>1.2.14</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -161,6 +189,11 @@
 			<classifier>resources</classifier>
 			<type>zip</type>
 		</dependency>
+		<dependency>
+			<groupId>jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>3.5.3</version>
+		</dependency>
 
 		<!-- test scope -->
 		<dependency>
@@ -182,13 +215,14 @@
 		<dependency>
 			<groupId>org.adaptiveplatform.surveys</groupId>
 			<artifactId>survey-spring</artifactId>
-			<classifier>tests</classifier>
 			<version>${surveys.version}</version>
+			<classifier>tests</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.adaptiveplatform.surveys</groupId>
 			<artifactId>core-spring</artifactId>
 			<classifier>tests</classifier>
+			<version>${surveys.version}</version>
 		</dependency>
 	</dependencies>
 	<properties>

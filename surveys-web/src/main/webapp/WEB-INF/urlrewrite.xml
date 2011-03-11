@@ -6,10 +6,6 @@
 		<from>^/static/(.*)$</from>
 		<to>/$1</to>
 	</rule>
-		<rule>
-		<from>^/spring/(.*)$</from>
-		<to>/spring/$1</to>
-	</rule>
 	<rule>
 		<from>^/(.*)$</from>
 		<to>/spring/$1</to>

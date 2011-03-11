@@ -38,30 +38,4 @@
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
 
 	<context:component-scan base-package="org.adaptiveplatform.surveys.controller" />
-
-	<bean id="viewResolver"
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
-		<property name="cache" value="true" />
-		<property name="prefix" value="" />
-		<property name="suffix" value=".ftl" />
-		<property name="requestContextAttribute">
-			<value>rc</value>
-		</property>
-		<property name="contentType" value="text/html;charset=UTF-8" />
-	</bean>
-
-	<bean
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-		<property name="templateLoaderPath" value="/freemarker/" />
-	</bean>
-
-	<bean id="messageSource"
-		class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>com.completeview.i18n.messages</value>
-			</list>
-		</property>
-		<property name="useCodeAsDefaultMessage" value="true" />
-	</bean>
 </beans>

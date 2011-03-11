@@ -34,6 +34,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
+	public void logout() {
+		SecurityContextHolder.clearContext();
+	}
+
+	@Override
 	public boolean isAuthenticated() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication != null && authentication.isAuthenticated();

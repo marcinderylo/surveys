@@ -10,6 +10,10 @@ import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author Rafał Jamróz
+ * @deprecated use {@link CoreFixtureBuilder}
+ */
 @Service
 public class CoreTestFixtureBuilder {
 

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="questionsSubreport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<subDataset name="answerDataSet">
+		<field name="number" class="java.lang.Integer"/>
+		<field name="text" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="dataset1"/>
+	<field name="id" class="java.lang.Long"/>
+	<field name="number" class="java.lang.Integer"/>
+	<field name="text" class="java.lang.String"/>
+	<field name="htmlText" class="java.lang.String"/>
+	<field name="comment" class="java.lang.String"/>
+	<field name="style" class="java.lang.String"/>
+	<field name="type" class="org.adaptiveplatform.surveys.dto.QuestionTypeEnum"/>
+	<field name="answers" class="java.util.List"/>
+	<group name="number" minHeightToStartNewPage="1">
+		<groupExpression><![CDATA[$V{REPORT_COUNT}]]></groupExpression>
+	</group>
+	<title>
+		<band height="50"/>
+	</title>
+	<detail>
+		<band height="20" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement mode="Transparent" x="0" y="0" width="504" height="20" backcolor="#6BF579"/>
+				<textElement markup="html"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["<b>Pytanie "+$F{number}+".</b> "+$F{text}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="21">
+			<componentElement>
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="20" backcolor="#A22828"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="answerDataSet">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{answers})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="20">
+						<textField>
+							<reportElement mode="Transparent" x="36" y="0" width="519" height="20" backcolor="#B375A1"/>
+							<textElement markup="html"/>
+							<textFieldExpression class="java.lang.String"><![CDATA["<b>"+$F{number}+".</b> "+$F{text}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+		</band>
+	</detail>
+</jasperReport>
