@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.UserAccount;
 import org.adaptiveplatform.surveys.domain.UserPrivilege;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service("userAccountFactory")
@@ -12,10 +13,13 @@ public class UserAccountFactory {
 
     @Resource
     private UserAccountRepository repository;
+    @Resource
+    private PasswordEncoder encoder;
 
     public UserAccount registerNewAccount(String name, String password, String email) {
         checkEmailUniqueness(email);
-        UserAccount account = new UserAccount(password, email);
+        final String encodedPassword = encoder.encodePassword(password, null);
+        UserAccount account = new UserAccount(encodedPassword, email);
         account.setName(name);
         account.addPrivilege(UserPrivilege.USER);
         repository.persist(account);

@@ -15,6 +15,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import static org.testng.Assert.fail;
@@ -33,6 +34,8 @@ public class ChangingPasswordTest {
     private UserAccountRepository repository;
     @Mock
     private UserAccount user;
+    @Mock
+    private PasswordEncoder encoder;
 
     @BeforeMethod
     public void setUp() {
@@ -41,6 +44,7 @@ public class ChangingPasswordTest {
         when(repository.getExisting(anyString())).thenAnswer(returingWantedUser());
         doAnswer(throwBadCredentialsIfOldPasswordDoesntMatch()).
                 when(authentication).checkCredentials(anyString(), anyString());
+        when(encoder.encodePassword(anyString(), anyObject())).thenAnswer(samePassword());
     }
 
     @Test
@@ -127,6 +131,16 @@ public class ChangingPasswordTest {
                     throw new BadCredentialsException("incorrect password");
                 }
                 return null;
+            }
+        };
+    }
+
+    private Answer<String> samePassword() {
+        return new Answer<String>() {
+
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                return (String) invocation.getArguments()[0];
             }
         };
     }

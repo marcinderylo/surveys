@@ -5,11 +5,17 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<sec:global-method-security
+    <sec:global-method-security
 		secured-annotations="enabled" jsr250-annotations="enabled" />
 
-	<sec:authentication-manager alias="authenticationManager">
-		<sec:authentication-provider
-			user-service-ref="userDetailsService" />
-	</sec:authentication-manager>
+    <!--<bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" >
+        <constructor-arg value="256" />
+    </bean>-->
+    <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.PlaintextPasswordEncoder" />
+
+    <sec:authentication-manager alias="authenticationManager">
+        <sec:authentication-provider user-service-ref="userDetailsService" >
+            <sec:password-encoder ref="passwordEncoder" />
+        </sec:authentication-provider>
+    </sec:authentication-manager>
 </beans>

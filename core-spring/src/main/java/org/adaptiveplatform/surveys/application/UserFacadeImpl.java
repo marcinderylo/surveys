@@ -17,6 +17,7 @@ import org.adaptiveplatform.surveys.service.UserAccountFactory;
 import org.adaptiveplatform.surveys.service.UserAccountRepository;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,8 @@ public class UserFacadeImpl implements UserFacade {
     private UserAccountRepository accountRepository;
     @Resource
     private AuthenticationService authentication;
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Long registerUser(RegisterAccountCommand command) {
@@ -84,7 +87,8 @@ public class UserFacadeImpl implements UserFacade {
         final UserAccount affectedUser = accountRepository.getExisting(command.getEmail());
         ensureCallerCanChangePasswordOf(affectedUser);
         checkOldPasswordIfRequired(affectedUser, command.getOldPassword());
-        affectedUser.setPassword(command.getNewPassword());
+        String encodedPassword = passwordEncoder.encodePassword(command.getNewPassword(), null);
+        affectedUser.setPassword(encodedPassword);
     }
 
     private void ensureCallerCanChangePasswordOf(UserAccount affectedUser) {
@@ -98,6 +102,6 @@ public class UserFacadeImpl implements UserFacade {
     private void checkOldPasswordIfRequired(UserAccount user, String oldPassword) {
         if (sameUser(user, authentication.getCurrentUser())) {
             authentication.checkCredentials(user.getEmail(), oldPassword);
-        }        
+        }
     }
 }
