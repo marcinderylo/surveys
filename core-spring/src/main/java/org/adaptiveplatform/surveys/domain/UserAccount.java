@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Table;
 
-import org.adaptiveplatform.surveys.application.ModifyingUser;
 import org.adaptiveplatform.surveys.db.UserPrivilegeType;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.NaturalId;

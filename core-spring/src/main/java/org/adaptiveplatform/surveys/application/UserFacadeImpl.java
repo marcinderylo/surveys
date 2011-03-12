@@ -10,6 +10,7 @@ import org.adaptiveplatform.surveys.domain.UserPrivilege;
 import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.security.CantRevokeOwnAdminRights;
+import org.adaptiveplatform.surveys.exception.security.NotAllowedToRegisterUserException;
 import org.adaptiveplatform.surveys.service.UserAccountFactory;
 import org.adaptiveplatform.surveys.service.UserAccountRepository;
 import org.springframework.flex.remoting.RemotingDestination;
@@ -31,6 +32,7 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public Long registerUser(RegisterAccountCommand command) {
+        ensureCreatorIsAnonymousOrAdmin();
         UserAccount user = accountFactory.registerNewAccount(command.getName(),
                 command.getPassword(), command.getEmail());
         return user.getId();
@@ -58,5 +60,15 @@ public class UserFacadeImpl implements UserFacade {
                 throw new CantRevokeOwnAdminRights();
             }
         }
+    }
+
+    private void ensureCreatorIsAnonymousOrAdmin() {
+        if (authentication.isAuthenticated() && !isAdmin(authentication.getCurrentUser())) {
+            throw new NotAllowedToRegisterUserException();
+        }
+    }
+
+    private boolean isAdmin(UserDto currentUser) {
+        return currentUser.getRoles().contains(Role.ADMINISTRATOR);
     }
 }
