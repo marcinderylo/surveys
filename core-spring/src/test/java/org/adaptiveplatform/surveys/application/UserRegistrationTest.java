@@ -1,8 +1,5 @@
-package org.adaptiveplatform.surveys;
+package org.adaptiveplatform.surveys.application;
 
-import org.adaptiveplatform.surveys.application.AuthenticationService;
-import org.adaptiveplatform.surveys.application.UserFacade;
-import org.adaptiveplatform.surveys.application.UserFacadeImpl;
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.domain.UserAccount;
 import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
@@ -70,8 +67,8 @@ public class UserRegistrationTest {
         // when
         try {
             facade.registerUser(new RegisterAccountCommand(NAME, PASSWORD, MAIL));
+            // expect exception
             fail("An exception should have been thrown");
-            // expect error
         } catch (NotAllowedToRegisterUserException e) {
             // just as expected;
         }

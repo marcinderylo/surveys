@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 
 import org.adaptiveplatform.adapt.commons.validation.constraints.NonBlank;
 import org.adaptiveplatform.codegenerator.api.RemoteService;
+import org.adaptiveplatform.surveys.dto.ChangePasswordCommand;
 import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
 import org.adaptiveplatform.surveys.exception.security.EmailAddressAlreadyRegisteredException;
 
@@ -25,4 +26,6 @@ public interface UserFacade {
 	 *            new roles to be assign to the user
 	 */
 	void setUserRoles(@NonBlank String email, @NotNull @Size(min = 1) Set<String> grantedRoles);
+
+    void changePassword(@NotNull @Valid ChangePasswordCommand command);
 }

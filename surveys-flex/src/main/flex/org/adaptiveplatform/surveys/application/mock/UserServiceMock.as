@@ -11,6 +11,7 @@ package org.adaptiveplatform.surveys.application.mock {
 	import org.adaptiveplatform.surveys.dto.generated.RegisterAccountCommand;
 	import org.adaptiveplatform.surveys.dto.generated.UserDto;
 	import org.adaptiveplatform.surveys.dto.generated.UserQuery;
+  	import org.adaptiveplatform.surveys.dto.generated.ChangePasswordCommand;
 
 	internal class UserServiceMock implements UserDao, UserFacade {
 
@@ -94,5 +95,9 @@ package org.adaptiveplatform.surveys.application.mock {
 			command.name = name;
 			return command;
 		}
+
+       public function changePassword(changePasswordCommand:ChangePasswordCommand):ResultHandler {
+            return new SuccessResultHandler();
+       }
 	}
 }

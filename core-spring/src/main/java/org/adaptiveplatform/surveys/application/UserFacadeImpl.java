@@ -7,8 +7,10 @@ import javax.annotation.Resource;
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.domain.UserAccount;
 import org.adaptiveplatform.surveys.domain.UserPrivilege;
+import org.adaptiveplatform.surveys.dto.ChangePasswordCommand;
 import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
 import org.adaptiveplatform.surveys.dto.UserDto;
+import org.adaptiveplatform.surveys.exception.security.CantChangePasswordException;
 import org.adaptiveplatform.surveys.exception.security.CantRevokeOwnAdminRights;
 import org.adaptiveplatform.surveys.exception.security.NotAllowedToRegisterUserException;
 import org.adaptiveplatform.surveys.service.UserAccountFactory;
@@ -52,6 +54,10 @@ public class UserFacadeImpl implements UserFacade {
         }
     }
 
+    private boolean sameUser(UserAccount affectedUser, UserDto currentUser) {
+        return affectedUser.getEmail().equals(currentUser.getEmail());
+    }
+
     private void verifyDoesNotRevokeOwnAdminRights(String email,
             Set<String> grantedRoles) {
         UserDto caller = authentication.getCurrentUser();
@@ -70,5 +76,28 @@ public class UserFacadeImpl implements UserFacade {
 
     private boolean isAdmin(UserDto currentUser) {
         return currentUser.getRoles().contains(Role.ADMINISTRATOR);
+    }
+
+    @Override
+    @Secured(Role.USER)
+    public void changePassword(ChangePasswordCommand command) {
+        final UserAccount affectedUser = accountRepository.getExisting(command.getEmail());
+        ensureCallerCanChangePasswordOf(affectedUser);
+        checkOldPasswordIfRequired(affectedUser, command.getOldPassword());
+        affectedUser.setPassword(command.getNewPassword());
+    }
+
+    private void ensureCallerCanChangePasswordOf(UserAccount affectedUser) {
+        if (!sameUser(affectedUser, authentication.getCurrentUser())) {
+            if (!isAdmin(authentication.getCurrentUser())) {
+                throw new CantChangePasswordException();
+            }
+        }
+    }
+
+    private void checkOldPasswordIfRequired(UserAccount user, String oldPassword) {
+        if (sameUser(user, authentication.getCurrentUser())) {
+            authentication.checkCredentials(user.getEmail(), oldPassword);
+        }        
     }
 }

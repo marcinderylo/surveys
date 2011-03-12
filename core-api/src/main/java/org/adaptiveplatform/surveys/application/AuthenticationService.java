@@ -16,4 +16,6 @@ public interface AuthenticationService {
 	UserDto getCurrentUser();
 
 	void userSecurityCheck(@NotNull @Valid Long ownwerId);
+
+    void checkCredentials(String username, String password);
 }

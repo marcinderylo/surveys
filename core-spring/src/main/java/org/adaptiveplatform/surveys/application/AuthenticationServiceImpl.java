@@ -14,6 +14,7 @@ import org.adaptiveplatform.surveys.service.UserAccountRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +29,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	@Override
 	public void login(String username, String password) {
-		UsernamePasswordAuthenticationToken request = new UsernamePasswordAuthenticationToken(username, password);
-		Authentication authentication = authenticationManager.authenticate(request);
+		Authentication authentication = tryToAuthenticate(username, password);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
+
+    @Override
+    public void checkCredentials(String username, String password) {
+        tryToAuthenticate(username, password);
+    }
+
+    private Authentication tryToAuthenticate(String username, String password) {
+        UsernamePasswordAuthenticationToken request =
+                new UsernamePasswordAuthenticationToken(username, password);
+        Authentication authentication = authenticationManager.authenticate(request);
+        return authentication;
+    }
 
 	@Override
 	public void logout() {
