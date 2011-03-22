@@ -11,35 +11,35 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-	<import resource="classpath:/datasourceContext.xml" />
-	<import resource="classpath:/securityContext.xml" />
+    <import resource="classpath:/datasourceContext.xml" />
+    <import resource="classpath:/securityContext.xml" />
 
-	<context:component-scan base-package="org.adaptiveplatform.surveys" />
+    <context:component-scan base-package="org.adaptiveplatform.surveys" />
 
-	<tx:annotation-driven />
+    <tx:annotation-driven />
 
 	<!-- validation -->
-	<bean id="beansValidatorsFactory" class="javax.validation.Validation"
+    <bean id="beansValidatorsFactory" class="javax.validation.Validation"
 		factory-method="buildDefaultValidatorFactory" scope="singleton" />
 
-	<bean id="beansValidator" factory-bean="beansValidatorsFactory"
+    <bean id="beansValidator" factory-bean="beansValidatorsFactory"
 		factory-method="getValidator" />
 
-	<bean id="methodCallValidator"
+    <bean id="methodCallValidator"
 		class="org.adaptiveplatform.adapt.commons.validation.argsvalidation.impl.ApacheBValMethodValidatorAdapter">
-		<constructor-arg ref="beansValidator" />
-	</bean>
+        <constructor-arg ref="beansValidator" />
+    </bean>
 
-	<bean id="argsValidatingAdvice"
+    <bean id="argsValidatingAdvice"
 		class="org.adaptiveplatform.adapt.quiz.support.validation.MethodValidationAspectJAdvice">
-		<constructor-arg ref="methodCallValidator" />
-	</bean>
-	<aop:config>
-		<aop:pointcut id="facadeOperation"
+        <constructor-arg ref="methodCallValidator" />
+    </bean>
+    <aop:config>
+        <aop:pointcut id="facadeOperation"
 			expression="execution(* org.adaptiveplatform.surveys.application.*FacadeImpl.*(..))" />
-		<aop:aspect id="validatingAspect" ref="argsValidatingAdvice">
-			<aop:before pointcut-ref="facadeOperation" method="validateMethodArguments" />
-		</aop:aspect>
-	</aop:config>
+        <aop:aspect id="validatingAspect" ref="argsValidatingAdvice">
+            <aop:before pointcut-ref="facadeOperation" method="validateMethodArguments" />
+        </aop:aspect>
+    </aop:config>
 </beans>
 

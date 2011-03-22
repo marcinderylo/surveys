@@ -18,9 +18,6 @@ public class SaveHsqlSnapshotBean implements InitializingBean {
 	@Resource
 	private HsqlSavableDataSource dataSource;
 
-	@Resource
-	private SessionFactory sessionFactory;
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataSource.saveSnapshot();

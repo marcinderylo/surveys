@@ -10,6 +10,8 @@
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
     <import resource="classpath:/configurationContext.xml" />
+    <import resource="classpath:/production-deployment-profile.xml" />
+    <import resource="classpath:/development-deployment-profile.xml" />
 
     <!-- security -->
 
