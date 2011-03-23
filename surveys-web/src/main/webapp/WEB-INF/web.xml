@@ -10,7 +10,7 @@
 
     <context-param>
         <param-name>spring.profiles.active</param-name>
-        <param-value>development</param-value>
+        <param-value>${spring.profiles.active}</param-value>
     </context-param>
     
     <listener>

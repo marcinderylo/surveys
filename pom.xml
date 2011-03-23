@@ -327,7 +327,12 @@
                 <artifactId>survey-spring</artifactId>
                 <version>${surveys.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.adaptiveplatform.surveys</groupId>
+                <artifactId>survey-spring</artifactId>
+                <classifier>tests</classifier>
+                <version>${surveys.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.adaptiveplatform.surveys</groupId>
                 <artifactId>surveys-flex</artifactId>
