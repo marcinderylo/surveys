@@ -329,6 +329,18 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         assertEquals(first(group.getStudents()).getId(), id(1L));
     }
 
+    @Test
+    public void shouldListGroupsStudentsCanJoinOnTheirOwn() throws Exception {
+        // given
+        authenticateAsStudent();
+        assertCollectionSize(groupDao.getAvailableGroups(), 1);
+        groupFacade.signUpAsStudent(new GroupSignUpCommand(2L));
+        // when
+        final List<StudentGroupDto> groups = groupDao.getAvailableGroups();
+        // then
+        assertEmpty(groups);
+    }
+
     private void authenticatedAsTeacher() {
         // given
         authMock.authenticate(2L, "teacher@adapt.com",

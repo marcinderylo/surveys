@@ -1,6 +1,7 @@
 package org.adaptiveplatform.surveys.application;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.security.access.annotation.Secured;
@@ -104,17 +106,45 @@ public class HibernateStudentGroupDao implements StudentGroupDao {
 
         // need to anonymize groups for evaluators
         if (resultsShouldBeAnonymized(query)) {
-            for (StudentGroupDto group : groups) {
-                group.setStudents(Collections.EMPTY_SET);
-                group.setEvaluators(Collections.EMPTY_SET);
-            }
+            anonymizeGroups(groups);
         }
 
         return groups;
     }
 
+    private void anonymizeGroups(List<StudentGroupDto> groups) {
+        for (StudentGroupDto group : groups) {
+            group.setStudents(Collections.EMPTY_SET);
+            group.setEvaluators(Collections.EMPTY_SET);
+        }
+    }
+
     private boolean resultsShouldBeAnonymized(StudentGroupQuery query) {
         return Arrays.asList(GroupRoleEnum.EVALUATOR, GroupRoleEnum.STUDENT).contains(
                 query.getRunAs());
+    }
+
+    @Override 
+    @Secured(Role.STUDENT)
+    public List<StudentGroupDto> getAvailableGroups() {
+        Criteria criteria = sf.getCurrentSession().createCriteria(StudentGroupDto.class);
+        criteria.add(Restrictions.eq("studentsCanSignUp", Boolean.TRUE));
+        Collection<Long> groupsAlreadyJoined = getGroupsUserIsStudentIn();
+        if(!groupsAlreadyJoined.isEmpty()) {
+            criteria.add(Restrictions.not(Restrictions.in("id",groupsAlreadyJoined)));
+        }
+        criteria.addOrder(Order.asc("groupName"));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        final List<StudentGroupDto> groups = criteria.list();
+        anonymizeGroups(groups);
+        return groups;
+    }
+
+    private Collection<Long> getGroupsUserIsStudentIn() {
+        final Criteria criteria = sf.getCurrentSession().createCriteria(StudentGroupDto.class);
+        criteria.createAlias("students", "usr",Criteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("usr.id", authenticationService.getCurrentUser().getId()));
+        criteria.setProjection(Projections.property("id"));
+        return criteria.list();
     }
 }

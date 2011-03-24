@@ -25,4 +25,9 @@ public interface StudentGroupDao {
      *         administrator or evaluator).
      */
     List<StudentGroupDto> query(StudentGroupQuery query);
+
+    /**
+     * @return list of groups calling user can join
+     */
+    List<StudentGroupDto> getAvailableGroups();
 }
