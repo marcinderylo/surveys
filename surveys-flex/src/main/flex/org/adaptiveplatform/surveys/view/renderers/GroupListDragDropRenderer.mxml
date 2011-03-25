@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
 	dragDrop="dragDrop(event)" 
-	dragEnter="dragEnter(event)"
-	text="{group==null?'':group.groupName}">
+	dragEnter="dragEnter(event)">
 
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.view.UsersList;
-			import org.adaptiveplatform.surveys.dto.generated.UserDto;
 			import mx.collections.ArrayCollection;
 			import mx.controls.DataGrid;
 			import mx.controls.List;
@@ -18,13 +15,16 @@
 			import mx.rpc.Fault;
 			
 			import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+			import org.adaptiveplatform.surveys.dto.generated.UserDto;
+			import org.adaptiveplatform.surveys.view.UsersList;
+			import org.adaptiveplatform.surveys.view.events.ChangeGroupSignUpModeClickedEvent;
 			
 			[Bindable]
 			private var group:StudentGroupDto;
 			
 			public override function set data(value:Object):void{
 				group = value as StudentGroupDto;
-				this.text = group.groupName;
+				groupNameLabel.text = group.groupName;
 				this.toolTip = group.groupName;
 			}
 			
@@ -49,7 +49,14 @@
 			[Bindable]
 			public var dragDropFunction:Function;
 			
+
+			protected function toggleGroupSignupMode(event:MouseEvent):void {
+				dispatchEvent(new ChangeGroupSignUpModeClickedEvent(group.id, !group.studentsCanSignUp));
+			}
+			
 		]]>
 	</mx:Script>
 	
-</mx:Label>
+	<mx:Label id="groupNameLabel" text="{group==null?'':group.groupName}" />
+	<mx:Button width="10" click="toggleGroupSignupMode(event)"/>
+</mx:HBox>

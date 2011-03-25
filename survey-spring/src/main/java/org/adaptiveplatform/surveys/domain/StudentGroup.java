@@ -121,7 +121,7 @@ public class StudentGroup implements Serializable {
     private void validateUserDoesntAlreadyHaveAConflictingRole(UserDto user, GroupRole groupRole) {
         final Set<GroupRole> roles = rolesOf(user);
         roles.add(groupRole);
-        if (roles.contains(groupRole.STUDENT) && (roles.contains(GroupRole.EVALUATOR) ||
+        if (roles.contains(GroupRole.STUDENT) && (roles.contains(GroupRole.EVALUATOR) ||
                 roles.contains(GroupRole.GROUP_ADMINISTRATOR)) ) {
             throw new ConflictingGroupRoleException(user.getEmail(), name, groupRole.asPublicRole());
         }

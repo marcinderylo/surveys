@@ -18,7 +18,9 @@
 			[Bindable]
 			private var publicationOfSurveyVisible:Boolean;
 			[Bindable]
-			private var evaluatorStartPageVisible:Boolean;			
+			private var evaluatorStartPageVisible:Boolean;
+			[Bindable]
+			private var groupSignup:Boolean;
 
 			private var authentication:AuthenticationService;
 			private var views:ViewController;
@@ -34,6 +36,7 @@
 				groupsManagementVisible = authentication.inRole(UserRole.TEACHER);
 				publicationOfSurveyVisible = authentication.inRole(UserRole.EVALUATOR);
 				evaluatorStartPageVisible = authentication.inRole(UserRole.EVALUATOR);
+				groupSignup = authentication.inRole(UserRole.USER);
 			}
 		]]>
 	</mx:Script>
@@ -45,4 +48,6 @@
 				   includeInLayout="{usersVisible}" click="{views.goto(View.USERS_LIST)}"/>
 	<mx:LinkButton label="{resourceManager.getString('adaptive', 'groups')}" visible="{groupsManagementVisible}"
 				   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_MANAGEMENT)}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'groupSignup')}" visible="{groupSignup}"
+				   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>
 </mx:HBox>

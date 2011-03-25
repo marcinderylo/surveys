@@ -39,7 +39,7 @@
 		  	private function getChannel():String {
 		    	var baseUrl = Application.application.url;
 		     	var pattern:RegExp = new RegExp("http://[^/]*/");
-		     	var hostUrl:String = "http://localhost:8080";
+		     	var hostUrl:String = "http://localhost:8080/";
 		     	if (pattern.test(baseUrl) == true) {
 		        	hostUrl = pattern.exec(baseUrl).toString();
 		     	}
@@ -97,6 +97,7 @@
 				<view:ResearchList id="researchList" label="research list" updateComplete="onUpdateComplete(event)"/>
 				<view:ResearchWizzard id="researchWizzard" label="research wizzard" updateComplete="onUpdateComplete(event)"/>
 				<view:EvaluatorStartPage id="evaluatorStartPage" label="evaluatorStartPage" updateComplete="onUpdateComplete(event)" />
+				<view:GroupSignup id="groupSignup" label="group signup" updateComplete="onUpdateComplete(event)" />
 			</mx:ViewStack>
 		</mx:Panel>
 	</mx:VBox>
