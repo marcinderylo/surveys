@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:List xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:component="org.adaptiveplatform.surveys.view.usermanagement.*"
+         dataProvider="{roles}"
+         selectable="false">
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+
+            import org.adaptiveplatform.surveys.dto.generated.UserDto;
+
+            [Bindable]
+            public var roles:ArrayCollection;
+            [Bindable]
+            public var selectedUser:UserDto;
+            [Bindable]
+            public var currentUserEmail:String;
+        ]]>
+    </mx:Script>
+
+    <mx:itemRenderer>
+        <mx:Component>
+            <component:UserRoleItemRenderer user="{outerDocument.selectedUser}"
+                                            currentUser="{outerDocument.currentUserEmail}"/>
+        </mx:Component>
+    </mx:itemRenderer>
+</mx:List>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         verticalAlign="middle">
+    <mx:Script>
+        <![CDATA[
+            import flash.events.Event;
+
+            import mx.collections.ArrayCollection;
+            import mx.controls.Alert;
+            import mx.controls.CheckBox;
+            import mx.controls.Image;
+            import mx.controls.Label;
+            import mx.controls.Text;
+            import mx.core.Application;
+            import mx.events.CollectionEvent;
+
+            import org.adaptiveplatform.surveys.application.UserRole;
+            import org.adaptiveplatform.surveys.dto.generated.UserDto;
+
+            [Embed(source="/assets/icons/evaluator.png")]
+            private var evaluator:Class;
+            [Embed(source="/assets/icons/teacher.png")]
+            private var teacher:Class;
+            [Embed(source="/assets/icons/administrator.png")]
+            private var administrator:Class;
+            [Embed(source="/assets/icons/student.png")]
+            private var student:Class;
+
+            [Bindable]
+            public var onCheckboxSelectFunction:Function;
+            [Bindable]
+            private var _selectedUser:UserDto;
+            [Bindable]
+            public var currentUser:String;
+
+            override public function set data(value:Object):void {
+                super.data=value;
+                this.removeAllChildren();
+                if (!value)
+                    return;
+                if (data is UserDto) {
+                    for each (var role:String in(data as UserDto).roles) {
+                        var icon:Image=new Image();
+                        icon.source=iconFunction(role);
+                        icon.toolTip=resourceManager.getString('adaptive', role);
+                        this.addChild(icon);
+                    }
+                } else {
+                    var icon:Image=new Image();
+                    icon.source=iconFunction(data as String);
+                    icon.toolTip=resourceManager.getString('adaptive', data as String);
+                    var text:Label=new Label();
+                    text.text=resourceManager.getString('adaptive', data as String);
+                    if (user != null) {
+                        roleEnabled.selected=user.roles.contains(data as String);
+                    }
+                    this.addChild(roleEnabled);
+                    this.addChild(icon);
+                    this.addChild(text);
+                }
+            }
+
+            private function iconFunction(role:String):Class {
+                switch (role) {
+                    case UserRole.USER:
+                        return student;
+                    case UserRole.ADMINISTRATOR:
+                        return administrator;
+                    case UserRole.TEACHER:
+                        return teacher;
+                    case UserRole.EVALUATOR:
+                        return evaluator;
+                }
+                return student;
+            }
+
+            public function set user(value:UserDto):void {
+                if (value != null) {
+                    _selectedUser=value;
+                    if (_selectedUser.roles != null) {
+                        roleEnabled.selected=_selectedUser.roles.contains(this.data as String);
+                        dispatchEvent(new Event("userChanged"));
+                    } else {
+                        roleEnabled.selected=false;
+                    }
+                }
+            }
+
+            [Bindable(event="userChanged")]
+            public function get user():UserDto {
+                return _selectedUser;
+            }
+
+
+            public function changeRoleStatus():void {
+                if (roleEnabled.selected) {
+                    user.roles.addItem(data as String);
+                } else {
+                    if (((data as String) == UserRole.ADMINISTRATOR) && (currentUser == user.email)) {
+                        roleEnabled.selected=!roleEnabled.selected;
+                        var msg:String=resourceManager.getString("adaptive", "error.cantRevokeOwnAdminRights");
+                        Alert.show(msg);
+                    } else {
+                        user.roles.removeItemAt(user.roles.getItemIndex(data as String));
+                    }
+                }
+            }
+        ]]>
+    </mx:Script>
+    <mx:CheckBox id="roleEnabled"
+                 change="changeRoleStatus()"/>
+</mx:HBox>

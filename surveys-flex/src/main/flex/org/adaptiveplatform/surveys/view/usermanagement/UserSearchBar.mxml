@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml"
+                          width="100%">
+    <mx:Metadata>
+		[Event(name="userSearch", type="org.adaptiveplatform.surveys.view.usermanagement.UserSearchEvent")]
+    </mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+            [Bindable]
+            public var queryText:String="";
+
+            private function find():void {
+                dispatchEvent(new UserSearchEvent(queryText));
+            }
+
+            private function reset():void {
+                queryText="";
+                dispatchEvent(new UserSearchEvent(null));
+            }
+        ]]>
+    </mx:Script>
+    <mx:HBox width="100%">
+        <mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+        <mx:TextInput id="queryTxt"
+                      width="100%"
+                      text="{queryText}"
+                      change="{queryText=queryTxt.text}"
+                      enter="find()"/>
+        <mx:Button label="{resourceManager.getString('adaptive', 'find')}"
+                   toolTip="{resourceManager.getString('adaptive', 'find')}"
+                   click="find()"
+                   icon="@Embed(source='/assets/icons/search.png')"/>
+        <mx:Button label="{resourceManager.getString('adaptive', 'reset')}"
+                   toolTip="{resourceManager.getString('adaptive', 'reset')}"
+                   click="reset()"
+                   icon="@Embed(source='/assets/icons/clear.png')"/>
+    </mx:HBox>
+</mx:ApplicationControlBar>

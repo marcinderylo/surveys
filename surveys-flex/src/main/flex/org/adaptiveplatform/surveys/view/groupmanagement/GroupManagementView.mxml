@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete()"
+         xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*"
+         verticalAlign="middle"
+         verticalScrollPolicy="off"
+         horizontalScrollPolicy="off">
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.events.ValidationResultEvent;
+            import mx.validators.ValidationResult;
+
+            import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+            import org.adaptiveplatform.surveys.application.ContextFactory;
+            import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
+            import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
+            import org.adaptiveplatform.surveys.dto.generated.CreateStudentGroupCommand;
+            import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
+            import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+            import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
+
+            private var studentGroupFacade:StudentGroupFacade;
+            private var groupDao:StudentGroupDao;
+
+            [Bindable]
+            private var groups:ArrayCollection;
+            [Bindable]
+            private var query:StudentGroupQuery=new StudentGroupQuery();
+
+
+
+            private function onCreationComplete():void {
+                studentGroupFacade=ContextFactory.context.service.studentGroupFacade;
+                groupDao=ContextFactory.context.service.studentGroupDao;
+                findGroups();
+            }
+
+            public function initializeView(ignore:*=null):void {
+            }
+
+            private function addGroup():void {
+                var event:ValidationResultEvent=groupNameValidator.validate();
+                for each (var result:ValidationResult in event.results) {
+                    if (result.isError) {
+                        return;
+                    }
+                }
+
+                var createGroupCommand:CreateStudentGroupCommand=new CreateStudentGroupCommand();
+                createGroupCommand.groupName=newGroupName.text;
+                createGroupCommand.addMemberCommands=new ArrayCollection();
+                studentGroupFacade.createGroup(createGroupCommand) //
+                    .onSuccess(function(result:Object):void {
+                        newGroupName.text="";
+                        newGroupName.errorString="";
+                        findGroups();
+                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+            }
+
+            private function removeGroup():void {
+                if (groupList.selectedIndex > 0) {
+                    var currentGroup:StudentGroupDto=groupList.selectedItem as StudentGroupDto;
+                    studentGroupFacade.removeGroup(currentGroup.id) //
+                        .onSuccess(function(result:Object):void {
+                            findGroups();
+                        }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                }
+            }
+
+            private function findGroups():void {
+                query.runAs=GroupRoleEnum.GROUP_ADMINISTRATOR;
+                groupDao.query(query) //
+                    .onSuccess(function(result:ArrayCollection):void {
+                        groups=result;
+                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+            }
+
+
+            private function resetGroup():void {
+                groups=new ArrayCollection();
+                query=new StudentGroupQuery();
+                findGroups();
+            }
+        ]]>
+    </mx:Script>
+    <mx:StringValidator id="groupNameValidator"
+                        required="true"
+                        minLength="5"
+                        source="{newGroupName}"
+                        property="text"/>
+
+    <mx:HBox verticalAlign="middle"
+             width="100%">
+
+        <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}:"/>
+        <mx:TextInput id="newGroupName"
+                      width="100%"
+                      enter="addGroup()"/>
+        <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
+                   toolTip="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
+                   click="addGroup()"
+                   icon="@Embed(source='/assets/icons/add.png')"/>
+        <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
+                   toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
+                   click="removeGroup()"
+                   icon="@Embed(source='/assets/icons/remove.png')"/>
+    </mx:HBox>
+    <mx:DataGrid id="groupList"
+                 width="100%"
+                 height="100%"
+                 dataProvider="{groups}"
+                 draggableColumns="false"
+                 rowHeight="26"
+                 sortableColumns="true">
+        <mx:columns>
+            <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}"
+                               dataField="groupName">
+            </mx:DataGridColumn>
+        </mx:columns>
+    </mx:DataGrid>
+</mx:HBox>

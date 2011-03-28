@@ -7,6 +7,7 @@ package org.adaptiveplatform.surveys.application {
 	import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
 	import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 	import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+	import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
 	import org.adaptiveplatform.surveys.application.generated.UserDao;
 	import org.adaptiveplatform.surveys.application.generated.UserFacade;
 
@@ -20,5 +21,6 @@ package org.adaptiveplatform.surveys.application {
 		function get studentGroupDao():StudentGroupDao;
 		function get evaluationFacade():EvaluationFacade;
 		function get evaluationDao():EvaluationDao;
+		function get systemInformationDao():SystemInformationDao;
 	}
 }

@@ -33,7 +33,7 @@
 			import org.adaptiveplatform.surveys.dto.generated.UserDto;
 			import org.adaptiveplatform.surveys.dto.generated.UserQuery;
 			import org.adaptiveplatform.surveys.view.renderers.UserDetailsRenderer;
-			import org.adaptiveplatform.surveys.view.renderers.UserRoleItemRenderer;
+			import org.adaptiveplatform.surveys.view.usermanagement.UserRoleItemRenderer;
 
 			private var userDao:UserDao;
 			private var studentGroupFacade:StudentGroupFacade;
@@ -193,24 +193,6 @@
 				userList.selectedItems = [];
 			}
 
-			private function addGroup():void {
-				var event:ValidationResultEvent = groupNameValidator.validate();
-				for each(var result:ValidationResult in event.results){
-					if(result.isError){
-						return;
-					}	
-				}
-				
-				var createGroupCommand:CreateStudentGroupCommand = new CreateStudentGroupCommand();
-				createGroupCommand.groupName = newGroupName.text; 
-				createGroupCommand.addMemberCommands = new ArrayCollection();
-				studentGroupFacade.createGroup(createGroupCommand) //
-					.onSuccess(function(result:Object):void {
-						newGroupName.text = "";
-						newGroupName.errorString="";
-						findGroups();
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-			}
 			
 			private function isNotInGroup( user:UserDto, group:ArrayCollection ):Boolean{
 				for each( var u:UserDto in group ){
@@ -246,16 +228,6 @@
 				changeGoupCommand.groupId = groupList.selectedItem.id;
 				changeGoupCommand.removeMembers.addItem(user.email);
 				changeMembers();
-			}
-
-			private function removeGroup():void {
-				if (groupList.selectedIndex < 0)
-					return;
-				var currentGroup:StudentGroupDto = groupList.selectedItem as StudentGroupDto;
-				studentGroupFacade.removeGroup(currentGroup.id) //
-					.onSuccess(function(result:Object):void {
-						findGroups();
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
 			}
 
 			private function prepareToDisplay(result:ArrayCollection):ArrayCollection {
@@ -313,8 +285,6 @@
 	<mx:Resize id="resize"/>
     <mx:Fade id="fadeIn" duration="1000" alphaFrom="0.0" alphaTo="1.0"/>
 	
-	<mx:StringValidator id="groupNameValidator" required="true" minLength="5" source="{newGroupName}" property="text"/>
-	
 	<mx:VBox height="100%" width="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" id="usersContainer">
 		<mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.users')}" width="100%" textAlign="center"/>
 		<mx:TabBar id="role" itemClick="onItemClick(event)" />
@@ -342,18 +312,6 @@
 	<mx:Button click="addToGroup()" icon="@Embed(source='/assets/icons/move.png')" width="60"/>
 	<mx:VBox width="100%" height="{usersContainer.height}" verticalScrollPolicy="off" horizontalScrollPolicy="off">
 		<mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.groups')}" width="100%" textAlign="center"/>
-		<mx:HBox verticalAlign="middle" width="100%">
-			<mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}:"/>
-			<mx:TextInput id="newGroupName" width="100%" enter="addGroup()"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
-				   toolTip="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
-				   click="addGroup()"
-				   icon="@Embed(source='/assets/icons/add.png')"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
-				   toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
-				   click="removeGroup()"
-				   icon="@Embed(source='/assets/icons/remove.png')"/>		
-		</mx:HBox>
 		<mx:ApplicationControlBar width="100%">
 			<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
 			<mx:TextInput id="cbxKeywordG" width="100%" text="{query.groupNamePattern}" 

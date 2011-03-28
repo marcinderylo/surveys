@@ -14,12 +14,14 @@ package org.adaptiveplatform.surveys.application {
 	import org.adaptiveplatform.surveys.application.generated.RemoteStudentGroupFacade;
 	import org.adaptiveplatform.surveys.application.generated.RemoteSurveyDao;
 	import org.adaptiveplatform.surveys.application.generated.RemoteSurveyFacade;
+	import org.adaptiveplatform.surveys.application.generated.RemoteSystemInformationDao;
 	import org.adaptiveplatform.surveys.application.generated.RemoteUserDao;
 	import org.adaptiveplatform.surveys.application.generated.RemoteUserFacade;
 	import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 	import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
 	import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 	import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+	import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
 	import org.adaptiveplatform.surveys.application.generated.UserDao;
 	import org.adaptiveplatform.surveys.application.generated.UserFacade;
 	
@@ -35,6 +37,7 @@ package org.adaptiveplatform.surveys.application {
 		private var _studentGroupDao:RemoteStudentGroupDao;
 		private var _evaluationFacade:RemoteEvaluationFacade;
 		private var _evaluationDao:RemoteEvaluationDao;
+		private var _systemInformationDao:RemoteSystemInformationDao;
 		
 		public function ServiceLocatorRemote(channelName:String, channelUrl:String) {
 			var channels:ChannelSet = createChannels(channelName, channelUrl);
@@ -58,6 +61,8 @@ package org.adaptiveplatform.surveys.application {
 			_evaluationFacade.remoteService = remoteService;
 			_evaluationDao = new RemoteEvaluationDao();
 			_evaluationDao.remoteService = remoteService;
+			_systemInformationDao = new RemoteSystemInformationDao();
+			_systemInformationDao.remoteService = remoteService;
 		}
 		private function createChannels(channelName:String, channelUrl:String):ChannelSet{
 			var channelSet:ChannelSet=new ChannelSet();
@@ -100,6 +105,10 @@ package org.adaptiveplatform.surveys.application {
 		
 		public function get evaluationDao():EvaluationDao {
 			return _evaluationDao;
+		}
+		
+		public function get systemInformationDao():SystemInformationDao{
+			return _systemInformationDao;	
 		}
 	}
 }

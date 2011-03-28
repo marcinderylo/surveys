@@ -1,13 +1,13 @@
 package org.adaptiveplatform.surveys.application.mock {
 	import org.adaptiveplatform.surveys.application.AuthenticationService;
 	import org.adaptiveplatform.surveys.application.ServiceLocator;
-	
 	import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
 	import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
 	import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 	import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
 	import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 	import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+	import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
 	import org.adaptiveplatform.surveys.application.generated.UserDao;
 	import org.adaptiveplatform.surveys.application.generated.UserFacade;
 
@@ -57,6 +57,9 @@ package org.adaptiveplatform.surveys.application.mock {
 		}
 
 		public function get evaluationDao():EvaluationDao {
+			return null;
+		}
+		public function get systemInformationDao():SystemInformationDao{
 			return null;
 		}
 	}

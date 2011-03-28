@@ -16,7 +16,7 @@
 			
 			import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
 			import org.adaptiveplatform.surveys.dto.generated.UserDto;
-			import org.adaptiveplatform.surveys.view.UsersList;
+			import org.adaptiveplatform.surveys.view.usermanagement.UserManagementView;
 			import org.adaptiveplatform.surveys.view.events.ChangeGroupSignUpModeClickedEvent;
 			
 			[Bindable]
@@ -48,15 +48,8 @@
 						
 			[Bindable]
 			public var dragDropFunction:Function;
-			
-
-			protected function toggleGroupSignupMode(event:MouseEvent):void {
-				dispatchEvent(new ChangeGroupSignUpModeClickedEvent(group.id, !group.studentsCanSignUp));
-			}
-			
 		]]>
 	</mx:Script>
 	
-	<mx:Label id="groupNameLabel" text="{group==null?'':group.groupName}" />
-	<mx:Button width="10" click="toggleGroupSignupMode(event)"/>
+	<mx:Label id="groupNameLabel" text="{group.groupName}" visible="{group!=null}"/>
 </mx:HBox>

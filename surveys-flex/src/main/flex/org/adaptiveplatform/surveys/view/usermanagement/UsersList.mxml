@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml"
+             change="userClicked(event)"
+             itemClick="userClicked(event)"
+             doubleClickEnabled="true"
+             draggableColumns="false"
+             rowHeight="32"
+             sortableColumns="true">
+    <mx:Metadata>
+		[Event(name="userSelected", type="org.adaptiveplatform.surveys.view.usermanagement.UserSelectedEvent")]
+	</mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.CollectionEvent;
+			import mx.events.ListEvent;
+			
+			import org.adaptiveplatform.surveys.dto.generated.UserDto;
+
+            public function refreshData():void {
+                if (dataProvider != null && dataProvider is ArrayCollection) {
+                    var data:ArrayCollection=ArrayCollection(dataProvider);
+					data.dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE));
+                }
+            }
+
+            private function userClicked(event:ListEvent):void {
+                var selectedUser:UserDto=UserDto(event.itemRenderer.data);
+                dispatchEvent(new UserSelectedEvent(selectedUser));
+            }
+        ]]>
+    </mx:Script>
+    <mx:columns>
+        <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'name')}"
+                           dataField="name"/>
+        <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'email')}"
+                           dataField="email"/>
+        <mx:DataGridColumn width="200"
+                           headerText="{resourceManager.getString('adaptive', 'role')}"
+                           dataField="roles"
+                           itemRenderer="{new ClassFactory(UserRoleItemRenderer)}"/>
+    </mx:columns>
+</mx:DataGrid>
+

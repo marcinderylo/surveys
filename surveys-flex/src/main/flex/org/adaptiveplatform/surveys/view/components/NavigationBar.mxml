@@ -40,14 +40,16 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'fillSurvey')}" visible="{fillingSurveysVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.fillSurvey')}" visible="{fillingSurveysVisible}"
 				   includeInLayout="{fillingSurveysVisible}" click="{views.goto(View.SURVEY_TEMPLATE_LIST)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'evalStartPage')}" visible="{evaluatorStartPageVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.evalStartPage')}" visible="{evaluatorStartPageVisible}"
 				   includeInLayout="{evaluatorStartPageVisible}" click="{views.goto(View.EVALUATOR_START_PAGE)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'users')}" visible="{usersVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.users')}" visible="{usersVisible}"
 				   includeInLayout="{usersVisible}" click="{views.goto(View.USERS_LIST)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'groups')}" visible="{groupsManagementVisible}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupManagement')}" visible="{groupsManagementVisible}"
 				   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_MANAGEMENT)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'groupSignup')}" visible="{groupSignup}"
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupCreation')}" visible="{groupsManagementVisible}"
+				   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_CREATION)}"/>
+	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupSignup')}" visible="{groupSignup}"
 				   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>
 </mx:HBox>

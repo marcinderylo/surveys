@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TabNavigator xmlns:mx="http://www.adobe.com/2006/mxml"
+                 xmlns:component="org.adaptiveplatform.surveys.view.usermanagement.*"
+                 visible="{_user != null}">
+    <mx:Metadata>
+		[Event(name="changePassword", type="org.adaptiveplatform.surveys.view.usermanagement.ChangePasswordEvent")]
+	</mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+
+            import org.adaptiveplatform.surveys.dto.generated.UserDto;
+
+            [Bindable]
+            private var _user:UserDto;
+            [Bindable]
+            public var currentUser:String;
+
+            [Bindable]
+            private var newPassword:String;
+
+            [Bindable]
+            public var roles:ArrayCollection;
+
+
+            public function set user(user:UserDto):void {
+                _user=user;
+                newPassword=null;
+            }
+
+            private function changePasswordClicked():void {
+                dispatchEvent(new ChangePasswordEvent(newPasswordTxt.text));
+            }
+        ]]>
+    </mx:Script>
+    <mx:Form label="{resourceManager.getString('adaptive', 'usermanagement.details')}">
+        <mx:FormItem label="{resourceManager.getString('adaptive', 'name')}">
+            <mx:Label text="{_user.name}"
+                      selectable="true"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('adaptive', 'email')}">
+            <mx:Label text="{_user.email}"
+                      selectable="true"/>
+        </mx:FormItem>
+        <!-- TODO implement on server -->
+        <mx:FormHeading visible="false"
+                        label="{resourceManager.getString('adaptive', 'userManagement.changePassword')}"/>
+        <mx:FormItem visible="false"
+                     label="{resourceManager.getString('adaptive', 'userManagement.newPassword')}">
+            <mx:TextInput id="newPasswordTxt"
+                          text=""/>
+            <mx:Button click="changePasswordClicked()"
+                       label="{resourceManager.getString('adaptive', 'userManagement.changePassword.button')}"/>
+        </mx:FormItem>
+    </mx:Form>
+    <mx:VBox label="{resourceManager.getString('adaptive', 'usermanagement.roles')}"
+             horizontalAlign="center">
+        <component:UserRolesList width="90%"
+                                 roles="{roles}"
+                                 currentUserEmail="{currentUser}"
+                                 selectedUser="{_user}"/>
+    </mx:VBox>
+
+</mx:TabNavigator>
