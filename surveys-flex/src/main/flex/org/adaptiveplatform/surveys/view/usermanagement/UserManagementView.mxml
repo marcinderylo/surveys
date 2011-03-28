@@ -72,7 +72,7 @@
 
             private function changePasswordHandler(event:ChangePasswordEvent):void {
                 var command:ChangePasswordCommand=new ChangePasswordCommand();
-                command.email=user.email;
+                command.email=event.user.email;
                 command.newPassword=event.newPassword;
                 userFacade.changePassword(command).onSuccess(function():void {
                     Alert.show("password changed");

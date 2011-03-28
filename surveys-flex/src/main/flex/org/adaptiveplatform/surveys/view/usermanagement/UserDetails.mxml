@@ -29,7 +29,7 @@
             }
 
             private function changePasswordClicked():void {
-                dispatchEvent(new ChangePasswordEvent(newPasswordTxt.text));
+                dispatchEvent(new ChangePasswordEvent(_user, newPasswordTxt.text));
             }
         ]]>
     </mx:Script>

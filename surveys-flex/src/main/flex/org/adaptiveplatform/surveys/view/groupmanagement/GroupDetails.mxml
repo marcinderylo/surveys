@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+         label="{resourceManager.getString('adaptive', 'usermanagement.details')}"
+		 visible="{group!=null}">
+    <mx:Script>
+        <![CDATA[
+            import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+
+            [Bindable]
+            public var group:StudentGroupDto;
+        ]]>
+    </mx:Script>
+    <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.groupName')}">
+        <mx:Label text="{group.groupName}"/>
+    </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.studentsCanSignUp')}">
+        <mx:CheckBox selected="{group.studentsCanSignUp}"
+                     />
+    </mx:FormItem>
+</mx:Form>

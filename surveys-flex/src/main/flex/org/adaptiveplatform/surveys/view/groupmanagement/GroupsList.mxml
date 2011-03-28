@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml"
+             draggableColumns="false"
+             rowHeight="26"
+             sortableColumns="true"
+             itemClick="showItem(event)">
+    <mx:Metadata>
+		[Event(name="groupSelected", type="org.adaptiveplatform.surveys.view.groupmanagement.GroupSelectedEvent")]
+	</mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+            import mx.events.ListEvent;
+
+            import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+
+            private function showItem(event:ListEvent):void {
+                var clickedGroup:StudentGroupDto=StudentGroupDto(event.itemRenderer.data);
+                dispatchEvent(new GroupSelectedEvent(clickedGroup));
+            }
+        ]]>
+    </mx:Script>
+    <mx:columns>
+        <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}"
+                           dataField="groupName">
+        </mx:DataGridColumn>
+    </mx:columns>
+</mx:DataGrid>

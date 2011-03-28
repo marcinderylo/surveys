@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*"
+         xmlns:component="org.adaptiveplatform.surveys.view.groupmanagement.*"
          width="100%"
          height="100%"
          creationComplete="onCreationComplete()"
-         xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*"
          verticalAlign="middle"
          verticalScrollPolicy="off"
          horizontalScrollPolicy="off">
@@ -12,7 +13,7 @@
             import mx.collections.ArrayCollection;
             import mx.events.ValidationResultEvent;
             import mx.validators.ValidationResult;
-
+            
             import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
             import org.adaptiveplatform.surveys.application.ContextFactory;
             import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
@@ -22,67 +23,17 @@
             import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
             import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
 
-            private var studentGroupFacade:StudentGroupFacade;
-            private var groupDao:StudentGroupDao;
-
             [Bindable]
-            private var groups:ArrayCollection;
-            [Bindable]
-            private var query:StudentGroupQuery=new StudentGroupQuery();
-
-
+            private var model:GroupManagementModel;
 
             private function onCreationComplete():void {
-                studentGroupFacade=ContextFactory.context.service.studentGroupFacade;
-                groupDao=ContextFactory.context.service.studentGroupDao;
-                findGroups();
+                var studentGroupFacade:StudentGroupFacade=ContextFactory.context.service.studentGroupFacade;
+                var groupDao:StudentGroupDao=ContextFactory.context.service.studentGroupDao;
+                model=new GroupManagementModel(studentGroupFacade, groupDao, resourceManager);                
+                model.findGroups();
             }
 
             public function initializeView(ignore:*=null):void {
-            }
-
-            private function addGroup():void {
-                var event:ValidationResultEvent=groupNameValidator.validate();
-                for each (var result:ValidationResult in event.results) {
-                    if (result.isError) {
-                        return;
-                    }
-                }
-
-                var createGroupCommand:CreateStudentGroupCommand=new CreateStudentGroupCommand();
-                createGroupCommand.groupName=newGroupName.text;
-                createGroupCommand.addMemberCommands=new ArrayCollection();
-                studentGroupFacade.createGroup(createGroupCommand) //
-                    .onSuccess(function(result:Object):void {
-                        newGroupName.text="";
-                        newGroupName.errorString="";
-                        findGroups();
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-            }
-
-            private function removeGroup():void {
-                if (groupList.selectedIndex > 0) {
-                    var currentGroup:StudentGroupDto=groupList.selectedItem as StudentGroupDto;
-                    studentGroupFacade.removeGroup(currentGroup.id) //
-                        .onSuccess(function(result:Object):void {
-                            findGroups();
-                        }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-                }
-            }
-
-            private function findGroups():void {
-                query.runAs=GroupRoleEnum.GROUP_ADMINISTRATOR;
-                groupDao.query(query) //
-                    .onSuccess(function(result:ArrayCollection):void {
-                        groups=result;
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-            }
-
-
-            private function resetGroup():void {
-                groups=new ArrayCollection();
-                query=new StudentGroupQuery();
-                findGroups();
             }
         ]]>
     </mx:Script>
@@ -91,34 +42,50 @@
                         minLength="5"
                         source="{newGroupName}"
                         property="text"/>
+    <mx:VBox width="50%"
+             height="100%">
+        <mx:ApplicationControlBar width="100%">
+            <mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+            <mx:TextInput id="cbxKeywordG"
+                          width="100%"
+                          text="{model.query.groupNamePattern}"
+                          change="{model.query.groupNamePattern=cbxKeywordG.text}"
+                          enter="model.findGroups()"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'find')}"
+                       toolTip="{resourceManager.getString('adaptive', 'find')}"
+                       click="model.findGroups()"
+                       icon="@Embed(source='/assets/icons/search.png')"/>
+            <mx:Button id="groupResetBtn"
+                       label="{resourceManager.getString('adaptive', 'reset')}"
+                       toolTip="{resourceManager.getString('adaptive', 'reset')}"
+                       click="model.resetGroup()"
+                       icon="@Embed(source='/assets/icons/clear.png')"/>
+        </mx:ApplicationControlBar>
+        <component:GroupsList id="groupList"
+                              width="100%"
+                              height="100%"
+                              dataProvider="{model.groups}"
+							  groupSelected="model.selectedGroup=event.selectedGroup"/>
+    </mx:VBox>
+    <mx:VBox width="50%">
+        <mx:HBox verticalAlign="middle"
+                 width="100%">
 
-    <mx:HBox verticalAlign="middle"
-             width="100%">
-
-        <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}:"/>
-        <mx:TextInput id="newGroupName"
-                      width="100%"
-                      enter="addGroup()"/>
-        <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
-                   toolTip="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
-                   click="addGroup()"
-                   icon="@Embed(source='/assets/icons/add.png')"/>
-        <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
-                   toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
-                   click="removeGroup()"
-                   icon="@Embed(source='/assets/icons/remove.png')"/>
-    </mx:HBox>
-    <mx:DataGrid id="groupList"
-                 width="100%"
-                 height="100%"
-                 dataProvider="{groups}"
-                 draggableColumns="false"
-                 rowHeight="26"
-                 sortableColumns="true">
-        <mx:columns>
-            <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}"
-                               dataField="groupName">
-            </mx:DataGridColumn>
-        </mx:columns>
-    </mx:DataGrid>
+            <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}:"/>
+            <mx:TextInput id="newGroupName"
+                          width="100%"
+                          text="{model.query.groupNamePattern}"
+                          change="model.query.groupNamePattern = newGroupName.text"
+                          enter="model.addGroup()"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
+                       toolTip="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
+                       click="model.addGroup()"
+                       icon="@Embed(source='/assets/icons/add.png')"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
+                       toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
+                       click="model.removeGroup()"
+                       icon="@Embed(source='/assets/icons/remove.png')"/>
+        </mx:HBox>
+        <component:GroupDetails group="{model.selectedGroup}"/>
+    </mx:VBox>
 </mx:HBox>

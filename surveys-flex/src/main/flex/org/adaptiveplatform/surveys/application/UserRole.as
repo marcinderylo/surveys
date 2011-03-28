@@ -1,5 +1,4 @@
 package org.adaptiveplatform.surveys.application {
-import flexunit.utils.ArrayList;
 
 import mx.collections.ArrayCollection;
 
