@@ -156,7 +156,6 @@
 						<mx:TextArea id="groupNames"
 									 wordWrap="true"
 									 width="100%"
-									 backgroundAlpha="0"
 									 editable="false"
 									 borderStyle="none"
 									 selectable="false"/>

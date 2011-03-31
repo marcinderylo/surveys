@@ -205,7 +205,6 @@
 			
 			public function addToGroupByDrag( group:StudentGroupDto):void{
 				groupList.selectedIndex = groupList.dataProvider.getItemIndex(group);
-//				selectedUsers = userList.selectedItems;
 				addToGroup();
 			}
 			
@@ -256,28 +255,24 @@
 			} 
 			
 			private function displayDetails():void {
-				if((groupDetails.parent as Box).percentHeight==100){
-					(groupDetails.parent as Box).height=10;
+				if(groupDetailsContainer.percentHeight==100){
+					groupDetailsContainer.height=10;
 					upDown.setStyle('icon', upIcon );
 					removeUserFromGroupBtn.enabled = false;
 				} else {
-					(groupDetails.parent as Box).percentHeight=100;
+					groupDetailsContainer.percentHeight=100;
 					upDown.setStyle('icon', downIcon );
 					removeUserFromGroupBtn.enabled = true;
 				}
 			}
 			
 			private function showItem(event:ListEvent):void{
-				if((groupDetails.parent as Box).percentHeight!=100){
+				if(groupDetailsContainer.percentHeight!=100){
 					displayDetails();
 				}
 			}
 			
 			private function startDragHandler(event:DragEvent):void{
-				selectedUsers = [];
-//				for each( var i:Number in userList.selectedIndices ){
-//					selectedUsers.push( i );
-//				}
 				selectedUsers = userList.selectedItems;
 			}
 		]]>
@@ -352,7 +347,7 @@
 				   click="removeUser()"
 				   icon="@Embed(source='/assets/icons/remove.png')"/>
 		</mx:HBox>
-		<mx:Box width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" textAlign="center">
+		<mx:Box id="groupDetailsContainer" width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" textAlign="center">
 			<mx:TileList id="groupDetails" name="list" width="100%" height="100%"
 				dataProvider="{groupList.selectedItem.students}"
 				dropEnabled="true" dragDrop="addToGroup()"

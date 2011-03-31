@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
          label="{resourceManager.getString('adaptive', 'usermanagement.details')}"
-		 visible="{group!=null}">
+         visible="{model.selectedGroup!=null}">
+    <mx:Metadata>
+		[Event(name="signupModeChanged", type="org.adaptiveplatform.surveys.view.groupmanagement.SignupModeChangedEvent")]
+	</mx:Metadata>
     <mx:Script>
         <![CDATA[
             import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
 
             [Bindable]
-            public var group:StudentGroupDto;
+            public var model:GroupManagementModel;
+
+            protected function signupModeChanged():void {
+                model.changeSignupMode(signupMode.selected);
+            }
         ]]>
     </mx:Script>
+	<mx:FormHeading label="Group details"/>
     <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.groupName')}">
-        <mx:Label text="{group.groupName}"/>
+        <mx:Label text="{model.selectedGroup.groupName}"/>
     </mx:FormItem>
     <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.studentsCanSignUp')}">
-        <mx:CheckBox selected="{group.studentsCanSignUp}"
-                     />
+        <mx:CheckBox id="signupMode"
+                     selected="{model.selectedGroup.studentsCanSignUp}"
+                     change="signupModeChanged()"
+					 label="(Kliknij by zmienić)"/>
     </mx:FormItem>
 </mx:Form>

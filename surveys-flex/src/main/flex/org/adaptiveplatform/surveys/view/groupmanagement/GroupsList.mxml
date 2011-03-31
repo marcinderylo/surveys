@@ -17,11 +17,16 @@
                 var clickedGroup:StudentGroupDto=StudentGroupDto(event.itemRenderer.data);
                 dispatchEvent(new GroupSelectedEvent(clickedGroup));
             }
+
+            private function studentsCanSignUpToString(group:StudentGroupDto, ignore:DataGridColumn=null):String {
+                return resourceManager.getString('adaptive', group.studentsCanSignUp ? 'yes' : 'no');
+            }
         ]]>
     </mx:Script>
     <mx:columns>
-        <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}"
-                           dataField="groupName">
-        </mx:DataGridColumn>
+        <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupManagement.groupName')}"
+                           dataField="groupName"/>
+        <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupManagement.studentsCanSignUp')}"
+                           labelFunction="studentsCanSignUpToString"/>
     </mx:columns>
 </mx:DataGrid>

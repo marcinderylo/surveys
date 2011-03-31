@@ -3,6 +3,7 @@ package org.adaptiveplatform.surveys.application {
 	
 	import mx.collections.ArrayCollection;
 	import mx.containers.ViewStack;
+	import mx.core.Container;
 	import mx.events.IndexChangedEvent;
 	import mx.rpc.events.ResultEvent;
 	
@@ -60,7 +61,7 @@ package org.adaptiveplatform.surveys.application {
 
 		private function onViewChange(event:IndexChangedEvent):void {
 			if (initializationArguments != null) {
-				viewStack.selectedChild.data = initializationArguments;
+				Container(viewStack.selectedChild).data = initializationArguments;
 				initializationArguments = null;
 			}
 		}

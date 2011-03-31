@@ -7,9 +7,7 @@
     <mx:Script>
         <![CDATA[
             import flash.events.Event;
-            
-            import flexunit.flexui.controls.right.SelectedTestCaseForm;
-            
+
             import mx.binding.utils.BindingUtils;
             import mx.collections.ArrayCollection;
             import mx.controls.Alert;
@@ -17,7 +15,7 @@
             import mx.events.FlexEvent;
             import mx.events.ListEvent;
             import mx.rpc.Fault;
-            
+
             import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
             import org.adaptiveplatform.surveys.application.ContextFactory;
             import org.adaptiveplatform.surveys.application.UserRole;
@@ -77,7 +75,7 @@
                 userFacade.changePassword(command).onSuccess(function():void {
                     Alert.show("password changed");
                 }).onFault(function(fault:Fault):void {
-                    Alert.show(fault.faultString, ""+fault.errorID);
+                    Alert.show(fault.faultString, "" + fault.errorID);
                 });
             }
         ]]>

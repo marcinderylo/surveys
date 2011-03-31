@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="150" height="32" backgroundAlpha="0">
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="150" height="32">
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;

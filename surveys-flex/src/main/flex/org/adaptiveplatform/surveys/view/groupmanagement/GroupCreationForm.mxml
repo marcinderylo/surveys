@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+    <fx:Script>
+        <![CDATA[
+            [Bindable]
+            public var model:GroupManagementModel;
+        ]]>
+    </fx:Script>
+    <mx:Form>
+        <mx:FormHeading label="Create group"/>
+        <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}">
+            <mx:TextInput id="groupNameTxt"
+						  width="100%"
+                          text="@{model.createGroupCommand.groupName}"
+                          errorString="{model.createGroupCommand.groupNameError}"
+                          enter="model.addGroup()"
+                          keyUp="groupNameTxt.drawFocus(true)"/>
+        </mx:FormItem>
+        <mx:VBox horizontalAlign="right"
+                 width="100%">
+            <mx:HRule height="1"
+                      width="100%"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
+                       click="model.addGroup()"
+                       icon="@Embed(source='/assets/icons/add.png')"/>
+        </mx:VBox>
+    </mx:Form>
+</s:Group>

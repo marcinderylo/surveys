@@ -13,7 +13,7 @@
             import mx.collections.ArrayCollection;
             import mx.events.ValidationResultEvent;
             import mx.validators.ValidationResult;
-            
+
             import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
             import org.adaptiveplatform.surveys.application.ContextFactory;
             import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
@@ -29,27 +29,19 @@
             private function onCreationComplete():void {
                 var studentGroupFacade:StudentGroupFacade=ContextFactory.context.service.studentGroupFacade;
                 var groupDao:StudentGroupDao=ContextFactory.context.service.studentGroupDao;
-                model=new GroupManagementModel(studentGroupFacade, groupDao, resourceManager);                
-                model.findGroups();
+                model=new GroupManagementModel(studentGroupFacade, groupDao, resourceManager);
             }
 
             public function initializeView(ignore:*=null):void {
             }
         ]]>
     </mx:Script>
-    <mx:StringValidator id="groupNameValidator"
-                        required="true"
-                        minLength="5"
-                        source="{newGroupName}"
-                        property="text"/>
     <mx:VBox width="50%"
              height="100%">
         <mx:ApplicationControlBar width="100%">
             <mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
-            <mx:TextInput id="cbxKeywordG"
-                          width="100%"
-                          text="{model.query.groupNamePattern}"
-                          change="{model.query.groupNamePattern=cbxKeywordG.text}"
+            <mx:TextInput width="100%"
+                          text="@{model.query.groupNamePattern}"
                           enter="model.findGroups()"/>
             <mx:Button label="{resourceManager.getString('adaptive', 'find')}"
                        toolTip="{resourceManager.getString('adaptive', 'find')}"
@@ -58,34 +50,19 @@
             <mx:Button id="groupResetBtn"
                        label="{resourceManager.getString('adaptive', 'reset')}"
                        toolTip="{resourceManager.getString('adaptive', 'reset')}"
-                       click="model.resetGroup()"
+                       click="model.resetGroups()"
                        icon="@Embed(source='/assets/icons/clear.png')"/>
         </mx:ApplicationControlBar>
         <component:GroupsList id="groupList"
                               width="100%"
                               height="100%"
                               dataProvider="{model.groups}"
-							  groupSelected="model.selectedGroup=event.selectedGroup"/>
+                              groupSelected="model.selectedGroup=event.selectedGroup"/>
     </mx:VBox>
-    <mx:VBox width="50%">
-        <mx:HBox verticalAlign="middle"
-                 width="100%">
-
-            <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}:"/>
-            <mx:TextInput id="newGroupName"
-                          width="100%"
-                          text="{model.query.groupNamePattern}"
-                          change="model.query.groupNamePattern = newGroupName.text"
-                          enter="model.addGroup()"/>
-            <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
-                       toolTip="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
-                       click="model.addGroup()"
-                       icon="@Embed(source='/assets/icons/add.png')"/>
-            <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
-                       toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeGroup')}"
-                       click="model.removeGroup()"
-                       icon="@Embed(source='/assets/icons/remove.png')"/>
-        </mx:HBox>
-        <component:GroupDetails group="{model.selectedGroup}"/>
+    <mx:VBox width="50%"
+             height="100%">
+        <component:GroupCreationForm model="{model}"/>
+        <component:GroupDetails model="{model}"
+                                height="100%"/>
     </mx:VBox>
 </mx:HBox>

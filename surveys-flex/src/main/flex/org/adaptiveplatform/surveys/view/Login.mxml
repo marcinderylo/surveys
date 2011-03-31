@@ -3,6 +3,7 @@
          width="100%"
          height="100%"
          creationComplete="onCreationComplete()"
+         preinitialize="msg = new MessageBundle(resourceManager, 'surveys', 'login_')"
          horizontalAlign="center"
          verticalAlign="middle">
 
@@ -12,9 +13,10 @@
 
     <mx:Script>
         <![CDATA[
+            import org.adaptiveplatform.surveys.utils.MessageBundle;
             import mx.controls.Alert;
             import mx.rpc.Fault;
-            
+
             import org.adaptiveplatform.surveys.application.AuthenticationService;
             import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
             import org.adaptiveplatform.surveys.application.ContextFactory;
@@ -22,16 +24,18 @@
             import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
 
             private var authentication:AuthenticationService;
-			private	var systemInformationDao:SystemInformationDao;
+            private var systemInformationDao:SystemInformationDao;
             private var view:ViewController;
-			
-			[Bindable]
-			private var serverStatus:String = "serverStatus.checking";
-			
+
+            [Bindable]
+            private var serverStatus:String="serverStatus.checking";
+            [Bindable]
+            private var msg:MessageBundle;
+
             private function onCreationComplete():void {
                 authentication=ContextFactory.context.service.authentication;
                 view=ContextFactory.context.view;
-				systemInformationDao=ContextFactory.context.service.systemInformationDao;
+                systemInformationDao=ContextFactory.context.service.systemInformationDao;
                 username.setFocus();
                 updateLocale(initialLocale);
             }
@@ -43,11 +47,11 @@
                     username.text=login;
                 }
                 password.text="adapt2010";
-				systemInformationDao.getSystemVersion().onSuccess(function(version:String) {
-					serverStatus = "serverStatus.online";
-				}).onFault(function(fault:Fault) {
-					serverStatus = "serverStatus.offline";
-				});
+                systemInformationDao.getSystemVersion().onSuccess(function(version:String) {
+                    serverStatus="serverStatus_online";
+                }).onFault(function(fault:Fault) {
+                    serverStatus="serverStatus_offline";
+                });
             }
 
             protected function loginClicked(ignore:MouseEvent=null):void {
@@ -91,7 +95,7 @@
 
             private function languageComboBoxLabelFunction(item:Object):String {
                 var locale:String=String(item);
-                return resourceManager.getString('adaptive', locale);
+                return msg.string("locale_" + locale);
             }
 
             private function languageComboBoxChanged(event:Event):void {
@@ -117,7 +121,7 @@
     </mx:Script>
     <mx:HBox>
         <mx:Label id="langLabel"
-                  text="{resourceManager.getString('adaptive', 'language')}"/>
+                  text="{msg.language}"/>
         <mx:ComboBox id="langCmbBox"
                      dataProvider="{locales}"
                      labelFunction="languageComboBoxLabelFunction"
@@ -125,12 +129,12 @@
     </mx:HBox>
     <mx:Form defaultButton="{loginBtn}"
              width="400">
-        <mx:FormItem label="{resourceManager.getString('adaptive', 'email')}"
+        <mx:FormItem label="{msg.email}"
                      width="100%">
             <mx:TextInput id="username"
                           width="100%"/>
         </mx:FormItem>
-        <mx:FormItem label="{resourceManager.getString('adaptive', 'password')}"
+        <mx:FormItem label="{msg.password}"
                      width="100%">
             <mx:TextInput id="password"
                           width="100%"
@@ -140,16 +144,17 @@
                      direction="horizontal"
                      width="100%">
             <mx:Button id="loginBtn"
-                       label="{resourceManager.getString('adaptive', 'doLogin')}"
+                       label="{msg.doLogin}"
                        click="loginClicked(event)"
                        width="50%"/>
-            <mx:Button label="{resourceManager.getString('adaptive', 'register')}"
+            <mx:Button label="{msg.register}"
                        click="view.goto(View.REGISTER_USER)"
                        width="50%"/>
         </mx:FormItem>
     </mx:Form>
-	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('adaptive', 'serverStatus')}"/>
-		<mx:Label id="serverStatusLbl" text="{resourceManager.getString('adaptive', serverStatus)}"/>	
-	</mx:HBox>
+    <mx:HBox>
+        <mx:Label text="{msg.serverStatus}"/>
+        <mx:Label id="serverStatusLbl"
+                  text="{msg.string(serverStatus)}"/>
+    </mx:HBox>
 </mx:VBox>
