@@ -18,7 +18,7 @@
 			import mx.rpc.events.FaultEvent;
 			
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
 			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
@@ -47,8 +47,8 @@
 			private var evaluationDao:EvaluationDao;
 
 			private function onCreationComplete():void {
-				evaluationDao=ContextFactory.context.service.evaluationDao;
-				views=ContextFactory.context.view;
+				evaluationDao=ApplicationContextHolder.context.service.evaluationDao;
+				views=ApplicationContextHolder.context.view;
 				questionGrid.addEventListener(ToolTipEvent.TOOL_TIP_CREATE, toolTipQuestionCreateHandler, false, 0, true);
 				userGrid.addEventListener(ToolTipEvent.TOOL_TIP_CREATE, toolTipSurveyCreateHandler, false, 0, true);
 			}

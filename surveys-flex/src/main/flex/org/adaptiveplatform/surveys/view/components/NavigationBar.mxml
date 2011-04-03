@@ -4,7 +4,7 @@
 	<mx:Script>
 		<![CDATA[
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.UserRole;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.view.View;
@@ -26,8 +26,8 @@
 			private var views:ViewController;
 
 			private function onCreationComplete():void {
-				authentication = ContextFactory.context.service.authentication;
-				views = ContextFactory.context.view;
+				authentication = ApplicationContextHolder.context.service.authentication;
+				views = ApplicationContextHolder.context.view;
 			}
 
 			public function onUpdateComplete():void {

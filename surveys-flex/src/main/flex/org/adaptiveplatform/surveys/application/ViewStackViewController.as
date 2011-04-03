@@ -47,7 +47,7 @@ package org.adaptiveplatform.surveys.application {
 		
 		public function gotoOnSuccess(view:String, ... arguments):Function{
 			return function(... ignoredParameters):void {
-				ContextFactory.context.view.goto(view, arguments);
+				ApplicationContextHolder.context.view.goto(view, arguments);
 			};
 		}
 		

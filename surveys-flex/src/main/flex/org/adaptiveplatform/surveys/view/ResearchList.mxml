@@ -11,7 +11,7 @@
 			import mx.events.ToolTipEvent;
 			import mx.rpc.Fault;
 			
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
@@ -31,8 +31,8 @@
 			private var views:ViewController;
 
 			private function onCreationComplete():void {
-				views=ContextFactory.context.view;
-				evaluationDao=ContextFactory.context.service.evaluationDao;
+				views=ApplicationContextHolder.context.view;
+				evaluationDao=ApplicationContextHolder.context.service.evaluationDao;
 				researchList.addEventListener(ToolTipEvent.TOOL_TIP_CREATE, toolTipResearchCreateHandler, false, 0, true);
 			}
 
@@ -68,7 +68,7 @@
 			}
 			
 			private function exit():void{
-				ContextFactory.context.view.goto(View.EVALUATOR_START_PAGE);
+				ApplicationContextHolder.context.view.goto(View.EVALUATOR_START_PAGE);
 			}
 
 			private function toolTipResearchCreateHandler(ev:ToolTipEvent):void {

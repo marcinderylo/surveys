@@ -18,7 +18,7 @@
 			import mx.utils.ArrayUtil;
 			
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
@@ -49,7 +49,7 @@
 
 			public function initializeView(ignore:* = null):void {
 				reset();
-				surveyDao = ContextFactory.context.service.surveyDao;
+				surveyDao = ApplicationContextHolder.context.service.surveyDao;
 				findEvaluatorTemplates();
 				questionsList.selectedItems = [];
 				if(ignore != null){
@@ -81,8 +81,8 @@
 			}
 
 			private function onCreationComplete():void {
-				surveyFacade = ContextFactory.context.service.surveyFacade;
-				views = ContextFactory.context.view;
+				surveyFacade = ApplicationContextHolder.context.service.surveyFacade;
+				views = ApplicationContextHolder.context.view;
 			}
 
 			private function update():void {
@@ -139,7 +139,7 @@
 
 			private function alertHandler(event:CloseEvent):void{
 				if( event.detail == Alert.YES ){
-					ContextFactory.context.view.goto(View.BACK);					
+					ApplicationContextHolder.context.view.goto(View.BACK);					
 				}
 			}
 			

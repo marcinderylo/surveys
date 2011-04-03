@@ -7,7 +7,8 @@
          creationComplete="onCreationComplete()"
          verticalAlign="middle"
          verticalScrollPolicy="off"
-         horizontalScrollPolicy="off">
+         horizontalScrollPolicy="off"
+         xmlns:common="org.adaptiveplatform.surveys.view.common.*">
     <mx:Script>
         <![CDATA[
             import mx.collections.ArrayCollection;
@@ -15,7 +16,7 @@
             import mx.validators.ValidationResult;
 
             import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-            import org.adaptiveplatform.surveys.application.ContextFactory;
+            import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
             import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
             import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
             import org.adaptiveplatform.surveys.dto.generated.CreateStudentGroupCommand;
@@ -27,32 +28,21 @@
             private var model:GroupManagementModel;
 
             private function onCreationComplete():void {
-                var studentGroupFacade:StudentGroupFacade=ContextFactory.context.service.studentGroupFacade;
-                var groupDao:StudentGroupDao=ContextFactory.context.service.studentGroupDao;
+                var studentGroupFacade:StudentGroupFacade=ApplicationContextHolder.context.service.studentGroupFacade;
+                var groupDao:StudentGroupDao=ApplicationContextHolder.context.service.studentGroupDao;
                 model=new GroupManagementModel(studentGroupFacade, groupDao, resourceManager);
             }
 
             public function initializeView(ignore:*=null):void {
+				model.findGroups();
             }
         ]]>
     </mx:Script>
     <mx:VBox width="50%"
              height="100%">
-        <mx:ApplicationControlBar width="100%">
-            <mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
-            <mx:TextInput width="100%"
-                          text="@{model.query.groupNamePattern}"
-                          enter="model.findGroups()"/>
-            <mx:Button label="{resourceManager.getString('adaptive', 'find')}"
-                       toolTip="{resourceManager.getString('adaptive', 'find')}"
-                       click="model.findGroups()"
-                       icon="@Embed(source='/assets/icons/search.png')"/>
-            <mx:Button id="groupResetBtn"
-                       label="{resourceManager.getString('adaptive', 'reset')}"
-                       toolTip="{resourceManager.getString('adaptive', 'reset')}"
-                       click="model.resetGroups()"
-                       icon="@Embed(source='/assets/icons/clear.png')"/>
-        </mx:ApplicationControlBar>
+        <common:SearchBar searchPhrase="@{model.query.groupNamePattern}"
+                          findClicked="{model.findGroups()}"
+                          resetClicked="{model.resetGroups()}"/>
         <component:GroupsList id="groupList"
                               width="100%"
                               height="100%"

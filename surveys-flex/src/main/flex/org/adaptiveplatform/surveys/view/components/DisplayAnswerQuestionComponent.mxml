@@ -5,7 +5,7 @@
 		 width="100%">
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
 			
 			import flash.events.KeyboardEvent;

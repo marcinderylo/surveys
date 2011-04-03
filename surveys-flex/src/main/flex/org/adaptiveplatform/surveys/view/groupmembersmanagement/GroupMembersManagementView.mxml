@@ -2,8 +2,7 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 	width="100%" height="100%" 
 	creationComplete="onCreationComplete()"
-	xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*"
-	verticalAlign="middle" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	verticalAlign="middle" verticalScrollPolicy="off" horizontalScrollPolicy="off" xmlns:groupmembersmanagement="org.adaptiveplatform.surveys.view.groupmembersmanagement.*">
 	<mx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
@@ -20,7 +19,7 @@
 			import mx.validators.ValidationResult;
 			
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
 			import org.adaptiveplatform.surveys.application.generated.UserDao;
@@ -82,9 +81,9 @@
 			private var selectedIndex:Number=-1;
 
 			private function onCreationComplete():void {
-				userDao = ContextFactory.context.service.userDao;
-				studentGroupFacade = ContextFactory.context.service.studentGroupFacade;
-				groupDao = ContextFactory.context.service.studentGroupDao;
+				userDao = ApplicationContextHolder.context.service.userDao;
+				studentGroupFacade = ApplicationContextHolder.context.service.studentGroupFacade;
+				groupDao = ApplicationContextHolder.context.service.studentGroupDao;
 				findUsers();
 				findGroups();
 			}
@@ -327,7 +326,7 @@
 				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}" dataField="groupName">
 					<mx:itemRenderer>
 						<mx:Component>
-							<renderers:GroupListDragDropRenderer 
+							<groupmembersmanagement:GroupListDragDropRenderer 
 								dragDropFunction="{outerDocument.addToGroupByDrag}" />
 						</mx:Component>
 					</mx:itemRenderer>

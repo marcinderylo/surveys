@@ -12,7 +12,7 @@
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.Fault;
 
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
 			import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
@@ -34,8 +34,8 @@
 			private var groupFacade:StudentGroupFacade;
 
 			private function onCreationComplete():void {
-				groupDao=ContextFactory.context.service.studentGroupDao;
-				groupFacade=ContextFactory.context.service.studentGroupFacade;
+				groupDao=ApplicationContextHolder.context.service.studentGroupDao;
+				groupFacade=ApplicationContextHolder.context.service.studentGroupFacade;
 				selectedGroups=new ArrayCollection();
 				resetGroup();
 			}

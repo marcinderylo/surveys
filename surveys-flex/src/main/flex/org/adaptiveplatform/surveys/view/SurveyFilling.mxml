@@ -12,7 +12,7 @@
 			import mx.events.ScrollEvent;
 			
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
@@ -31,10 +31,10 @@
 			public var survey:FilledSurveyDto;
 
 			private function onCreationComplete():void {
-				authentication = ContextFactory.context.service.authentication;
-				surveyDao = ContextFactory.context.service.surveyDao;
-				surveyFacade = ContextFactory.context.service.surveyFacade;
-				views = ContextFactory.context.view;
+				authentication = ApplicationContextHolder.context.service.authentication;
+				surveyDao = ApplicationContextHolder.context.service.surveyDao;
+				surveyFacade = ApplicationContextHolder.context.service.surveyFacade;
+				views = ApplicationContextHolder.context.view;
 			}
 
 			public function initializeView(surveyId:Number):void {

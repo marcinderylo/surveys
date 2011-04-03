@@ -7,7 +7,7 @@
 			import mx.events.ListEvent;
 			import mx.utils.ObjectUtil;
 			
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
@@ -36,9 +36,9 @@
 			private var surveyFacade:SurveyFacade;
 
 			protected function onCreationComplete():void {
-				view = ContextFactory.context.view;
-				surveyDao = ContextFactory.context.service.surveyDao;
-				surveyFacade = ContextFactory.context.service.surveyFacade;
+				view = ApplicationContextHolder.context.view;
+				surveyDao = ApplicationContextHolder.context.service.surveyDao;
+				surveyFacade = ApplicationContextHolder.context.service.surveyFacade;
 			}
 			
 			public function initializeView(ignore:* = null):void {

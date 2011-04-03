@@ -31,7 +31,7 @@
 			
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
 			import org.adaptiveplatform.surveys.dto.generated.CommentQuestionCommand;
 			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
@@ -78,7 +78,7 @@
 
 			private function onCreationComplete():void {
 				userAnswers=new ArrayCollection();
-				evaluationFacade=ContextFactory.context.service.evaluationFacade;
+				evaluationFacade=ApplicationContextHolder.context.service.evaluationFacade;
 				filledSurveys=research.submittedSurveys;
 				createStatistics();
 			}

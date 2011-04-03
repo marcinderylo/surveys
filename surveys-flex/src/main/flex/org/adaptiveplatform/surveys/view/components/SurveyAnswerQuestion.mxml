@@ -3,7 +3,7 @@
 
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.QuestionStyleEnum;
 			import org.adaptiveplatform.surveys.view.components.questions.FourToggleType;
 			
@@ -41,7 +41,7 @@
 
 			private function create():void {
 				var isFirstCall:Boolean = true;
-				surveyFacade = ContextFactory.context.service.surveyFacade;
+				surveyFacade = ApplicationContextHolder.context.service.surveyFacade;
 				watcher.addItem(BindingUtils.bindSetter(function(question:SurveyQuestionDto):void {
 						if( question != null ){
 							createAnswersComponent();

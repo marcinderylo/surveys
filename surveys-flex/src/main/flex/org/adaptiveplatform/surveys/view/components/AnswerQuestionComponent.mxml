@@ -5,7 +5,7 @@
 	<mx:Script>
 		<![CDATA[
 			import org.adaptiveplatform.surveys.QuestionStyleEnum;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			
 			import flash.events.KeyboardEvent;
 			

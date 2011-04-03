@@ -8,7 +8,7 @@
 			import mx.events.CloseEvent;
 			
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.view.View;
 			[Bindable]
@@ -21,8 +21,8 @@
 			private var authentication:AuthenticationService;
 
 			private function onCreationComplete():void {
-				authentication = ContextFactory.context.service.authentication;
-				views = ContextFactory.context.view;
+				authentication = ApplicationContextHolder.context.service.authentication;
+				views = ApplicationContextHolder.context.view;
 			}
 
 			public function onUpdateComplete():void {

@@ -10,7 +10,7 @@
 			import mx.validators.Validator;
 			
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.UserFacade;
 			import org.adaptiveplatform.surveys.dto.generated.RegisterAccountCommand;
@@ -22,8 +22,8 @@
 			private var user:RegisterAccountCommand;
 
 			private function onCreationComplete():void {
-				userFacade = ContextFactory.context.service.userFacade;
-				view = ContextFactory.context.view;
+				userFacade = ApplicationContextHolder.context.service.userFacade;
+				view = ApplicationContextHolder.context.view;
 				user = new RegisterAccountCommand();
 			}
 

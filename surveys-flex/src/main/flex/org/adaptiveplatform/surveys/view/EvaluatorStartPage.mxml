@@ -10,7 +10,7 @@
 			import mx.events.ListEvent;
 			import mx.resources.ResourceBundle;
 			
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
 			import org.adaptiveplatform.surveys.dto.generated.ActivitiesQuery;
@@ -31,8 +31,8 @@
 			}
 			
 			private function onCreationComplete():void{
-				views = ContextFactory.context.view;
-				evaluationsActivityDao = ContextFactory.context.service.evaluationDao;
+				views = ApplicationContextHolder.context.view;
+				evaluationsActivityDao = ApplicationContextHolder.context.service.evaluationDao;
 				retriveveActivities();
 			}
 			

@@ -3,7 +3,7 @@
 		   xmlns:comp="adaptlearning.view.components.*" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 			import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
@@ -17,8 +17,8 @@
 			private var view:ViewController;
 
 			private function onCreationComplete():void {
-				surveys = ContextFactory.context.service.surveyDao;
-				view = ContextFactory.context.view;
+				surveys = ApplicationContextHolder.context.service.surveyDao;
+				view = ApplicationContextHolder.context.view;
 			}
 
 			public function initializeView(id:Number):void {

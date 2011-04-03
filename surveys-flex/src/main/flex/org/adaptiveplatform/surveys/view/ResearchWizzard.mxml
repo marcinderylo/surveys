@@ -11,7 +11,7 @@
 			import mx.events.IndexChangedEvent;
 			import mx.rpc.Fault;
 
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
@@ -57,8 +57,8 @@
 			}
 
 			private function onCreationComplete():void {
-				views=ContextFactory.context.view;
-				evaluationFacade=ContextFactory.context.service.evaluationFacade;
+				views=ApplicationContextHolder.context.view;
+				evaluationFacade=ApplicationContextHolder.context.service.evaluationFacade;
 				researchCommand=new PrepareResearchCommand();
 			}
 

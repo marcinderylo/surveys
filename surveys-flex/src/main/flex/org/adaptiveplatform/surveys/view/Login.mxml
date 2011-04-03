@@ -19,7 +19,7 @@
 
             import org.adaptiveplatform.surveys.application.AuthenticationService;
             import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-            import org.adaptiveplatform.surveys.application.ContextFactory;
+            import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
             import org.adaptiveplatform.surveys.application.ViewController;
             import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
 
@@ -28,14 +28,14 @@
             private var view:ViewController;
 
             [Bindable]
-            private var serverStatus:String="serverStatus.checking";
+            private var serverStatus:String="serverStatus_checking";
             [Bindable]
             private var msg:MessageBundle;
 
             private function onCreationComplete():void {
-                authentication=ContextFactory.context.service.authentication;
-                view=ContextFactory.context.view;
-                systemInformationDao=ContextFactory.context.service.systemInformationDao;
+                authentication=ApplicationContextHolder.context.service.authentication;
+                view=ApplicationContextHolder.context.view;
+                systemInformationDao=ApplicationContextHolder.context.service.systemInformationDao;
                 username.setFocus();
                 updateLocale(initialLocale);
             }

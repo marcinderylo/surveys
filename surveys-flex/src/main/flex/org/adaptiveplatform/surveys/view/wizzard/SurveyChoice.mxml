@@ -11,7 +11,7 @@
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.Fault;
 			
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
@@ -30,7 +30,7 @@
 			private var surveyFacade:SurveyFacade;
 
 			private function onCreationComplete():void {
-				surveyFacade=ContextFactory.context.service.surveyFacade;
+				surveyFacade=ApplicationContextHolder.context.service.surveyFacade;
 				resetSurvey();
 			}
 
@@ -41,7 +41,7 @@
 			}
 
 			protected function findSurveys():void {
-				surveyDao=ContextFactory.context.service.surveyDao;
+				surveyDao=ApplicationContextHolder.context.service.surveyDao;
 				surveyDao.queryTemplates(surveyTemplateQuery) //
 					.onSuccess(function(result:ArrayCollection):void {
 						surveys=result;

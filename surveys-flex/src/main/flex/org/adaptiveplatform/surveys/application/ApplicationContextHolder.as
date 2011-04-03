@@ -1,7 +1,7 @@
 package org.adaptiveplatform.surveys.application {
 	import org.adaptiveplatform.surveys.application.mock.ServiceLocatorMock;
 
-	public class ContextFactory {
+	public class ApplicationContextHolder {
 		private static var _context:DefaultApplicationContext;
 
 		private var view:ViewController;

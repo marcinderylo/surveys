@@ -16,7 +16,7 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
 			
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
@@ -51,12 +51,12 @@
 			private var selectedIndex:Number=-1;
 
 			private function onCreationComplete():void {
-				surveyDao = ContextFactory.context.service.surveyDao;
-				views = ContextFactory.context.view;
+				surveyDao = ApplicationContextHolder.context.service.surveyDao;
+				views = ApplicationContextHolder.context.view;
 				
-				surveyFacade = ContextFactory.context.service.surveyFacade;
-				groupDao = ContextFactory.context.service.studentGroupDao;
-				groupFacade = ContextFactory.context.service.studentGroupFacade;
+				surveyFacade = ApplicationContextHolder.context.service.surveyFacade;
+				groupDao = ApplicationContextHolder.context.service.studentGroupDao;
+				groupFacade = ApplicationContextHolder.context.service.studentGroupFacade;
 			}
 
 			public function initializeView(ignore:* = null):void {

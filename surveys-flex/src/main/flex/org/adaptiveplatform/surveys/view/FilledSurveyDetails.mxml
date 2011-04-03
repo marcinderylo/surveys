@@ -13,7 +13,7 @@
 			import mx.controls.DateField;
 			import mx.managers.PopUpManager;
 			
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 			
 
@@ -28,7 +28,7 @@
 
 			private function onCreationComplete():void {
 				questions=new ArrayCollection();
-				surveyDao=ContextFactory.context.service.surveyDao;
+				surveyDao=ApplicationContextHolder.context.service.surveyDao;
 				getQuestionsForSurvey();
 			}
 

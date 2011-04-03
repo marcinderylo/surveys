@@ -2,7 +2,7 @@
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.ContextFactory;
+			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
 			import org.adaptiveplatform.surveys.application.generated.UserDao;
 			import org.adaptiveplatform.surveys.dto.generated.UserDto;
@@ -14,8 +14,8 @@
 			private var view:ViewController;
 
 			private function onCreationComplete():void {
-				users = ContextFactory.context.service.userDao;
-				view = ContextFactory.context.view;
+				users = ApplicationContextHolder.context.service.userDao;
+				view = ApplicationContextHolder.context.view;
 			}
 
 			public function initializeView(id:Number):void {
