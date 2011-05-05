@@ -6,64 +6,65 @@ package org.adaptiveplatform.surveys.application {
 	import mx.resources.ResourceManager;
 	import mx.utils.StringUtil;
 	import org.adaptiveplatform.communication.RemoteBusinessExceptionParametersUnmarshaller;
-	
-	public class RemoteBusinessExceptionParametersUnmarshallerTest extends TestCase	{
-		
+	import org.flexunit.Assert;
+
+	public class RemoteBusinessExceptionParametersUnmarshallerTest{
+		[Test]
 		public function testSplitNull():void{
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split(null);
-			assertEquals(split.length, 0);
+			Assert.assertEquals(split.length, 0);
 		}
-		
+		[Test]
 		public function testSplitEmptyString():void{
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split("");
-			assertEquals(split.length, 0);
+			Assert.assertEquals(split.length, 0);
 		}
-		
+		[Test]
 		public function testSplitOneStringArguments():void {
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split("first");
-			assertEquals(split.length, 1);
-			assertEquals(split[0], "first");
+			Assert.assertEquals(split.length, 1);
+			Assert.assertEquals(split[0], "first");
 		}
-		
+		[Test]
 		public function testSplitTwoStringArguments():void {
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split("first`second");
-			assertEquals(2, split.length);
-			assertEquals( "first", split[0]);
-			assertEquals( "second", split[1]);
+			Assert.assertEquals(2, split.length);
+			Assert.assertEquals( "first", split[0]);
+			Assert.assertEquals( "second", split[1]);
 		}
-		
+		[Test]
 		public function testSplitCollectionWithOneString():void{
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split("[first]");
-			assertEquals(1, split.length);
-			assertEquals( 1,split[0].length);
-			assertEquals("first", split[0][0]);
+			Assert.assertEquals(1, split.length);
+			Assert.assertEquals( 1,split[0].length);
+			Assert.assertEquals("first", split[0][0]);
 		}
-		
+		[Test]
 		public function testSplitStringContainingEmptyParameters():void{
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split("`second`");
-			assertEquals(3,split.length);
-			assertEquals( "", split[0]);
-			assertEquals( "second", split[1]);
-			assertEquals( "", split[2]);
+			Assert.assertEquals(3,split.length);
+			Assert.assertEquals( "", split[0]);
+			Assert.assertEquals( "second", split[1]);
+			Assert.assertEquals( "", split[2]);
 		}
-		
+		[Test]
 		public function testSplitComplexCollection():void{
 			var unmarshaller :RemoteBusinessExceptionParametersUnmarshaller = new RemoteBusinessExceptionParametersUnmarshaller();
 			var split:Array = unmarshaller.split("first`[second`third]`fourth");
-			assertEquals(3,split.length);
-			assertEquals( "first", split[0]);
-			assertEquals( 2, split[1].length);
-			assertEquals( "second", split[1][0]);
-			assertEquals( "third", split[1][1]);
-			assertEquals( "fourth", split[2]);
+			Assert.assertEquals(3,split.length);
+			Assert.assertEquals( "first", split[0]);
+			Assert.assertEquals( 2, split[1].length);
+			Assert.assertEquals( "second", split[1][0]);
+			Assert.assertEquals( "third", split[1][1]);
+			Assert.assertEquals( "fourth", split[2]);
 		}
-		
+		[Test]
 		public function testResourceManager():void{
 			var resources:IResourceManager = ResourceManager.getInstance();
 			resources.addResourceBundle(new ResourceBundle("pl_PL", "adaptive"));
