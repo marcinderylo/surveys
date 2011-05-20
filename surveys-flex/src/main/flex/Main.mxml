@@ -6,82 +6,90 @@
                 xmlns:view="org.adaptiveplatform.surveys.view.*"
                 initialize="onInitialize()"
                 creationComplete="onCreationComplete(event)"
-                xmlns:components="adaptlearning.view.components.*"
-                xmlns:reflexutil="net.kandov.reflexutil.*"
                 xmlns:components1="org.adaptiveplatform.surveys.view.components.*"
                 xmlns:usermanagement="org.adaptiveplatform.surveys.view.usermanagement.*"
                 xmlns:groupmanagement="org.adaptiveplatform.surveys.view.groupmanagement.*"
-                xmlns:groupsignup="org.adaptiveplatform.surveys.view.groupsignup.*" xmlns:groupmembersmanagement="org.adaptiveplatform.surveys.view.groupmembersmanagement.*">
+                xmlns:groupsignup="org.adaptiveplatform.surveys.view.groupsignup.*"
+                xmlns:groupmembersmanagement="org.adaptiveplatform.surveys.view.groupmembersmanagement.*">
 
     <mx:Metadata>
-		[ResourceBundle("adaptive")]
-		[ResourceBundle("surveys")]
-	</mx:Metadata>
+        [ResourceBundle("adaptive")]
+        [ResourceBundle("surveys")]
+    </mx:Metadata>
 
     <mx:Style source="/assets/css/Main.css"/>
     <mx:Script>
         <![CDATA[
-            import mx.collections.ArrayCollection;
-            import mx.controls.Alert;
-            import mx.controls.CheckBox;
-            import mx.core.Container;
-            import mx.core.FlexGlobals;
-            import mx.events.FlexEvent;
-            import mx.events.IndexChangedEvent;
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+        import mx.controls.CheckBox;
+        import mx.core.Container;
+        import mx.core.FlexGlobals;
+        import mx.events.FlexEvent;
+        import mx.events.IndexChangedEvent;
 
-            import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-            import org.adaptiveplatform.surveys.application.DefaultApplicationContext;
-            import org.adaptiveplatform.surveys.application.ViewStackViewController;
-            import org.adaptiveplatform.surveys.view.View;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.DefaultApplicationContext;
+        import org.adaptiveplatform.surveys.application.ViewStackViewController;
+        import org.adaptiveplatform.surveys.view.View;
 
-            private var context:DefaultApplicationContext;
+        private var context:DefaultApplicationContext;
 
-            private var viewsWithOutNavigation:ArrayCollection=new ArrayCollection(['surveyCreating', 'surveyFilling']);
+        private var viewsWithOutNavigation:ArrayCollection = new ArrayCollection(['surveyCreating', 'surveyFilling']);
 
-            private function onInitialize():void {
-                var channelName:String="my-amf";
-                var destination:String="surveys-web/messagebroker/amf";
-                var channelUrl:String=getChannel();
-                channelUrl=channelUrl + destination;
+        private function onInitialize():void {
+            var channelName:String = "my-amf";
+            var destination:String = "surveys-web/messagebroker/amf";
+            var channelUrl:String = getChannel();
+            channelUrl = channelUrl + destination;
+            if (false) {
                 ApplicationContextHolder.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
+            } else {
+                ApplicationContextHolder.initializeMockContext(new ViewStackViewController(viewstack));
             }
+        }
 
-            private function onCreationComplete(event:FlexEvent):void {
-                ApplicationContextHolder.context.view.goto(View.LOGIN);
+        private function onCreationComplete(event:FlexEvent):void {
+            ApplicationContextHolder.context.view.goto(View.LOGIN);
+        }
+
+        private function getChannel():String {
+            var baseUrl:String = Main(FlexGlobals.topLevelApplication).url;
+            var pattern:RegExp = new RegExp("http://[^/]*/");
+            var hostUrl:String = "http://localhost:8080/";
+            if (pattern.test(baseUrl) == true) {
+                hostUrl = pattern.exec(baseUrl).toString();
             }
+            return hostUrl;
+        }
 
-            private function getChannel():String {
-                var baseUrl:String=Main(FlexGlobals.topLevelApplication).url;
-                var pattern:RegExp=new RegExp("http://[^/]*/");
-                var hostUrl:String="http://localhost:8080/";
-                if (pattern.test(baseUrl) == true) {
-                    hostUrl=pattern.exec(baseUrl).toString();
+        private function registerView(event:FlexEvent):void {
+            var view:IEventDispatcher = IEventDispatcher(event.target);
+            view.addEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
+        }
+
+        private function onUpdateComplete(event:FlexEvent):void {
+            var target:Object = event.currentTarget;
+            if (target.data != null) {
+                trace("view has been updated with: " + target.data);
+                if (target.hasOwnProperty("initializeView")) {
+                    var f:Function = target.initializeView;
+                    var arguments:Array = target.data;
+                    f.apply(target, arguments);
                 }
-                return hostUrl;
+                target.data = null;
             }
+        }
 
-            private function onUpdateComplete(event:FlexEvent):void {
-                var target:Object=event.currentTarget;
-                if (target.data != null) {
-                    trace("view has been updated with: " + target.data);
-                    if (target.hasOwnProperty("initializeView")) {
-                        var f:Function=target.initializeView;
-                        var arguments:Array=target.data;
-                        f.apply(target, arguments);
-                    }
-                    target.data=null;
-                }
-            }
+        private function onViewChange(event:IndexChangedEvent):void {
+            navigation.onUpdateComplete();
+            userInfo.onUpdateComplete();
+            navigation.visible = navigationVisible();
+        }
 
-            private function onViewChange(event:IndexChangedEvent):void {
-                navigation.onUpdateComplete();
-                userInfo.onUpdateComplete();
-                navigation.visible=navigationVisible();
-            }
-
-            private function navigationVisible():Boolean {
-                return !viewsWithOutNavigation.contains(Container(viewstack.selectedChild).id);
-            }
+        private function navigationVisible():Boolean {
+            return !viewsWithOutNavigation.contains(Container(viewstack.selectedChild).id);
+        }
         ]]>
     </mx:Script>
     <mx:VBox height="100%"
@@ -110,39 +118,37 @@
                           change="onViewChange(event)">
                 <mx:Box/>
                 <view:Login id="login"
-                            updateComplete="onUpdateComplete(event)"/>
+                            creationComplete="registerView(event)"/>
                 <view:RegisterUser id="registerUser"
-                                   updateComplete="onUpdateComplete(event)"/>
+                                   creationComplete="registerView(event)"/>
                 <view:SurveyTemplateList id="surveyTemplateList"
-                                         updateComplete="onUpdateComplete(event)"/>
+                                         creationComplete="registerView(event)"/>
                 <view:SurveyFilling id="surveyFilling"
-                                    updateComplete="onUpdateComplete(event)"/>
+                                    creationComplete="registerView(event)"/>
                 <usermanagement:UserManagementView id="usersList"
-                                                   updateComplete="onUpdateComplete(event)"/>
+                                                   creationComplete="registerView(event)"/>
                 <groupmembersmanagement:GroupMembersManagementView id="groupMembersManagement"
-                                             updateComplete="onUpdateComplete(event)"/>
+                                                                   creationComplete="registerView(event)"/>
                 <groupmanagement:GroupManagementView id="groupManagement"
-                                                     updateComplete="onUpdateComplete(event)"/>
-                <view:UserAccountDetails id="userAccountDetails"
-                                         updateComplete="onUpdateComplete(event)"/>
+                                                     creationComplete="registerView(event)"/>
                 <view:SubmittedSurveyDetails id="submittedSurveyDetails"
-                                             updateComplete="onUpdateComplete(event)"/>
+                                             creationComplete="registerView(event)"/>
                 <view:SurveyCreating id="surveyCreating"
-                                     updateComplete="onUpdateComplete(event)"/>
+                                     creationComplete="registerView(event)"/>
                 <view:SurveyPublication id="surveyPublication"
-                                        updateComplete="onUpdateComplete(event)"/>
+                                        creationComplete="registerView(event)"/>
                 <view:PublicationDetails id="surveyPublicationDetails"
-                                         updateComplete="onUpdateComplete(event)"/>
+                                         creationComplete="registerView(event)"/>
                 <view:ResearchList id="researchList"
-                                   updateComplete="onUpdateComplete(event)"/>
+                                   creationComplete="registerView(event)"/>
                 <view:ResearchWizzard id="researchWizzard"
-                                      updateComplete="onUpdateComplete(event)"/>
+                                      creationComplete="registerView(event)"/>
                 <view:EvaluatorStartPage id="evaluatorStartPage"
-                                         updateComplete="onUpdateComplete(event)"/>
-                <mx:Canvas id="groupSignup"
-                           updateComplete="onUpdateComplete(event)">
+                                         creationComplete="registerView(event)"/>
+                <view:ViewContainer id="groupSignup"
+                                    creationComplete="registerView(event)">
                     <groupsignup:GroupSignupView/>
-                </mx:Canvas>
+                </view:ViewContainer>
             </mx:ViewStack>
         </mx:Panel>
     </mx:VBox>

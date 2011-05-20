@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:mx="library://ns.adobe.com/flex/mx">
+         xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:validators="org.adaptiveplatform.surveys.view.validators.*">
+
     <fx:Script>
         <![CDATA[
-            [Bindable]
-            public var model:GroupManagementModel;
+        [Bindable]
+        public var model:GroupManagementModel;
         ]]>
     </fx:Script>
+    <fx:Declarations>
+        <validators:CreateStudentGroupCommandValidator/>
+    </fx:Declarations>
     <mx:Form>
         <mx:FormHeading label="Create group"/>
         <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}">
             <mx:TextInput id="groupNameTxt"
-						  width="100%"
+                          width="100%"
                           text="@{model.createGroupCommand.groupName}"
-                          errorString="{model.createGroupCommand.groupNameError}"
-                          enter="model.addGroup()"
+                          errorString="{model.createGroupCommandValidator.errorStrings.groupName}"
+                          enter="model.createNewGroup()"
                           keyUp="groupNameTxt.drawFocus(true)"/>
         </mx:FormItem>
         <mx:VBox horizontalAlign="right"
@@ -23,7 +27,7 @@
             <mx:HRule height="1"
                       width="100%"/>
             <mx:Button label="{resourceManager.getString('adaptive', 'groupManagement.addGroup')}"
-                       click="model.addGroup()"
+                       click="model.createNewGroup()"
                        icon="@Embed(source='/assets/icons/add.png')"/>
         </mx:VBox>
     </mx:Form>

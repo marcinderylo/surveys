@@ -7,6 +7,8 @@
 	</fx:Metadata>
     <fx:Script>
         <![CDATA[
+            import mx.controls.Alert;
+            import mx.events.CloseEvent;
             import mx.events.ListEvent;
 
             import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
@@ -15,15 +17,22 @@
             public var model:GroupSignupModel;
 
             private function groupClicked(event:ListEvent):void {
-                var clickedGroup:StudentGroupDto=StudentGroupDto(event.itemRenderer.data);
-                model.selectedGroup=clickedGroup;
+                Alert.show("Sign up to that group?", "Group signup", Alert.YES | Alert.NO, this, //
+                    function(closeEvent:CloseEvent):void {
+                        if (closeEvent.detail == Alert.YES) {
+                            const clickedGroup:StudentGroupDto=StudentGroupDto(event.itemRenderer.data);
+                            model.signUp(clickedGroup);
+                        }
+                    }, null, Alert.NO);
             }
         ]]>
     </fx:Script>
     <mx:DataGrid draggableColumns="false"
                  rowHeight="26"
                  sortableColumns="true"
-                 itemClick="groupClicked(event)">
+                 doubleClickEnabled="true"
+                 itemDoubleClick="groupClicked(event)"
+                 dataProvider="{model.groups}">
         <mx:columns>
             <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupManagement.groupName')}"
                                dataField="groupName"/>

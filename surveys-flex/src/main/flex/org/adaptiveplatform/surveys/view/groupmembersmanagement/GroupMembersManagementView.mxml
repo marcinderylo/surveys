@@ -1,359 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-	width="100%" height="100%" 
-	creationComplete="onCreationComplete()"
-	verticalAlign="middle" verticalScrollPolicy="off" horizontalScrollPolicy="off" xmlns:groupmembersmanagement="org.adaptiveplatform.surveys.view.groupmembersmanagement.*">
-	<mx:Script>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         width="100%" height="100%"
+         creationComplete="onCreationComplete()"
+         verticalAlign="middle" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+         xmlns:groupmembersmanagement="org.adaptiveplatform.surveys.view.groupmembersmanagement.*">
+    <mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
-			import mx.binding.utils.BindingUtils;
-			import mx.collections.ArrayCollection;
-			import mx.controls.Label;
-			import mx.events.DragEvent;
-			import mx.events.FlexEvent;
-			import mx.events.ItemClickEvent;
-			import mx.events.ListEvent;
-			import mx.events.ValidationResultEvent;
-			import mx.resources.ResourceManager;
-			import mx.rpc.Fault;
-			import mx.validators.ValidationResult;
-			
-			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-			import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
-			import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
-			import org.adaptiveplatform.surveys.application.generated.UserDao;
-			import org.adaptiveplatform.surveys.dto.generated.AddGroupMemberCommand;
-			import org.adaptiveplatform.surveys.dto.generated.ChangeGroupMembersCommand;
-			import org.adaptiveplatform.surveys.dto.generated.CreateStudentGroupCommand;
-			import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
-			import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
-			import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
-			import org.adaptiveplatform.surveys.dto.generated.UserDto;
-			import org.adaptiveplatform.surveys.dto.generated.UserQuery;
-			import org.adaptiveplatform.surveys.view.renderers.UserDetailsRenderer;
-			import org.adaptiveplatform.surveys.view.usermanagement.UserRoleItemRenderer;
+        import mx.collections.ArrayCollection;
+        import mx.events.DragEvent;
+        import mx.events.ItemClickEvent;
+        import mx.events.ListEvent;
 
-			private var userDao:UserDao;
-			private var studentGroupFacade:StudentGroupFacade;
-			private var groupDao:StudentGroupDao;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+        import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
+        import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
+        import org.adaptiveplatform.surveys.application.generated.UserDao;
+        import org.adaptiveplatform.surveys.dto.generated.AddGroupMemberCommand;
+        import org.adaptiveplatform.surveys.dto.generated.ChangeGroupMembersCommand;
+        import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
+        import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+        import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
+        import org.adaptiveplatform.surveys.dto.generated.UserDto;
+        import org.adaptiveplatform.surveys.dto.generated.UserQuery;
+        import org.adaptiveplatform.surveys.view.renderers.UserDetailsRenderer;
 
-			[Bindable]
-			private var userQuery:UserQuery = new UserQuery();
-			
-			[Bindable]
-			private var query:StudentGroupQuery = new StudentGroupQuery();
+        private var userDao:UserDao;
+        private var studentGroupFacade:StudentGroupFacade;
+        private var groupDao:StudentGroupDao;
 
-			[Bindable]
-			private var changeGoupCommand:ChangeGroupMembersCommand = new ChangeGroupMembersCommand();
+        [Bindable]
+        private var userQuery:UserQuery = new UserQuery();
 
-			[Bindable]
-			private var users:ArrayCollection;
-			[Bindable]
-			public var ROLE_ARRAY:Array = new Array();
-			
-			[Bindable]
-			private var groups:ArrayCollection;
+        [Bindable]
+        private var query:StudentGroupQuery = new StudentGroupQuery();
 
-			[Bindable]
-			[Embed(source="/assets/icons/student.png")]
-			public var studentIcon:Class;
+        [Bindable]
+        private var changeGoupCommand:ChangeGroupMembersCommand = new ChangeGroupMembersCommand();
 
-			[Bindable]
-			[Embed(source="/assets/icons/teacher.png")]
-			public var teacherIcon:Class;
+        [Bindable]
+        private var users:ArrayCollection;
+        [Bindable]
+        public var ROLE_ARRAY:Array = new Array();
 
-			[Bindable]
-			[Embed(source="/assets/icons/evaluator.png")]
-			public var evaluatorIcon:Class;
-			
-			[Bindable]
-			[Embed(source="/assets/icons/up.png")]
-			public var upIcon:Class;
+        [Bindable]
+        private var groups:ArrayCollection;
 
-			[Bindable]
-			[Embed(source="/assets/icons/down.png")]
-			public var downIcon:Class;
-			
-			[Bindable]
-			private var selectedUsers:Array = new Array();
-			
-			private var selectedIndex:Number=-1;
+        [Bindable]
+        [Embed(source="/assets/icons/student.png")]
+        public var studentIcon:Class;
 
-			private function onCreationComplete():void {
-				userDao = ApplicationContextHolder.context.service.userDao;
-				studentGroupFacade = ApplicationContextHolder.context.service.studentGroupFacade;
-				groupDao = ApplicationContextHolder.context.service.studentGroupDao;
-				findUsers();
-				findGroups();
-			}
+        [Bindable]
+        [Embed(source="/assets/icons/teacher.png")]
+        public var teacherIcon:Class;
 
-			public function initializeView(ignore:* = null):void {
-				reset();
-				if(selectedIndex>=0){
-					groupList.selectedIndex = selectedIndex;
-				}
-				ROLE_ARRAY = new Array();
-				ROLE_ARRAY.push({label: resourceManager.getString('adaptive', 'Students'), data: "ROLE_USER", value: GroupRoleEnum.STUDENT});
-				ROLE_ARRAY.push({label: resourceManager.getString('adaptive', 'Teachers'), data: "ROLE_ADMINISTRATOR", value: GroupRoleEnum.GROUP_ADMINISTRATOR});
-				ROLE_ARRAY.push({label: resourceManager.getString('adaptive', 'Evaluators'), data: "ROLE_EVALUATOR", value: GroupRoleEnum.EVALUATOR});
-				role.dataProvider = ROLE_ARRAY;
-				role.selectedIndex = 0;
-			}
+        [Bindable]
+        [Embed(source="/assets/icons/evaluator.png")]
+        public var evaluatorIcon:Class;
 
-			private function reset():void {
-				resetUser();
-				resetGroup();
-			}
-			
-			private function resetUser():void {
-				userQuery = new UserQuery();
-				users = new ArrayCollection();
-				userList.selectedItems = [];
-				findUsers();
-			}
-			
-			private function resetGroup():void {
-				groups = new ArrayCollection();
-				query = new StudentGroupQuery();
-				findGroups();
-			}
+        [Bindable]
+        [Embed(source="/assets/icons/up.png")]
+        public var upIcon:Class;
 
-			protected function findUsers():void {
-				userDao.query(userQuery) //
-					.onSuccess(function(result:ArrayCollection):void {
-						users = result;
-						users.filterFunction = filterByRole;
-						users.refresh();
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-			}
+        [Bindable]
+        [Embed(source="/assets/icons/down.png")]
+        public var downIcon:Class;
 
-			protected function findGroups():void {
-				query.runAs = GroupRoleEnum.GROUP_ADMINISTRATOR;
-				groupDao.query(query) //
-					.onSuccess(function(result:ArrayCollection):void {
-						groups = prepareToDisplay(result);
-						if(selectedIndex>=0)
-							groupList.selectedIndex = selectedIndex;
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-			}
+        [Bindable]
+        private var selectedUsers:Array = new Array();
 
-			protected function changeMembers():void {
-				selectedIndex = groupList.selectedIndex;
-				studentGroupFacade.changeGroupMembers(changeGoupCommand) //
-					.onSuccess(function(result:Object):void {
-						findGroups();
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-			}
+        private var selectedIndex:Number = -1;
 
-			private function filterByRole(user:Object):Boolean {
-				var currentRole:String = role.dataProvider.getItemAt(role.selectedIndex).data;
-				for each (var userRole:String in(user as UserDto).roles) {
-					if (currentRole == userRole)
-						return true;
-				}
-				return false;
-			}
+        private function onCreationComplete():void {
+            userDao = ApplicationContextHolder.context.service.userDao;
+            studentGroupFacade = ApplicationContextHolder.context.service.studentGroupFacade;
+            groupDao = ApplicationContextHolder.context.service.studentGroupDao;
+        }
 
-			private function onItemClick(event:ItemClickEvent):void {
-				users.filterFunction = filterByRole;
-				users.refresh();
-			}
+        public function initializeView(ignore:* = null):void {
+            if (selectedIndex >= 0) {
+                groupList.selectedIndex = selectedIndex;
+            }
+            reset();
+        }
 
-			private function addToGroup():void {
-				var usersToAdd:Array = userList.selectedItems.length == 0 ? selectedUsers : userList.selectedItems; 
-				if (usersToAdd.length === 0 || groupList.selectedIndex < 0){
-					return;
-				}
+        private function reset():void {
+            resetUser();
+            resetGroup();
+        }
 
-				var currentRole:String = role.dataProvider.getItemAt(role.selectedIndex).value;
-				var currentGroup:StudentGroupDto = groupList.selectedItem as StudentGroupDto;
+        private function resetUser():void {
+            userQuery = new UserQuery();
+            users = new ArrayCollection();
+            userList.selectedItems = [];
+            findUsers();
+        }
 
+        private function resetGroup():void {
+            groups = new ArrayCollection();
+            query = new StudentGroupQuery();
+            findGroups();
+        }
 
-				changeGoupCommand = new ChangeGroupMembersCommand();
-				changeGoupCommand.addMembers = new ArrayCollection();
-				changeGoupCommand.removeMembers = new ArrayCollection();
-				changeGoupCommand.groupId = currentGroup.id;
+        protected function findUsers():void {
+            userDao.query(userQuery)//
+                    .onSuccess(
+                    function(result:ArrayCollection):void {
+                        users = result;
+                        users.filterFunction = filterByRole;
+                        users.refresh();
+                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+        }
 
-				for each (var user:UserDto in usersToAdd) {
-					if( !isNotInGroup(user, currentGroup.evaluators) &&
-							!isNotInGroup(user, currentGroup.administrators) &&
-								!isNotInGroup(user, currentGroup.students) )
-					{
-						var addMembersCommand:AddGroupMemberCommand = new AddGroupMemberCommand();
-						addMembersCommand.email = user.email;
-						addMembersCommand.role = currentRole;
-						findGroups();
-						changeGoupCommand.addMembers.addItem(addMembersCommand);
-						
-					}
-				}
-				changeMembers();
-				userList.selectedItems = [];
-			}
+        protected function findGroups():void {
+            query.runAs = GroupRoleEnum.GROUP_ADMINISTRATOR;
+            groupDao.query(query)//
+                    .onSuccess(
+                    function(result:ArrayCollection):void {
+                        groups = prepareToDisplay(result);
+                        if (selectedIndex >= 0)
+                            groupList.selectedIndex = selectedIndex;
+                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+        }
 
-			
-			private function isNotInGroup( user:UserDto, group:ArrayCollection ):Boolean{
-				for each( var u:UserDto in group ){
-					if( (u.email == user.email) && (u.id == user.id) ){
-						return true;
-					}
-				}
-				return false;
-			}
-			
-			public function addToGroupByDrag( group:StudentGroupDto):void{
-				groupList.selectedIndex = groupList.dataProvider.getItemIndex(group);
-				addToGroup();
-			}
-			
-            public function dragEnterHandler(event:DragEvent):void {
-                if (event.dragSource.hasFormat("img"))
-                {
-                	addToGroup();
-                }
+        protected function changeMembers():void {
+            selectedIndex = groupList.selectedIndex;
+            studentGroupFacade.changeGroupMembers(changeGoupCommand)//
+                    .onSuccess(
+                    function(result:Object):void {
+                        findGroups();
+                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+        }
+
+        private function filterByRole(user:UserDto):Boolean {
+            var selectedRole:String = role.dataProvider.getItemAt(role.selectedIndex).data;
+            return user.roles.contains(selectedRole);
+        }
+
+        private function onItemClick(event:ItemClickEvent):void {
+            users.filterFunction = filterByRole;
+            users.refresh();
+        }
+
+        private function addToGroup():void {
+            var usersToAdd:Array = userList.selectedItems.length == 0 ? selectedUsers : userList.selectedItems;
+            if (usersToAdd.length === 0 || groupList.selectedIndex < 0) {
+                return;
             }
 
-			private function removeUser():void {
-				if (!groupDetails.selectedItem)
-					return;
-				var user:UserDto = groupDetails.selectedItem as UserDto;
-				if (!user)
-					return;
-				changeGoupCommand = new ChangeGroupMembersCommand();
-				changeGoupCommand.removeMembers = new ArrayCollection();
-				changeGoupCommand.addMembers = new ArrayCollection();
-				changeGoupCommand.groupId = groupList.selectedItem.id;
-				changeGoupCommand.removeMembers.addItem(user.email);
-				changeMembers();
-			}
+            var currentRole:String = role.dataProvider.getItemAt(role.selectedIndex).value;
+            var currentGroup:StudentGroupDto = groupList.selectedItem as StudentGroupDto;
 
-			private function prepareToDisplay(result:ArrayCollection):ArrayCollection {
-				//display all lists in each group (students and evaluators and administrators)
-				var preparedList:ArrayCollection = new ArrayCollection();
-				for each (var studentGroup:StudentGroupDto in result) {
-					studentGroup.students.addAll(studentGroup.evaluators);
-					studentGroup.students.addAll(studentGroup.administrators);
-					preparedList.addItem(studentGroup);
-				}
-				return preparedList;
-			}
 
-			private function iconFunc(item:Object):Class {
-				var iconClass:Class;
-	
-				if ((item.roles as ArrayCollection).contains("ROLE_ADMINISTRATOR")) {
-					iconClass = teacherIcon;
-				} else if ((item.roles as ArrayCollection).contains("ROLE_EVALUATOR")) {
-					iconClass = evaluatorIcon;
-				} else {
-					iconClass = studentIcon;
-				}
-	
-				return iconClass;
-			} 
-			
-			private function displayDetails():void {
-				if(groupDetailsContainer.percentHeight==100){
-					groupDetailsContainer.height=10;
-					upDown.setStyle('icon', upIcon );
-					removeUserFromGroupBtn.enabled = false;
-				} else {
-					groupDetailsContainer.percentHeight=100;
-					upDown.setStyle('icon', downIcon );
-					removeUserFromGroupBtn.enabled = true;
-				}
-			}
-			
-			private function showItem(event:ListEvent):void{
-				if(groupDetailsContainer.percentHeight!=100){
-					displayDetails();
-				}
-			}
-			
-			private function startDragHandler(event:DragEvent):void{
-				selectedUsers = userList.selectedItems;
-			}
-		]]>
+            changeGoupCommand = new ChangeGroupMembersCommand();
+            changeGoupCommand.addMembers = new ArrayCollection();
+            changeGoupCommand.removeMembers = new ArrayCollection();
+            changeGoupCommand.groupId = currentGroup.id;
+
+            for each (var user:UserDto in usersToAdd) {
+                if (!isNotInGroup(user, currentGroup.evaluators) &&
+                        !isNotInGroup(user, currentGroup.administrators) &&
+                        !isNotInGroup(user, currentGroup.students)) {
+                    var addMembersCommand:AddGroupMemberCommand = new AddGroupMemberCommand();
+                    addMembersCommand.email = user.email;
+                    addMembersCommand.role = currentRole;
+                    findGroups();
+                    changeGoupCommand.addMembers.addItem(addMembersCommand);
+
+                }
+            }
+            changeMembers();
+            userList.selectedItems = [];
+        }
+
+
+        private function isNotInGroup(user:UserDto, group:ArrayCollection):Boolean {
+            for each(var u:UserDto in group) {
+                if ((u.email == user.email) && (u.id == user.id)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public function addToGroupByDrag(group:StudentGroupDto):void {
+            groupList.selectedIndex = groupList.dataProvider.getItemIndex(group);
+            addToGroup();
+        }
+
+        public function dragEnterHandler(event:DragEvent):void {
+            if (event.dragSource.hasFormat("img")) {
+                addToGroup();
+            }
+        }
+
+        private function removeUser():void {
+            if (!groupDetails.selectedItem)
+                return;
+            var user:UserDto = groupDetails.selectedItem as UserDto;
+            if (!user)
+                return;
+            changeGoupCommand = new ChangeGroupMembersCommand();
+            changeGoupCommand.removeMembers = new ArrayCollection();
+            changeGoupCommand.addMembers = new ArrayCollection();
+            changeGoupCommand.groupId = groupList.selectedItem.id;
+            changeGoupCommand.removeMembers.addItem(user.email);
+            changeMembers();
+        }
+
+        private function prepareToDisplay(result:ArrayCollection):ArrayCollection {
+            //display all lists in each group (students and evaluators and administrators)
+            var preparedList:ArrayCollection = new ArrayCollection();
+            for each (var studentGroup:StudentGroupDto in result) {
+                studentGroup.students.addAll(studentGroup.evaluators);
+                studentGroup.students.addAll(studentGroup.administrators);
+                preparedList.addItem(studentGroup);
+            }
+            return preparedList;
+        }
+
+        private function iconFunc(item:Object):Class {
+            var iconClass:Class;
+
+            if ((item.roles as ArrayCollection).contains("ROLE_ADMINISTRATOR")) {
+                iconClass = teacherIcon;
+            } else if ((item.roles as ArrayCollection).contains("ROLE_EVALUATOR")) {
+                iconClass = evaluatorIcon;
+            } else {
+                iconClass = studentIcon;
+            }
+
+            return iconClass;
+        }
+
+        private function displayDetails():void {
+            if (groupDetailsContainer.percentHeight == 100) {
+                groupDetailsContainer.height = 10;
+                upDown.setStyle('icon', upIcon);
+                removeUserFromGroupBtn.enabled = false;
+            } else {
+                groupDetailsContainer.percentHeight = 100;
+                upDown.setStyle('icon', downIcon);
+                removeUserFromGroupBtn.enabled = true;
+            }
+        }
+
+        private function showItem(event:ListEvent):void {
+            if (groupDetailsContainer.percentHeight != 100) {
+                displayDetails();
+            }
+        }
+
+        private function startDragHandler(event:DragEvent):void {
+            selectedUsers = userList.selectedItems;
+        }
+        ]]>
 	</mx:Script>
-	<mx:Resize id="resize"/>
+    <mx:Resize id="resize"/>
     <mx:Fade id="fadeIn" duration="1000" alphaFrom="0.0" alphaTo="1.0"/>
-	
-	<mx:VBox height="100%" width="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" id="usersContainer">
-		<mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.users')}" width="100%" textAlign="center"/>
-		<mx:TabBar id="role" itemClick="onItemClick(event)" />
-		<mx:ApplicationControlBar width="100%">
-			<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>			
-			<mx:TextInput id="cbxKeyword" width="100%"
-				text="{userQuery.nameContains}" change="{userQuery.nameContains=cbxKeyword.text}" enter="findUsers()"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'find')}"
-				   toolTip="{resourceManager.getString('adaptive', 'find')}"
-				   click="findUsers()"
-				   icon="@Embed(source='/assets/icons/search.png')"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'reset')}"
-				   toolTip="{resourceManager.getString('adaptive', 'reset')}"
-				   click="resetUser()"
-				   icon="@Embed(source='/assets/icons/clear.png')"/>
-		</mx:ApplicationControlBar>
-		<mx:DataGrid id="userList" width="100%" height="100%" dataProvider="{users}" selectable="true"
-					 rowHeight="26" allowMultipleSelection="true" dragEnabled="true" dragStart="startDragHandler(event)">
-			<mx:columns>
-				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'name')}" dataField="name"/>
-				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'email')}" dataField="email"/>
-			</mx:columns>
-		</mx:DataGrid>
-	</mx:VBox>
-	<mx:Button click="addToGroup()" icon="@Embed(source='/assets/icons/move.png')" width="60"/>
-	<mx:VBox width="100%" height="{usersContainer.height}" verticalScrollPolicy="off" horizontalScrollPolicy="off">
-		<mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.groups')}" width="100%" textAlign="center"/>
-		<mx:ApplicationControlBar width="100%">
-			<mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
-			<mx:TextInput id="cbxKeywordG" width="100%" text="{query.groupNamePattern}" 
-				change="{query.groupNamePattern=cbxKeywordG.text}" enter="findGroups()"/>
-			<mx:Button label="{resourceManager.getString('adaptive', 'find')}"
-				   toolTip="{resourceManager.getString('adaptive', 'find')}"
-				   click="findGroups()"
-				   icon="@Embed(source='/assets/icons/search.png')"/>
-			<mx:Button id="groupResetBtn" label="{resourceManager.getString('adaptive', 'reset')}"
-				   toolTip="{resourceManager.getString('adaptive', 'reset')}"
-				   click="resetGroup()"
-				   icon="@Embed(source='/assets/icons/clear.png')"/>
-		</mx:ApplicationControlBar>
-		<mx:DataGrid id="groupList" width="100%" height="100%" dataProvider="{groups}" 
-				 draggableColumns="false" rowHeight="26" sortableColumns="true"
-				 resizeEffect="{resize}" doubleClickEnabled="true" itemDoubleClick="showItem(event)">
-			<mx:columns>
-				<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}" dataField="groupName">
-					<mx:itemRenderer>
-						<mx:Component>
-							<groupmembersmanagement:GroupListDragDropRenderer 
-								dragDropFunction="{outerDocument.addToGroupByDrag}" />
-						</mx:Component>
-					</mx:itemRenderer>
-				</mx:DataGridColumn>
-			</mx:columns>
-		</mx:DataGrid>
-		<mx:HBox width="100%" horizontalAlign="right" textAlign="right">
-			<mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.details')}" width="100%" textAlign="center"/>
-			<mx:Image />
-			<mx:Button
-				   toolTip="{resourceManager.getString('adaptive', 'showHideDetails')}"
-				   id="upDown" icon="@Embed(source='/assets/icons/down.png')"
-				   click="displayDetails()"/>
-			<mx:Button id="removeUserFromGroupBtn"
-				   label="{resourceManager.getString('adaptive', 'groupManagement.removeUserFromGroup')}"
-				   toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeUserFromGroup')}"
-				   click="removeUser()"
-				   icon="@Embed(source='/assets/icons/remove.png')"/>
-		</mx:HBox>
-		<mx:Box id="groupDetailsContainer" width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" textAlign="center">
-			<mx:TileList id="groupDetails" name="list" width="100%" height="100%"
-				dataProvider="{groupList.selectedItem.students}"
-				dropEnabled="true" dragDrop="addToGroup()"
-				resizeEffect="{fadeIn}" direction="horizontal"
-				itemRenderer="{new ClassFactory(UserDetailsRenderer)}">
-			</mx:TileList>
-		</mx:Box>
-		
-	</mx:VBox>
+
+    <mx:VBox height="100%" width="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" id="usersContainer">
+        <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.users')}" width="100%"
+                  textAlign="center"/>
+        <mx:TabBar id="role" itemClick="onItemClick(event)"
+                   dataProvider="{[{label:  'Students', data: 'ROLE_USER', value: GroupRoleEnum.STUDENT}, {label: 'Teachers', data: 'ROLE_ADMINISTRATOR', value: GroupRoleEnum.GROUP_ADMINISTRATOR}, {label: 'Evaluators', data: 'ROLE_EVALUATOR', value: GroupRoleEnum.EVALUATOR}]}"
+                   selectedIndex="0"/>
+        <mx:ApplicationControlBar width="100%">
+            <mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+            <mx:TextInput id="cbxKeyword" width="100%"
+                          text="{userQuery.nameContains}" change="{userQuery.nameContains=cbxKeyword.text}"
+                          enter="findUsers()"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'find')}"
+                       toolTip="{resourceManager.getString('adaptive', 'find')}"
+                       click="findUsers()"
+                       icon="@Embed(source='/assets/icons/search.png')"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'reset')}"
+                       toolTip="{resourceManager.getString('adaptive', 'reset')}"
+                       click="resetUser()"
+                       icon="@Embed(source='/assets/icons/clear.png')"/>
+        </mx:ApplicationControlBar>
+        <mx:DataGrid id="userList" width="100%" height="100%" dataProvider="{users}" selectable="true"
+                     rowHeight="26" allowMultipleSelection="true" dragEnabled="true"
+                     dragStart="startDragHandler(event)">
+            <mx:columns>
+                <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'name')}" dataField="name"/>
+                <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'email')}" dataField="email"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:VBox>
+    <mx:Button click="addToGroup()" icon="@Embed(source='/assets/icons/move.png')" width="60"/>
+    <mx:VBox width="100%" height="{usersContainer.height}" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+        <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.groups')}" width="100%"
+                  textAlign="center"/>
+        <mx:ApplicationControlBar width="100%">
+            <mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+            <mx:TextInput id="cbxKeywordG" width="100%" text="{query.groupNamePattern}"
+                          change="{query.groupNamePattern=cbxKeywordG.text}" enter="findGroups()"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'find')}"
+                       toolTip="{resourceManager.getString('adaptive', 'find')}"
+                       click="findGroups()"
+                       icon="@Embed(source='/assets/icons/search.png')"/>
+            <mx:Button id="groupResetBtn" label="{resourceManager.getString('adaptive', 'reset')}"
+                       toolTip="{resourceManager.getString('adaptive', 'reset')}"
+                       click="resetGroup()"
+                       icon="@Embed(source='/assets/icons/clear.png')"/>
+        </mx:ApplicationControlBar>
+        <mx:DataGrid id="groupList" width="100%" height="100%" dataProvider="{groups}"
+                     draggableColumns="false" rowHeight="26" sortableColumns="true"
+                     resizeEffect="{resize}" doubleClickEnabled="true" itemDoubleClick="showItem(event)">
+            <mx:columns>
+                <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'surveyFilling.groupName')}"
+                                   dataField="groupName">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <groupmembersmanagement:GroupListDragDropRenderer
+                                    dragDropFunction="{outerDocument.addToGroupByDrag}"/>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:HBox width="100%" horizontalAlign="right" textAlign="right">
+            <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.details')}" width="100%"
+                      textAlign="center"/>
+            <mx:Image/>
+            <mx:Button
+                    toolTip="{resourceManager.getString('adaptive', 'showHideDetails')}"
+                    id="upDown" icon="@Embed(source='/assets/icons/down.png')"
+                    click="displayDetails()"/>
+            <mx:Button id="removeUserFromGroupBtn"
+                       label="{resourceManager.getString('adaptive', 'groupManagement.removeUserFromGroup')}"
+                       toolTip="{resourceManager.getString('adaptive', 'groupManagement.removeUserFromGroup')}"
+                       click="removeUser()"
+                       icon="@Embed(source='/assets/icons/remove.png')"/>
+        </mx:HBox>
+        <mx:Box id="groupDetailsContainer" width="100%" height="100%" horizontalAlign="center" verticalAlign="middle"
+                textAlign="center">
+            <mx:TileList id="groupDetails" name="list" width="100%" height="100%"
+                         dataProvider="{groupList.selectedItem.students}"
+                         dropEnabled="true" dragDrop="addToGroup()"
+                         resizeEffect="{fadeIn}" direction="horizontal"
+                         itemRenderer="{new ClassFactory(UserDetailsRenderer)}">
+            </mx:TileList>
+        </mx:Box>
+
+    </mx:VBox>
 </mx:HBox>

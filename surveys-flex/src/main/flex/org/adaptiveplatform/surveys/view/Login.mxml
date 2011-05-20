@@ -38,15 +38,17 @@
                 systemInformationDao=ApplicationContextHolder.context.service.systemInformationDao;
                 username.setFocus();
                 updateLocale(initialLocale);
+
+                // REMOVE ME
+                username.text="adaptserver@gmail.com";
+                password.text="adapt2010";
             }
 
             public function initializeView(login:String=null):void {
-                if (login == null) {
-                    username.text="adaptserver@gmail.com";
-                } else {
+                if (login != null) {
                     username.text=login;
                 }
-                password.text="adapt2010";
+
                 systemInformationDao.getSystemVersion().onSuccess(function(version:String) {
                     serverStatus="serverStatus_online";
                 }).onFault(function(fault:Fault) {

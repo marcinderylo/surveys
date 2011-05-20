@@ -12,7 +12,6 @@ package org.adaptiveplatform.surveys.view {
 		public static const SURVEY_FILLING:String = "surveyFilling";
 		public static const REGISTER_USER:String = "registerUser";
 		public static const USERS_LIST:String = "usersList";
-		public static const USER_ACCOUNT_DETAILS:String = "userAccountDetails";
 		public static const SUBMITTED_SURVEY_DETAILS:String = "submittedSurveyDetails";
 		public static const SURVEY_CREATING:String = "surveyCreating";
 		public static const GROUP_MANAGEMENT:String = "groupMembersManagement";

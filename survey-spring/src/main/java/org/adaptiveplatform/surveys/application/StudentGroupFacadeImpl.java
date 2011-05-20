@@ -199,8 +199,9 @@ public class StudentGroupFacadeImpl implements StudentGroupFacade {
 		group.setStudentsCanSignUp(command.isAllowStudentsToSignUp());
 	}
 
+	// TODO change to Role.STUDENT?
 	@Override
-	@Secured({ Role.STUDENT })
+	@Secured({ Role.USER }) 
 	public void signUpAsStudent(GroupSignUpCommand command) {
 		final StudentGroup group = groupRepository.getExisting(command.getGroupId());
 		UserDto caller = authenticationService.getCurrentUser();

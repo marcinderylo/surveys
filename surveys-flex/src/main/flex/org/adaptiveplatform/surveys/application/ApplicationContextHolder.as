@@ -1,5 +1,5 @@
 package org.adaptiveplatform.surveys.application {
-	import org.adaptiveplatform.surveys.application.mock.ServiceLocatorMock;
+	import org.adaptiveplatform.surveys.application.mock.StubServiceLocator;
 
 	public class ApplicationContextHolder {
 		private static var _context:DefaultApplicationContext;
@@ -7,7 +7,7 @@ package org.adaptiveplatform.surveys.application {
 		private var view:ViewController;
 
 		public static function initializeMockContext(view:ViewController):void {
-			initialize(new DefaultApplicationContext(view, new ServiceLocatorMock()));
+			initialize(new DefaultApplicationContext(view, new StubServiceLocator()));
 		}
 
 		public static function initializeRemoteContext(view:ViewController, channelName:String, channelUrl:String):void {

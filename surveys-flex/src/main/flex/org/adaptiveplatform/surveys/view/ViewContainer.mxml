@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+           width="100%"
+           height="100%">
+    <mx:Script>
+        <![CDATA[
+            import mx.core.UIComponent;
+            import mx.events.FlexEvent;
+
+            public function initializeView(args:*=null):void {
+  w              for each (var child:Object in getChildren()) {
+                    if (child.hasOwnProperty("initializeView")) {
+                        var f:Function=child.initializeView;
+                        f.apply(child, args);
+                    }
+                }
+            }
+        ]]>
+    </mx:Script>
+</mx:Canvas>

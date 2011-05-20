@@ -29,5 +29,9 @@
             }
         ]]>
     </fx:Script>
+    <s:layout>
+        <s:VerticalLayout/>
+    </s:layout>
+    <s:Label text="Double click a group to join it."/>
     <groupsignup:GroupsList model="{model}"/>
 </s:Group>

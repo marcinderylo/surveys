@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationControlBar xmlns="http://www.adobe.com/2006/mxml"
+                       width="100%">
+    <Metadata>
+        [Event(name="findClicked", type="flash.events.Event")]
+        [Event(name="resetClicked", type="flash.events.Event")]
+    </Metadata>
+    <Script>
+        <![CDATA[
+        public static const FIND_CLICKED_EVENT:String = "findClicked";
+        public static const RESET_CLICKED_EVENT:String = "resetClicked";
+
+        [Bindable]
+        public var searchPhrase:String = null;
+
+        private function findClicked():void {
+            dispatchEvent(new Event(FIND_CLICKED_EVENT));
+        }
+
+        private function resetClicked():void {
+            dispatchEvent(new Event(RESET_CLICKED_EVENT));
+        }
+        ]]>
+    </Script>
+    <Label text="{resourceManager.getString('adaptive', 'search')}:"/>
+    <TextInput width="100%"
+               text="@{searchPhrase}"
+               enter="findClicked()"/>
+    <Button label="{resourceManager.getString('adaptive', 'find')}"
+            click="findClicked()"
+            icon="@Embed(source='/assets/icons/search.png')"/>
+    <Button label="{resourceManager.getString('adaptive', 'reset')}"
+            click="resetClicked()"
+            icon="@Embed(source='/assets/icons/clear.png')"/>
+</ApplicationControlBar>

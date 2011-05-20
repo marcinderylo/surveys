@@ -1,111 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:components="org.adaptiveplatform.surveys.components.*"
            width="100%"
            height="100%"
            creationComplete="onCreationComplete()"
-           xmlns:usermanagement="org.adaptiveplatform.surveys.view.usermanagement.*"
-           xmlns:common="org.adaptiveplatform.surveys.view.common.*">
+           xmlns:usermanagement="org.adaptiveplatform.surveys.view.usermanagement.*">
     <mx:Script>
         <![CDATA[
-            import flash.events.Event;
+        import flash.events.Event;
 
-            import mx.binding.utils.BindingUtils;
-            import mx.collections.ArrayCollection;
-            import mx.controls.Alert;
-            import mx.events.CollectionEvent;
-            import mx.events.FlexEvent;
-            import mx.events.ListEvent;
-            import mx.rpc.Fault;
+        import mx.binding.utils.BindingUtils;
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+        import mx.events.CollectionEvent;
+        import mx.events.FlexEvent;
+        import mx.events.ListEvent;
+        import mx.rpc.Fault;
 
-            import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-            import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-            import org.adaptiveplatform.surveys.application.UserRole;
-            import org.adaptiveplatform.surveys.application.ViewController;
-            import org.adaptiveplatform.surveys.application.generated.UserDao;
-            import org.adaptiveplatform.surveys.application.generated.UserFacade;
-            import org.adaptiveplatform.surveys.dto.generated.ChangePasswordCommand;
-            import org.adaptiveplatform.surveys.dto.generated.UserDto;
-            import org.adaptiveplatform.surveys.dto.generated.UserQuery;
+        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.UserRole;
+        import org.adaptiveplatform.surveys.application.ViewController;
+        import org.adaptiveplatform.surveys.application.generated.UserDao;
+        import org.adaptiveplatform.surveys.application.generated.UserFacade;
+        import org.adaptiveplatform.surveys.dto.generated.ChangePasswordCommand;
+        import org.adaptiveplatform.surveys.dto.generated.UserDto;
+        import org.adaptiveplatform.surveys.dto.generated.UserQuery;
 
-            private var userDao:UserDao;
-            private var view:ViewController;
-            private var userFacade:UserFacade;
+        private var userDao:UserDao;
+        private var view:ViewController;
+        private var userFacade:UserFacade;
 
-            [Bindable]
-            public var user:UserDto;
+        [Bindable]
+        public var user:UserDto;
 
-            [Bindable]
-            public var currentUser:String;
-            [Bindable]
-            private var searchPhrase:String;
+        [Bindable]
+        public var currentUser:String;
+        [Bindable]
+        private var searchPhrase:String;
 
-            private function onCreationComplete():void {
-                userDao=ApplicationContextHolder.context.service.userDao;
-                view=ApplicationContextHolder.context.view;
-                currentUser=ApplicationContextHolder.context.service.authentication.currentUser;
-                userFacade=ApplicationContextHolder.context.service.userFacade;
-            }
+        private function onCreationComplete():void {
+            userDao = ApplicationContextHolder.context.service.userDao;
+            view = ApplicationContextHolder.context.view;
+            currentUser = ApplicationContextHolder.context.service.authentication.currentUser;
+            userFacade = ApplicationContextHolder.context.service.userFacade;
+        }
 
-            public function initializeView(ignore:*=null):void {
-                find();
-            }
-
-
-            private function onChangeRoleSuccess(result:Object):void {
-                usersList.refreshData();
-            }
+        public function initializeView(...ignore):void {
+            find();
+        }
 
 
-            private function find():void {
-                user=null;
-                var userQuery:UserQuery=new UserQuery();
-                userQuery.nameContains=searchPhrase;
-                userDao.query(userQuery) //
-                    .onSuccess(function(result:ArrayCollection):void {
+        private function onChangeRoleSuccess(...ignore):void {
+            usersList.refreshData();
+        }
+
+
+        private function find():void {
+            user = null;
+            var userQuery:UserQuery = new UserQuery();
+            userQuery.nameContains = searchPhrase;
+            userDao.query(userQuery)//
+                    .onSuccess(
+                    function(result:ArrayCollection):void {
                         for each (var userFromList:UserDto in result) {
                             userFromList.roles.addEventListener(CollectionEvent.COLLECTION_CHANGE, function():void {
                                 userFacade.setUserRoles(user.email, user.roles).onSuccess(onChangeRoleSuccess);
                             });
                         }
-                        usersList.dataProvider=result;
+                        usersList.dataProvider = result;
                     }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-            }
+        }
 
-            private function resetSearch():void {
-                searchPhrase=null;
-                find();
-            }
+        private function resetSearch():void {
+            searchPhrase = null;
+            find();
+        }
 
-            private function changePasswordHandler(event:ChangePasswordEvent):void {
-                var command:ChangePasswordCommand=new ChangePasswordCommand();
-                command.email=event.user.email;
-                command.newPassword=event.newPassword;
-                userFacade.changePassword(command).onSuccess(function():void {
-                    Alert.show("password changed");
-                }).onFault(function(fault:Fault):void {
-                    Alert.show(fault.faultString, "" + fault.errorID);
-                });
-            }
+        private function changePasswordHandler(event:ChangePasswordEvent):void {
+            var command:ChangePasswordCommand = new ChangePasswordCommand();
+            command.email = event.user.email;
+            command.newPassword = event.newPassword;
+            userFacade.changePassword(command).onSuccess(
+                    function():void {
+                        Alert.show("password changed");
+                    }).onFault(function(fault:Fault):void {
+                Alert.show(fault.faultString, "" + fault.errorID);
+            });
+        }
         ]]>
     </mx:Script>
-    <common:SearchBar searchPhrase="@{searchPhrase}"
-                      findClicked="{find()}"
-                      resetClicked="{resetSearch()}"
-                      width="59.5%"/>
+    <components:SearchBar searchPhrase="@{searchPhrase}"
+                          findClicked="{find()}"
+                          resetClicked="{resetSearch()}"
+                          width="59.5%"/>
     <mx:HBox x="0"
              y="50"
              width="100%"
              height="100%">
         <usermanagement:UsersList id="usersList"
-                             width="60%"
-                             height="100%"
-                             userSelected="user = event.selectedUser"/>
+                                  width="60%"
+                                  height="100%"
+                                  userSelected="user = event.selectedUser"/>
 
         <usermanagement:UserDetails width="40%"
-                               height="100%"
-                               roles="{UserRole.allRoles}"
-                               user="{user}"
-                               currentUser="{currentUser}"
-                               changePassword="changePasswordHandler(event)"/>
+                                    height="100%"
+                                    roles="{UserRole.allRoles}"
+                                    user="{user}"
+                                    currentUser="{currentUser}"
+                                    changePassword="changePasswordHandler(event)"/>
     </mx:HBox>
 </mx:Canvas>

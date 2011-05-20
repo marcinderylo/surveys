@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-         xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*"
          xmlns:component="org.adaptiveplatform.surveys.view.groupmanagement.*"
+         xmlns:components="org.adaptiveplatform.surveys.components.*"
          width="100%"
          height="100%"
          creationComplete="onCreationComplete()"
          verticalAlign="middle"
          verticalScrollPolicy="off"
-         horizontalScrollPolicy="off"
-         xmlns:common="org.adaptiveplatform.surveys.view.common.*">
+         horizontalScrollPolicy="off">
     <mx:Script>
         <![CDATA[
-            import mx.collections.ArrayCollection;
-            import mx.events.ValidationResultEvent;
-            import mx.validators.ValidationResult;
+        import mx.collections.ArrayCollection;
+        import mx.events.ValidationResultEvent;
+        import mx.validators.ValidationResult;
 
-            import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-            import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-            import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
-            import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
-            import org.adaptiveplatform.surveys.dto.generated.CreateStudentGroupCommand;
-            import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
-            import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
-            import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
+        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
+        import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
+        import org.adaptiveplatform.surveys.dto.generated.CreateStudentGroupCommand;
+        import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
+        import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
+        import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
 
-            [Bindable]
-            private var model:GroupManagementModel;
+        [Bindable]
+        private var model:GroupManagementModel;
 
-            private function onCreationComplete():void {
-                var studentGroupFacade:StudentGroupFacade=ApplicationContextHolder.context.service.studentGroupFacade;
-                var groupDao:StudentGroupDao=ApplicationContextHolder.context.service.studentGroupDao;
-                model=new GroupManagementModel(studentGroupFacade, groupDao, resourceManager);
-            }
+        private function onCreationComplete():void {
+            var studentGroupFacade:StudentGroupFacade = ApplicationContextHolder.context.service.studentGroupFacade;
+            var groupDao:StudentGroupDao = ApplicationContextHolder.context.service.studentGroupDao;
+            model = new GroupManagementModel(studentGroupFacade, groupDao, resourceManager);
+        }
 
-            public function initializeView(ignore:*=null):void {
-				model.findGroups();
-            }
+        public function initializeView(ignore:* = null):void {
+            model.initialize();
+            model.findGroups();
+        }
         ]]>
     </mx:Script>
     <mx:VBox width="50%"
              height="100%">
-        <common:SearchBar searchPhrase="@{model.query.groupNamePattern}"
-                          findClicked="{model.findGroups()}"
-                          resetClicked="{model.resetGroups()}"/>
+        <components:SearchBar searchPhrase="@{model.query.groupNamePattern}"
+                              findClicked="{model.findGroups()}"
+                              resetClicked="{model.resetGroups()}"/>
         <component:GroupsList id="groupList"
                               width="100%"
                               height="100%"

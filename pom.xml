@@ -23,8 +23,9 @@
 	</scm>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<surveys.version>${project.version}</surveys.version>
-		<flex2java.version>0.9.1</flex2java.version>
+		<flex2java.version>1.0.RC1</flex2java.version>
 		<spring.version>3.1.0.M1</spring.version>
 		<spring-security.version>3.0.5.RELEASE</spring-security.version>
 	</properties>

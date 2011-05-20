@@ -12,13 +12,11 @@ public class GroupSignupModel {
 
     private var studentGroupFacade:StudentGroupFacade;
     private var groupDao:StudentGroupDao;
-    // REMOVEME
+    // REMOVE ME
     private var resourceManager:IResourceManager;
 
     [Bindable]
     public var groups:ArrayCollection;
-    [Bindable]
-    public var selectedGroup:StudentGroupDto;
 
     public function GroupSignupModel(studentGroupFacade:StudentGroupFacade, groupDao:StudentGroupDao, resourceManager:IResourceManager) {
         this.studentGroupFacade=studentGroupFacade;
@@ -29,15 +27,14 @@ public class GroupSignupModel {
     public function findGroups():void {
         groupDao.getAvailableGroups() //
             .onSuccess(function(result:ArrayCollection):void {
-                selectedGroup=null;
                 groups=result;
             }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
     }
 
-    public function signUpToSelectedGroup():void {
-        if (selectedGroup != null) {
+    public function signUp(group:StudentGroupDto):void {
+        if (group != null) {
             var command:GroupSignUpCommand=new GroupSignUpCommand();
-            command.groupId=selectedGroup.id;
+            command.groupId=group.id;
             studentGroupFacade.signUpAsStudent(command).onSuccess(function():void {
             }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
         }
