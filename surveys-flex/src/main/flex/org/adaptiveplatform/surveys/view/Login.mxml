@@ -38,10 +38,6 @@
                 systemInformationDao=ApplicationContextHolder.context.service.systemInformationDao;
                 username.setFocus();
                 updateLocale(initialLocale);
-
-                // REMOVE ME
-                username.text="adaptserver@gmail.com";
-                password.text="adapt2010";
             }
 
             public function initializeView(login:String=null):void {

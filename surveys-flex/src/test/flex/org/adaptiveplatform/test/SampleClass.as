@@ -1,6 +1,6 @@
 package org.adaptiveplatform.test {
-public class TestClass2 {
-    public function TestClass2() {
+public class SampleClass {
+    public function SampleClass() {
     }
 
     public function argumentless():void {

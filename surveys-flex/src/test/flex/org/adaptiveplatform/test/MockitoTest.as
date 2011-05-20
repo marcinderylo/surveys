@@ -1,6 +1,8 @@
 package org.adaptiveplatform.test {
 import mx.collections.ArrayCollection;
 
+import mx.collections.IList;
+
 import org.flexunit.asserts.assertEquals;
 import org.flexunit.asserts.assertNull;
 import org.flexunit.asserts.assertTrue;
@@ -13,11 +15,11 @@ import org.mockito.integrations.verify;
 [RunWith("org.mockito.integrations.flexunit4.MockitoClassRunner")]
 public class MockitoTest {
 
-    [Mock(type="org.adaptiveplatform.surveys.application.TestClass2")]
-    public var mockie:TestClass2;
+    [Mock(type="org.adaptiveplatform.test.SampleClass")]
+    public var mockie:SampleClass;
 
-    [Mock(type="mx.collections.ArrayCollection")]
-    public var arrayCollectionMock:ArrayCollection;
+    [Mock(type="mx.collections.IList")]
+    public var arrayCollectionMock:IList;
 
     [Test]
     public function shouldVerifyMockInvocation():void {

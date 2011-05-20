@@ -1,6 +1,5 @@
 package org.adaptiveplatform.surveys.application
 {
-	import flexunit.framework.TestCase;
 	import org.flexunit.Assert;
 	import mx.utils.StringUtil;
 

@@ -8,7 +8,7 @@
             import mx.events.FlexEvent;
 
             public function initializeView(args:*=null):void {
-  w              for each (var child:Object in getChildren()) {
+                for each (var child:Object in getChildren()) {
                     if (child.hasOwnProperty("initializeView")) {
                         var f:Function=child.initializeView;
                         f.apply(child, args);

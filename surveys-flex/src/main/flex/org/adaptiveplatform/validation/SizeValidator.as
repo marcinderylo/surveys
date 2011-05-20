@@ -1,7 +1,6 @@
 package org.adaptiveplatform.validation {
 import mx.collections.ArrayCollection;
 
-import org.as3commons.collections.framework.ICollection;
 import org.spicefactory.lib.reflect.ClassInfo;
 
 [Metadata(name="Size")]
@@ -26,8 +25,6 @@ public class SizeValidator implements MetaValidator {
             size = (object as ArrayCollection).length;
         } else if (object is Array) {
             size = (object as Array).length;
-        } else if (object is ICollection) {
-            size = (object as ICollection).size;
         } else {
             return TYPE_ERROR;
         }

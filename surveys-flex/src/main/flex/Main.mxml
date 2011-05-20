@@ -33,6 +33,8 @@
         import org.adaptiveplatform.surveys.application.ViewStackViewController;
         import org.adaptiveplatform.surveys.view.View;
 
+        private static const OFFLINE_DEBUG :Boolean = false;
+
         private var context:DefaultApplicationContext;
 
         private var viewsWithOutNavigation:ArrayCollection = new ArrayCollection(['surveyCreating', 'surveyFilling']);
@@ -42,10 +44,11 @@
             var destination:String = "surveys-web/messagebroker/amf";
             var channelUrl:String = getChannel();
             channelUrl = channelUrl + destination;
-            if (false) {
-                ApplicationContextHolder.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
-            } else {
+
+            if (OFFLINE_DEBUG) {
                 ApplicationContextHolder.initializeMockContext(new ViewStackViewController(viewstack));
+            } else {
+                ApplicationContextHolder.initializeRemoteContext(new ViewStackViewController(viewstack), channelName, channelUrl);
             }
         }
 

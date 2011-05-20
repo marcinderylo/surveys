@@ -10,5 +10,13 @@ public class CollectionUtils {
         }
         return true;
     }
+
+    public static function length(collection:Object):int {
+        var i:int = 0;
+        for (var key:Object in collection) {
+            i++;
+        }
+        return i;
+    }
 }
 }
