@@ -1,289 +1,292 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="org.adaptiveplatform.surveys.view.*"
-		   xmlns:comp="adaptlearning.view.components.*" width="100%" height="100%"
-		   creationComplete="onCreationComplete()">
-	<mx:Script>
+           width="100%" height="100%"
+           creationComplete="onCreationComplete()">
+    <mx:Script>
 		<![CDATA[
-			import mx.events.CloseEvent;
-			import mx.collections.ArrayCollection;
-			import mx.controls.Alert;
-			import mx.core.Application;
-			import mx.core.IFlexDisplayObject;
-			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
-			import mx.events.MenuEvent;
-			import mx.events.ValidationResultEvent;
-			import mx.managers.PopUpManager;
-			import mx.rpc.Fault;
-			import mx.utils.ArrayUtil;
-			
-			import org.adaptiveplatform.surveys.application.AuthenticationService;
-			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-			import org.adaptiveplatform.surveys.application.ViewController;
-			import org.adaptiveplatform.surveys.application.generated.SurveyDao;
-			import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
-			import org.adaptiveplatform.surveys.dto.generated.CreateSurveyTemplateCommand;
-			import org.adaptiveplatform.surveys.dto.generated.QuestionTemplateDto;
-			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
-			import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateQuery;
-			import org.adaptiveplatform.surveys.view.components.NewSurveyQuestion;
-			import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
+        import mx.events.CloseEvent;
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+        import mx.core.Application;
+        import mx.core.IFlexDisplayObject;
+        import mx.events.FlexEvent;
+        import mx.events.ListEvent;
+        import mx.events.MenuEvent;
+        import mx.events.ValidationResultEvent;
+        import mx.managers.PopUpManager;
+        import mx.rpc.Fault;
+        import mx.utils.ArrayUtil;
 
-			private var authentication:AuthenticationService;
-			private var surveyDao:SurveyDao;
-			private var surveyFacade:SurveyFacade;
-			private var views:ViewController;
+        import org.adaptiveplatform.surveys.application.AuthenticationService;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+        import org.adaptiveplatform.surveys.application.ViewController;
+        import org.adaptiveplatform.surveys.application.generated.SurveyDao;
+        import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
+        import org.adaptiveplatform.surveys.dto.generated.CreateSurveyTemplateCommand;
+        import org.adaptiveplatform.surveys.dto.generated.QuestionTemplateDto;
+        import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
+        import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateQuery;
+        import org.adaptiveplatform.surveys.view.components.NewSurveyQuestion;
+        import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
 
-			[Bindable]
-			public var survey:SurveyTemplateDto;
-			
-			[Bindable]
-			private var _evaluatorTemplates:ArrayCollection;
-			
-			[Bindable]
-			private var surveyTemplateQuery:SurveyTemplateQuery;
-			
-			[Bindable]
-			private var isEditMode:Boolean = false;
+        private var authentication:AuthenticationService;
+        private var surveyDao:SurveyDao;
+        private var surveyFacade:SurveyFacade;
+        private var views:ViewController;
 
-			public function initializeView(ignore:* = null):void {
-				reset();
-				surveyDao = ApplicationContextHolder.context.service.surveyDao;
-				findEvaluatorTemplates();
-				questionsList.selectedItems = [];
-				if(ignore != null){
-					findSurvey(ignore);
-				}else{
-					isEditMode = false;
+        [Bindable]
+        public var survey:SurveyTemplateDto;
+
+        [Bindable]
+        private var _evaluatorTemplates:ArrayCollection;
+
+        [Bindable]
+        private var surveyTemplateQuery:SurveyTemplateQuery;
+
+        [Bindable]
+        private var isEditMode:Boolean = false;
+
+        public function initializeView(ignore:* = null):void {
+            reset();
+            surveyDao = ApplicationContextHolder.context.service.surveyDao;
+            findEvaluatorTemplates();
+            questionsList.selectedItems = [];
+            if (ignore != null) {
+                findSurvey(ignore);
+            } else {
+                isEditMode = false;
 //					saveBtn.enabled = true;
-				}
-			}
-			
-			private function reset():void {
-				surveyName.text = "";
-				surveyDescription.text = "";
-				surveyTemplateQuery = new SurveyTemplateQuery();
-				survey = new SurveyTemplateDto();
-				survey.questions = new ArrayCollection();
-				_evaluatorTemplates = null;
-				isEditMode = false;
-			}
-			
-			protected function findSurvey(id:int):void {
-				surveyDao.getTemplate(id) //
-					.onSuccess(function(result:SurveyTemplateDto):void {
-						survey = result;
-						surveyName.text = result.name;
-						//saveBtn.enabled = true;
-						isEditMode = true;
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-			}
-
-			private function onCreationComplete():void {
-				surveyFacade = ApplicationContextHolder.context.service.surveyFacade;
-				views = ApplicationContextHolder.context.view;
-			}
-
-			private function update():void {
-				if( isCreationValid() ){
-					survey.questions = questionsList.dataProvider as ArrayCollection;
-					if( !isNaN(survey.id) ){
-						surveyFacade.updateTemplate( survey.id, prepareCreateCommand())
-							.onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-					}else{
-						submit();
-					}
-				}
-			}
-			
-			private function nameAlreadyExists():Boolean{
-				if(alreadyExists()){
-					Alert.show(resourceManager.getString('adaptive', 'surveyExistsError') + ' ' + surveyName.text);
-					return true;
-				}
-				return false;
-			}
-			
-			private function alreadyExists():Boolean{
-				for each(var template:SurveyTemplateDto in _evaluatorTemplates ){
-					if( template.name == surveyName.text ){
-						return true;
-					}
-				}
-				return false;
-			}
-			
-			private function findEvaluatorTemplates():void{
-				if(_evaluatorTemplates == null){
-					var query:SurveyTemplateQuery = new SurveyTemplateQuery();
-					surveyDao.queryTemplates(query).onSuccess(
-						function(value:ArrayCollection):void{
-							_evaluatorTemplates = value;
-						});					
-				}
-			}
-			
-			private function submit():void {
-				if( isCreationValid() ){
-					surveyFacade.createTemplate(prepareCreateCommand())
-						.onSuccess( function(id:Number):void{ survey.id = id, survey.description = surveyDescription.text } )
-						.onFault(BusinessExceptionHandler.displayAlert(resourceManager));
-				}
-			}
-			
-			private function exit():void{
-				Alert.show( resourceManager.getString('adaptive', 'createQuestion.exitWarningMessage'), 
-					resourceManager.getString('adaptive', 'createQuestion.warning'), 3, this, alertHandler );
-			}
-
-			private function alertHandler(event:CloseEvent):void{
-				if( event.detail == Alert.YES ){
-					ApplicationContextHolder.context.view.goto(View.BACK);					
-				}
-			}
-			
-			private function addQuestion():void{
-				manageQuestion(null);
-			}
-			
-			private function prepareCreateCommand():CreateSurveyTemplateCommand{
-				var createCommand:CreateSurveyTemplateCommand = new CreateSurveyTemplateCommand();
-				createCommand.name = surveyName.text;
-				createCommand.questions = survey.questions;
-				createCommand.description = surveyDescription.text;
-				return createCommand;			
-			}
-			
-			private function isCreationValid():Boolean{
-				if( questionsList.dataProvider.length == 0 ){
-					Alert.show( resourceManager.getString('adaptive', 'createQuestion.questionRequired' ) );
-					return false;
-				}
-				return (surveyTemplateNameValidator.validate().type == ValidationResultEvent.VALID);
-			}
-			
-			private function manageQuestion(question:QuestionTemplateDto):void {
-				var surveyForm:NewSurveyQuestion = PopUpManager.createPopUp(Application.application as DisplayObject,NewSurveyQuestion , true) as NewSurveyQuestion;
-				surveyForm.initializeView( survey, question );
-				surveyForm.x = (Application.application.width - surveyForm.width ) / 2;
-				PopUpManager.centerPopUp( surveyForm );				
-			}
-			
-			protected function editQuestion(event:ListEvent):void
-			{
-			    var selectedQuestion:QuestionTemplateDto =  event.target.selectedItem as QuestionTemplateDto;
-			    manageQuestion(selectedQuestion);
-			}
-			
-			public function removeQuestion():void {
-				if (questionsList.selectedIndex < 0)
-					return;
-				var currentQuestion:QuestionTemplateDto = questionsList.selectedItem as QuestionTemplateDto;
-				survey.questions.removeItemAt( survey.questions.getItemIndex( currentQuestion ) );
-			}
-			
-            private function menuHandler(event:MenuEvent):void  {
-            	switch( String(event.item.@data) ){
-            		case "save":
-            		{
-            			update();
-            			break;
-            		}
-            		case "exit":
-            		{
-            			exit();
-            			break;
-            		}
-            		case "createCopy":
-            		{
-            			submit();
-            			break;
-            		}
-            		case "addNewQuestion":
-            		{
-						addQuestion();
-            			break;
-            		}
-            		case "editSelectedQuestion":
-            		{
-            			if( questionsList.selectedIndex > 0 ){
-	            			manageQuestion( questionsList.selectedIndex as QuestionTemplateDto );
-            			}
-            			break;
-            		}
-            		case "deleteSelectedQuestion":
-            		{
-            			removeQuestion();
-            			break;
-            		}
-            	}
             }
-			
-		]]>
+        }
+
+        private function reset():void {
+            surveyName.text = "";
+            surveyDescription.text = "";
+            surveyTemplateQuery = new SurveyTemplateQuery();
+            survey = new SurveyTemplateDto();
+            survey.questions = new ArrayCollection();
+            _evaluatorTemplates = null;
+            isEditMode = false;
+        }
+
+        protected function findSurvey(id:int):void {
+            surveyDao.getTemplate(id)//
+                    .onSuccess(
+                    function(result:SurveyTemplateDto):void {
+                        survey = result;
+                        surveyName.text = result.name;
+                        //saveBtn.enabled = true;
+                        isEditMode = true;
+                    }).onFault(BusinessExceptionHandler.displayAlert());
+        }
+
+        private function onCreationComplete():void {
+            surveyFacade = ApplicationContextHolder.context.service.surveyFacade;
+            views = ApplicationContextHolder.context.view;
+        }
+
+        private function update():void {
+            if (isCreationValid()) {
+                survey.questions = questionsList.dataProvider as ArrayCollection;
+                if (!isNaN(survey.id)) {
+                    surveyFacade.updateTemplate(survey.id, prepareCreateCommand())
+                            .onFault(BusinessExceptionHandler.displayAlert());
+                } else {
+                    submit();
+                }
+            }
+        }
+
+        private function nameAlreadyExists():Boolean {
+            if (alreadyExists()) {
+                Alert.show(resourceManager.getString('adaptive', 'surveyExistsError') + ' ' + surveyName.text);
+                return true;
+            }
+            return false;
+        }
+
+        private function alreadyExists():Boolean {
+            for each(var template:SurveyTemplateDto in _evaluatorTemplates) {
+                if (template.name == surveyName.text) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private function findEvaluatorTemplates():void {
+            if (_evaluatorTemplates == null) {
+                var query:SurveyTemplateQuery = new SurveyTemplateQuery();
+                surveyDao.queryTemplates(query).onSuccess(
+                        function(value:ArrayCollection):void {
+                            _evaluatorTemplates = value;
+                        });
+            }
+        }
+
+        private function submit():void {
+            if (isCreationValid()) {
+                surveyFacade.createTemplate(prepareCreateCommand())
+                        .onSuccess(function(id:Number):void {
+                    survey.id = id,survey.description = surveyDescription.text
+                })
+                        .onFault(BusinessExceptionHandler.displayAlert());
+            }
+        }
+
+        private function exit():void {
+            Alert.show(resourceManager.getString('adaptive', 'createQuestion.exitWarningMessage'),
+                    resourceManager.getString('adaptive', 'createQuestion.warning'), 3, this, alertHandler);
+        }
+
+        private function alertHandler(event:CloseEvent):void {
+            if (event.detail == Alert.YES) {
+                ApplicationContextHolder.context.view.goto(View.BACK);
+            }
+        }
+
+        private function addQuestion():void {
+            manageQuestion(null);
+        }
+
+        private function prepareCreateCommand():CreateSurveyTemplateCommand {
+            var createCommand:CreateSurveyTemplateCommand = new CreateSurveyTemplateCommand();
+            createCommand.name = surveyName.text;
+            createCommand.questions = survey.questions;
+            createCommand.description = surveyDescription.text;
+            return createCommand;
+        }
+
+        private function isCreationValid():Boolean {
+            if (questionsList.dataProvider.length == 0) {
+                Alert.show(resourceManager.getString('adaptive', 'createQuestion.questionRequired'));
+                return false;
+            }
+            return (surveyTemplateNameValidator.validate().type == ValidationResultEvent.VALID);
+        }
+
+        private function manageQuestion(question:QuestionTemplateDto):void {
+            var surveyForm:NewSurveyQuestion = PopUpManager.createPopUp(Application.application as DisplayObject, NewSurveyQuestion, true) as NewSurveyQuestion;
+            surveyForm.initializeView(survey, question);
+            surveyForm.x = (Application.application.width - surveyForm.width ) / 2;
+            PopUpManager.centerPopUp(surveyForm);
+        }
+
+        protected function editQuestion(event:ListEvent):void {
+            var selectedQuestion:QuestionTemplateDto = event.target.selectedItem as QuestionTemplateDto;
+            manageQuestion(selectedQuestion);
+        }
+
+        public function removeQuestion():void {
+            if (questionsList.selectedIndex < 0)
+                return;
+            var currentQuestion:QuestionTemplateDto = questionsList.selectedItem as QuestionTemplateDto;
+            survey.questions.removeItemAt(survey.questions.getItemIndex(currentQuestion));
+        }
+
+        private function menuHandler(event:MenuEvent):void {
+            switch (String(event.item.@data)) {
+                case "save":
+                {
+                    update();
+                    break;
+                }
+                case "exit":
+                {
+                    exit();
+                    break;
+                }
+                case "createCopy":
+                {
+                    submit();
+                    break;
+                }
+                case "addNewQuestion":
+                {
+                    addQuestion();
+                    break;
+                }
+                case "editSelectedQuestion":
+                {
+                    if (questionsList.selectedIndex > 0) {
+                        manageQuestion(questionsList.selectedIndex as QuestionTemplateDto);
+                    }
+                    break;
+                }
+                case "deleteSelectedQuestion":
+                {
+                    removeQuestion();
+                    break;
+                }
+            }
+        }
+        ]]>
 	</mx:Script>
-	
-    <mx:StringValidator id="surveyTemplateNameValidator" source="{surveyName}" property="text" required="true" />
-	
-	<mx:VBox x="0" y="0" height="100%" width="100%">
-			<mx:ApplicationControlBar width="100%">
-				<mx:VBox width="100%">
-					<mx:HBox width="100%">
-						<mx:Label text="{resourceManager.getString('adaptive', 'surveyName')}:" width="100"/>
-						<mx:TextInput id="surveyName" width="100%"/> 
-						<mx:Button toolTip="{resourceManager.getString('adaptive', 'addQuestion')}"
-								   label="{resourceManager.getString('adaptive', 'addQuestion')}"
-								   icon="@Embed(source='/assets/icons/add.png')"
-								   click="addQuestion()"/>
-						<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
-								   label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
-								   visible="{ !isNaN(survey.id) }"
-								   includeInLayout="{ !isNaN(survey.id) }"
-								   click="submit()" height="100%"/>
-						<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.save')}"
-								   label="{resourceManager.getString('adaptive', 'btn.save')}"
-								   click="update()" height="100%"/>
-						<mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.exit')}"
-								   label="{resourceManager.getString('adaptive', 'btn.exit')}"
-								   click="exit()" height="100%"/>
-					</mx:HBox>
-					<mx:HBox width="100%">
-						<mx:Label text="{resourceManager.getString('adaptive', 'surveyCreating.survey.description')}" />
-						<mx:TextArea id="surveyDescription" width="100%" text="{survey.description}"/>
-					</mx:HBox>
-				</mx:VBox>
-			</mx:ApplicationControlBar>
-			<mx:DataGrid dataProvider="{survey.questions}" width="100%" height="100%"
-				 draggableColumns="false" sortableColumns="true" rowHeight="26" dragEnabled="true" dropEnabled="true"
-				 doubleClickEnabled="true" itemDoubleClick="editQuestion(event)" dragMoveEnabled="true"
-				 id="questionsList">
-				<mx:columns>
-					<mx:DataGridColumn dataField="text" headerText="{resourceManager.getString('adaptive', 'text')}" />
-					<mx:DataGridColumn dataField="type" 
-						headerText="{resourceManager.getString('adaptive', 'questionType').toLowerCase()}"
-						itemRenderer="{new ClassFactory(QuestionTypeItemRenderer)}" width="100"
-						wordWrap="true"/>
-					<mx:DataGridColumn width="100"
-						wordWrap="true"
-						headerText="{resourceManager.getString('adaptive', 'count')}">
-						 <mx:itemRenderer>
-					        <mx:Component>
-					            <mx:Label text="{data.answers.length}" width="100%" textAlign="center"/>
-					        </mx:Component>
-					    </mx:itemRenderer>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'remove').toLowerCase()}" width="50"
-						sortable="false">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:Image toolTip="{resourceManager.getString('adaptive', 'removeQuestion')}" 
-									source="@Embed(source='/assets/icons/remove.png')" 
-									buttonMode="true" click="{outerDocument.removeQuestion()}" 
-									horizontalAlign="center"/>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-				</mx:columns>
-			</mx:DataGrid>
-	</mx:VBox>
+
+    <mx:StringValidator id="surveyTemplateNameValidator" source="{surveyName}" property="text" required="true"/>
+
+    <mx:VBox x="0" y="0" height="100%" width="100%">
+        <mx:ApplicationControlBar width="100%">
+            <mx:VBox width="100%">
+                <mx:HBox width="100%">
+                    <mx:Label text="{resourceManager.getString('adaptive', 'surveyName')}:" width="100"/>
+                    <mx:TextInput id="surveyName" width="100%"/>
+                    <mx:Button toolTip="{resourceManager.getString('adaptive', 'addQuestion')}"
+                               label="{resourceManager.getString('adaptive', 'addQuestion')}"
+                               icon="@Embed(source='/assets/icons/add.png')"
+                               click="addQuestion()"/>
+                    <mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
+                               label="{resourceManager.getString('adaptive', 'btn.saveAsNew')}"
+                               visible="{ !isNaN(survey.id) }"
+                               includeInLayout="{ !isNaN(survey.id) }"
+                               click="submit()" height="100%"/>
+                    <mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.save')}"
+                               label="{resourceManager.getString('adaptive', 'btn.save')}"
+                               click="update()" height="100%"/>
+                    <mx:Button toolTip="{resourceManager.getString('adaptive', 'btn.exit')}"
+                               label="{resourceManager.getString('adaptive', 'btn.exit')}"
+                               click="exit()" height="100%"/>
+                </mx:HBox>
+                <mx:HBox width="100%">
+                    <mx:Label text="{resourceManager.getString('adaptive', 'surveyCreating.survey.description')}"/>
+                    <mx:TextArea id="surveyDescription" width="100%" text="{survey.description}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:ApplicationControlBar>
+        <mx:DataGrid dataProvider="{survey.questions}" width="100%" height="100%"
+                     draggableColumns="false" sortableColumns="true" rowHeight="26" dragEnabled="true"
+                     dropEnabled="true"
+                     doubleClickEnabled="true" itemDoubleClick="editQuestion(event)" dragMoveEnabled="true"
+                     id="questionsList">
+            <mx:columns>
+                <mx:DataGridColumn dataField="text" headerText="{resourceManager.getString('adaptive', 'text')}"/>
+                <mx:DataGridColumn dataField="type"
+                                   headerText="{resourceManager.getString('adaptive', 'questionType').toLowerCase()}"
+                                   itemRenderer="{new ClassFactory(QuestionTypeItemRenderer)}" width="100"
+                                   wordWrap="true"/>
+                <mx:DataGridColumn width="100"
+                                   wordWrap="true"
+                                   headerText="{resourceManager.getString('adaptive', 'count')}">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:Label text="{data.answers.length}" width="100%" textAlign="center"/>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'remove').toLowerCase()}"
+                                   width="50"
+                                   sortable="false">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:Image toolTip="{resourceManager.getString('adaptive', 'removeQuestion')}"
+                                      source="@Embed(source='/assets/icons/remove.png')"
+                                      buttonMode="true" click="{outerDocument.removeQuestion()}"
+                                      horizontalAlign="center"/>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:VBox>
 </mx:Canvas>

@@ -109,7 +109,7 @@
                         users = result;
                         users.filterFunction = filterByRole;
                         users.refresh();
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                    }).onFault(BusinessExceptionHandler.displayAlert());
         }
 
         protected function findGroups():void {
@@ -120,7 +120,7 @@
                         groups = prepareToDisplay(result);
                         if (selectedIndex >= 0)
                             groupList.selectedIndex = selectedIndex;
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                    }).onFault(BusinessExceptionHandler.displayAlert());
         }
 
         protected function changeMembers():void {
@@ -129,7 +129,7 @@
                     .onSuccess(
                     function(result:Object):void {
                         findGroups();
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                    }).onFault(BusinessExceptionHandler.displayAlert());
         }
 
         private function filterByRole(user:UserDto):Boolean {

@@ -14,6 +14,7 @@ import org.adaptiveplatform.surveys.dto.AddGroupToResearchCommand;
 import org.adaptiveplatform.surveys.dto.CommentQuestionCommand;
 import org.adaptiveplatform.surveys.dto.PrepareResearchCommand;
 import org.adaptiveplatform.surveys.dto.TagAnswerCommand;
+import org.adaptiveplatform.surveys.exception.NotAllowedToPublishTemplatesInGroupException;
 import org.adaptiveplatform.surveys.service.EvaluationRepository;
 import org.adaptiveplatform.surveys.service.ResearchRepository;
 import org.adaptiveplatform.surveys.service.StudentGroupRepository;
@@ -28,7 +29,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
+ * 
  * @author Marcin Deryło
  */
 @Service("evaluationFacade")
@@ -47,32 +48,29 @@ public class EvaluationFacadeImpl implements EvaluationFacade {
 
     @Override
     public void commentQuestion(CommentQuestionCommand command) {
-        QuestionEvaluation questionEvaluation =
-                getQuestionEvaluation(command.getResearchId(), command.
-                getQuestionId());
+        QuestionEvaluation questionEvaluation = getQuestionEvaluation(command.getResearchId(), command.getQuestionId());
         questionEvaluation.setEvaluationComment(command.getComment());
     }
 
     @Override
     public Long createResearch(PrepareResearchCommand cmd) {
         // FIXME turn into validation error
-        Validate.notNull(cmd.getSurveyTemplateId(),
-                "Must specify a survey template to use for research");
-        final SurveyTemplate template =
-                surveyTemplateRepository.getExisting(
-                cmd.getSurveyTemplateId());
+        Validate.notNull(cmd.getSurveyTemplateId(), "Must specify a survey template to use for research");
+        final SurveyTemplate template = surveyTemplateRepository.getExisting(cmd.getSurveyTemplateId());
         authenticationService.userSecurityCheck(template.getOwnerId());
 
         // TODO might push this down to a factory
-        // but then the factory would call the repository to persist publications...
+        // but then the factory would call the repository to persist
+        // publications...
         Research research = new Research(cmd.getName(), template);
 
         for (AddGroupToResearchCommand publishCmd : cmd.getGroupsToAdd()) {
-            final StudentGroup group =
-                    studentGroupRepository.getExisting(publishCmd.getGroupId());
-            final SurveyPublication publication =
-                    publicationFactory.create(template, group,
-                    publishCmd.getValidFrom(), publishCmd.getValidTo());
+            final StudentGroup group = studentGroupRepository.getExisting(publishCmd.getGroupId());
+            if (!group.isAssignedAsEvaluator(authenticationService.getCurrentUser())) {
+                throw new NotAllowedToPublishTemplatesInGroupException(publishCmd.getGroupId());
+            }
+            SurveyPublication publication = publicationFactory.create(template, group, publishCmd.getValidFrom(),
+                    publishCmd.getValidTo());
             publicationRepository.persist(publication);
             research.addSurveyPublication(publication);
         }
@@ -82,10 +80,8 @@ public class EvaluationFacadeImpl implements EvaluationFacade {
     }
 
     @Override
-    public void rememberSearchPhrase(Long researchId, Integer questionId,
-            String phrase) {
-        final QuestionEvaluation questionEvaluation =
-                getQuestionEvaluation(researchId, questionId);
+    public void rememberSearchPhrase(Long researchId, Integer questionId, String phrase) {
+        final QuestionEvaluation questionEvaluation = getQuestionEvaluation(researchId, questionId);
         questionEvaluation.rememberSearchPhrase(phrase);
     }
 
@@ -95,11 +91,8 @@ public class EvaluationFacadeImpl implements EvaluationFacade {
         defineTagsForAnswer(command);
     }
 
-    private AnswerEvaluation createNewEvaluation(TagAnswerCommand command,
-            final AnsweredQuestion answeredQuestion) {
-        AnswerEvaluation evaluation =
-                new AnswerEvaluation(researchRepository.getExisting(command.
-                getResearchId()),
+    private AnswerEvaluation createNewEvaluation(TagAnswerCommand command, final AnsweredQuestion answeredQuestion) {
+        AnswerEvaluation evaluation = new AnswerEvaluation(researchRepository.getExisting(command.getResearchId()),
                 answeredQuestion);
         evaluationRepository.persist(evaluation);
         return evaluation;
@@ -111,47 +104,43 @@ public class EvaluationFacadeImpl implements EvaluationFacade {
     }
 
     private AnsweredQuestion getAnsweredQuestion(TagAnswerCommand command) {
-        final FilledSurvey survey =
-                surveyRepository.get(command.getFilledSurveyId());
+        final FilledSurvey survey = surveyRepository.get(command.getFilledSurveyId());
         return survey.getAnsweredQuestion(command.getQuestionNumber());
     }
 
     private void defineTagsForQuestionTemplate(TagAnswerCommand command) {
-        final QuestionEvaluation questionEvaluation =
-                getQuestionEvaluation(command);
+        final QuestionEvaluation questionEvaluation = getQuestionEvaluation(command);
         assignTags(command, questionEvaluation);
     }
 
-    private void assignTags(TagAnswerCommand command,
-            final QuestionEvaluation questionEvaluation) {
+    private void assignTags(TagAnswerCommand command, final QuestionEvaluation questionEvaluation) {
         for (String tag : command.getSetTags()) {
             questionEvaluation.defineTag(tag);
         }
     }
 
     private QuestionEvaluation getQuestionEvaluation(TagAnswerCommand command) {
-        return getQuestionEvaluation(command.getResearchId(), command.
-                getQuestionNumber());
+        return getQuestionEvaluation(command.getResearchId(), command.getQuestionNumber());
     }
 
-    private QuestionEvaluation getQuestionEvaluation(Long researchId,
-            Integer questionId) {// FIXME turn into validation errors
+    private QuestionEvaluation getQuestionEvaluation(Long researchId, Integer questionId) {// FIXME
+                                                                                           // turn
+                                                                                           // into
+                                                                                           // validation
+                                                                                           // errors
         Validate.notNull(researchId, "Must specify a research");
         Validate.notNull(questionId, "Must specify question number");
-        final Research research =
-                researchRepository.getExisting(researchId);
+        final Research research = researchRepository.getExisting(researchId);
 
         authenticationService.userSecurityCheck(research.getEvaluatorId());
 
-        final QuestionEvaluation questionEvaluation =
-                research.getQuestionEvaluation(questionId);
+        final QuestionEvaluation questionEvaluation = research.getQuestionEvaluation(questionId);
         return questionEvaluation;
     }
 
     private AnswerEvaluation getAnswerEvaluation(TagAnswerCommand command) {
         final AnsweredQuestion answeredQuestion = getAnsweredQuestion(command);
-        AnswerEvaluation evaluation = evaluationRepository.get(command.
-                getResearchId(), answeredQuestion);
+        AnswerEvaluation evaluation = evaluationRepository.get(command.getResearchId(), answeredQuestion);
         if (evaluation == null) {
             evaluation = createNewEvaluation(command, answeredQuestion);
         }
@@ -164,8 +153,7 @@ public class EvaluationFacadeImpl implements EvaluationFacade {
     }
 
     @Resource
-    public void setAuthenticationService(
-            AuthenticationService authenticationService) {
+    public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
@@ -175,8 +163,7 @@ public class EvaluationFacadeImpl implements EvaluationFacade {
     }
 
     @Resource
-    public void setStudentGroupRepository(
-            StudentGroupRepository studentGroupRepository) {
+    public void setStudentGroupRepository(StudentGroupRepository studentGroupRepository) {
         this.studentGroupRepository = studentGroupRepository;
     }
 
@@ -186,20 +173,17 @@ public class EvaluationFacadeImpl implements EvaluationFacade {
     }
 
     @Resource
-    public void setEvaluationRepository(
-            EvaluationRepository evaluationRepository) {
+    public void setEvaluationRepository(EvaluationRepository evaluationRepository) {
         this.evaluationRepository = evaluationRepository;
     }
 
     @Resource
-    public void setPublicationFactory(
-            SurveyPublicationFactory publicationFactory) {
+    public void setPublicationFactory(SurveyPublicationFactory publicationFactory) {
         this.publicationFactory = publicationFactory;
     }
 
     @Resource
-    public void setPublicationRepository(
-            SurveyPublicationRepository publicationRepository) {
+    public void setPublicationRepository(SurveyPublicationRepository publicationRepository) {
         this.publicationRepository = publicationRepository;
     }
 }

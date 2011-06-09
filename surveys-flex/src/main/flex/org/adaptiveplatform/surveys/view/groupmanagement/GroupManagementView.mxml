@@ -10,18 +10,9 @@
          horizontalScrollPolicy="off">
     <mx:Script>
         <![CDATA[
-        import mx.collections.ArrayCollection;
-        import mx.events.ValidationResultEvent;
-        import mx.validators.ValidationResult;
-
-        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
         import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
         import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
         import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
-        import org.adaptiveplatform.surveys.dto.generated.CreateStudentGroupCommand;
-        import org.adaptiveplatform.surveys.dto.generated.GroupRoleEnum;
-        import org.adaptiveplatform.surveys.dto.generated.StudentGroupDto;
-        import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
 
         [Bindable]
         private var model:GroupManagementModel;
@@ -29,7 +20,7 @@
         private function onCreationComplete():void {
             var studentGroupFacade:StudentGroupFacade = ApplicationContextHolder.context.service.studentGroupFacade;
             var groupDao:StudentGroupDao = ApplicationContextHolder.context.service.studentGroupDao;
-            model = new GroupManagementModel(studentGroupFacade, groupDao, resourceManager);
+            model = new GroupManagementModel(studentGroupFacade, groupDao);
         }
 
         public function initializeView(ignore:* = null):void {

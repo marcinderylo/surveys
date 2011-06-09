@@ -18,7 +18,7 @@
             <mx:TextInput id="groupNameTxt"
                           width="100%"
                           text="@{model.createGroupCommand.groupName}"
-                          errorString="{model.createGroupCommandValidator.errorStrings.groupName}"
+                          errorString="{resourceManager.getString('validation', model.createGroupCommandValidator.errorStrings.groupName)}"
                           enter="model.createNewGroup()"
                           keyUp="groupNameTxt.drawFocus(true)"/>
         </mx:FormItem>

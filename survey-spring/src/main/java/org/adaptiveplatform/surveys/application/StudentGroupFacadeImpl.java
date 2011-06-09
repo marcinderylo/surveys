@@ -73,7 +73,7 @@ public class StudentGroupFacadeImpl implements StudentGroupFacade {
 	@Secured({ Role.TEACHER })
 	public Long createGroup(CreateStudentGroupCommand command) {
 		StudentGroup group = groupFactory.newGroup(command.getGroupName());
-
+		group.setStudentsCanSignUp(command.isOpenForSignup());
 		addGroupMembers(group, command.getAddMemberCommands());
 		return group.getId();
 	}
@@ -86,7 +86,7 @@ public class StudentGroupFacadeImpl implements StudentGroupFacade {
 		UserDto caller = authenticationService.getCurrentUser();
 
 		if (!group.isAssignedAsEvaluator(caller)) {
-			throw new NotAllowedToPublishTemplatesInGroupException(group.getName());
+			throw new NotAllowedToPublishTemplatesInGroupException(command.getGroupId());
 		}
 		// FIXME add tests for publishing multiple survey template at once
 		Collection<Long> templateIDs = asLongs(command.getSurveyTemplateIds());
@@ -201,7 +201,7 @@ public class StudentGroupFacadeImpl implements StudentGroupFacade {
 
 	// TODO change to Role.STUDENT?
 	@Override
-	@Secured({ Role.USER }) 
+	@Secured({ Role.USER })
 	public void signUpAsStudent(GroupSignUpCommand command) {
 		final StudentGroup group = groupRepository.getExisting(command.getGroupId());
 		UserDto caller = authenticationService.getCurrentUser();

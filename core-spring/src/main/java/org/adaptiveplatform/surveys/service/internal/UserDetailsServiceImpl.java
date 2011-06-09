@@ -6,7 +6,6 @@ import java.util.Collection;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.UserAccount;
-import org.adaptiveplatform.surveys.domain.UserPrivilege;
 import org.adaptiveplatform.surveys.service.UserAccountRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service("userDetailsService")
+@Service("defaultUserDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Resource
@@ -35,8 +34,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	private User createUser(UserAccount user) {
 		Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-		for (UserPrivilege p : user.getPrivileges()) {
-			authorities.add(new GrantedAuthorityImpl(p.role));
+		for (String role : user.getRoles()) {
+			authorities.add(new GrantedAuthorityImpl(role));
 		}
 		return new User(user.getEmail(), user.getPassword(), true, true, true, true, authorities);
 	}

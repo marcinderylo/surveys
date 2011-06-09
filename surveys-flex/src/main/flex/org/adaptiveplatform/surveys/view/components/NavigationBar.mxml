@@ -1,55 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete()"
-		 updateComplete="onUpdateComplete()">
-	<mx:Script>
+         updateComplete="onUpdateComplete()">
+    <mx:Script>
 		<![CDATA[
-			import org.adaptiveplatform.surveys.application.AuthenticationService;
-			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-			import org.adaptiveplatform.surveys.application.UserRole;
-			import org.adaptiveplatform.surveys.application.ViewController;
-			import org.adaptiveplatform.surveys.view.View;
+        import org.adaptiveplatform.surveys.application.AuthenticationService;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.UserRole;
+        import org.adaptiveplatform.surveys.application.ViewController;
+        import org.adaptiveplatform.surveys.view.View;
 
-			[Bindable]
-			private var usersVisible:Boolean;
-			[Bindable]
-			private var fillingSurveysVisible:Boolean;
-			[Bindable]
-			private var groupsManagementVisible:Boolean;
-			[Bindable]
-			private var publicationOfSurveyVisible:Boolean;
-			[Bindable]
-			private var evaluatorStartPageVisible:Boolean;
-			[Bindable]
-			private var groupSignup:Boolean;
+        [Bindable]
+        private var usersVisible:Boolean;
+        [Bindable]
+        private var fillingSurveysVisible:Boolean;
+        [Bindable]
+        private var groupsManagementVisible:Boolean;
+        [Bindable]
+        private var publicationOfSurveyVisible:Boolean;
+        [Bindable]
+        private var evaluatorStartPageVisible:Boolean;
+        [Bindable]
+        private var groupSignup:Boolean;
 
-			private var authentication:AuthenticationService;
-			private var views:ViewController;
+        private var authentication:AuthenticationService;
+        private var views:ViewController;
 
-			private function onCreationComplete():void {
-				authentication = ApplicationContextHolder.context.service.authentication;
-				views = ApplicationContextHolder.context.view;
-			}
+        private function onCreationComplete():void {
+            authentication = ApplicationContextHolder.context.service.authentication;
+            views = ApplicationContextHolder.context.view;
+        }
 
-			public function onUpdateComplete():void {
-				usersVisible = authentication.inRole(UserRole.ADMINISTRATOR);
-				fillingSurveysVisible = authentication.inRole(UserRole.USER);
-				groupsManagementVisible = authentication.inRole(UserRole.TEACHER);
-				publicationOfSurveyVisible = authentication.inRole(UserRole.EVALUATOR);
-				evaluatorStartPageVisible = authentication.inRole(UserRole.EVALUATOR);
-				groupSignup = authentication.inRole(UserRole.USER);
-			}
-		]]>
+        public function onUpdateComplete():void {
+            usersVisible = authentication.inRole(UserRole.ADMINISTRATOR);
+            fillingSurveysVisible = authentication.inRole(UserRole.USER);
+            groupsManagementVisible = authentication.inRole(UserRole.TEACHER);
+            publicationOfSurveyVisible = authentication.inRole(UserRole.EVALUATOR);
+            evaluatorStartPageVisible = authentication.inRole(UserRole.EVALUATOR);
+            groupSignup = authentication.inRole(UserRole.USER);
+        }
+        ]]>
 	</mx:Script>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.fillSurvey')}" visible="{fillingSurveysVisible}"
-				   includeInLayout="{fillingSurveysVisible}" click="{views.goto(View.SURVEY_TEMPLATE_LIST)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.evalStartPage')}" visible="{evaluatorStartPageVisible}"
-				   includeInLayout="{evaluatorStartPageVisible}" click="{views.goto(View.EVALUATOR_START_PAGE)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.users')}" visible="{usersVisible}"
-				   includeInLayout="{usersVisible}" click="{views.goto(View.USERS_LIST)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupManagement')}" visible="{groupsManagementVisible}"
-				   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_MANAGEMENT)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupCreation')}" visible="{groupsManagementVisible}"
-				   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_CREATION)}"/>
-	<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupSignup')}" visible="{groupSignup}"
-				   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>
+    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.fillSurvey')}"
+                   visible="{fillingSurveysVisible}"
+                   includeInLayout="{fillingSurveysVisible}" click="{views.goto(View.SURVEY_TEMPLATE_LIST)}"/>
+    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.evalStartPage')}"
+                   visible="{evaluatorStartPageVisible}"
+                   includeInLayout="{evaluatorStartPageVisible}" click="{views.goto(View.EVALUATOR_START_PAGE)}"/>
+    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.users')}" visible="{usersVisible}"
+                   includeInLayout="{usersVisible}" click="{views.goto(View.USERS_LIST)}"/>
+    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupManagement')}"
+                   visible="{groupsManagementVisible}"
+                   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_MANAGEMENT)}"/>
+    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupCreation')}"
+                   visible="{groupsManagementVisible}"
+                   includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_CREATION)}"/>
+    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupSignup')}" visible="{groupSignup}"
+                   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>
 </mx:HBox>

@@ -1,82 +1,51 @@
 package org.adaptiveplatform.surveys.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRLoader;
 
+import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.dto.FilledSurveyDto;
+import org.adaptiveplatform.surveys.dto.FilledSurveyQuery;
 import org.adaptiveplatform.surveys.dto.SurveyQuestionAnswerDto;
 import org.adaptiveplatform.surveys.dto.SurveyQuestionDto;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class JasperReportsController {
 
 	@Resource
-	private ResourceLoader resources;
+	private SurveysPrintFactory surveysReportFactory;
+
+	@Resource
+	private SurveyDao surveyDao;
 
 	@RequestMapping("/export.pdf")
-	public HttpEntity<byte[]> exportSurveysPdf() throws IOException, JRException {
-		JasperReport jasperReport = loadReport("classpath:/singleSurvey.jasper");
+	public HttpEntity<byte[]> exportSurveysPdf(@RequestParam("templateId") Long templateId,
+			@RequestParam("groupId") Long groupId) throws IOException, JRException {
+		FilledSurveyQuery query = new FilledSurveyQuery();
+		query.setGroupId(groupId);
+		query.setTemplateId(templateId);
 
-		JasperPrint print1 = printReport(jasperReport, questions(10));
-		JasperPrint print2 = printReport(jasperReport, questions(10));
-		JasperPrint print3 = printReport(jasperReport, questions(10));
-
-		byte[] byteArray = exportReportToPdf(Arrays.asList(print1, print2, print3));
+		List<FilledSurveyDto> surveys = surveyDao.querySurveys(query);
+		byte[] byteArray = surveysReportFactory.printSurveysToPdf(surveys);
 		return createHttpResponse(byteArray);
-	}
-
-	private JasperReport loadReport(String resourcePath) throws IOException, JRException {
-		InputStream inputStream = resources.getResource(resourcePath).getInputStream();
-		JasperReport jasperReport = (JasperReport) JRLoader.loadObject(inputStream);
-		return jasperReport;
-	}
-
-	private byte[] exportReportToPdf(Collection<JasperPrint> prints) throws JRException {
-		JRPdfExporter exporter = new JRPdfExporter();
-		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, prints);
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, byteArrayOutputStream);
-		exporter.exportReport();
-		return byteArrayOutputStream.toByteArray();
-	}
-
-	private JasperPrint printReport(JasperReport jasperReport, Collection<?> data) throws JRException {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(JRParameter.REPORT_DATA_SOURCE, new JRBeanCollectionDataSource(data));
-		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
-		return jasperPrint;
 	}
 
 	private HttpEntity<byte[]> createHttpResponse(byte[] body) {
 		HttpHeaders header = new HttpHeaders();
-		header.set("Content-Type", "text/csv; charset=UTF-8");
+		header.set("Content-Type", "application/pdf; charset=UTF-8");
 		header.set("Content-Length", String.valueOf(body.length));
 		return new ResponseEntity<byte[]>(body, header, HttpStatus.OK);
 	}

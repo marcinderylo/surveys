@@ -4,7 +4,7 @@ import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.application.AuthenticationService;
 import org.adaptiveplatform.surveys.application.UserFacade;
-import org.adaptiveplatform.surveys.domain.UserAccountBuilder;
+import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,19 +19,31 @@ public class CoreFixtureBuilder {
 	@Resource
 	private AuthenticationService authentication;
 
-	public void createUsers(UserAccountBuilder... builders) {
+	public Long createUser(UserAccountBuilder user) {
 		authentication.logout();
-		for (UserAccountBuilder builder : builders) {
-			facade.registerUser(builder.buildRegisterCommand());
+		RegisterAccountCommand command = user.build();
+		Long userId = facade.registerUser(command);
 
-			if (!builder.getRoles().isEmpty()) {
-				loginAsAdmin();
-				facade.setUserRoles(builder.getEmail(), builder.getRoles());
-			}
+		if (!user.getRoles().isEmpty()) {
+			loginAsAdmin();
+			facade.setUserRoles(command.getEmail(), user.getRoles());
 		}
+		return userId;
 	}
 
 	public void loginAsAdmin() {
-		authentication.login(ADMIN_EMAIL, ADMIN_PASSWORD);
+		loginAs(ADMIN_EMAIL, ADMIN_PASSWORD);
+	}
+
+	public void loginAs(String email) {
+		authentication.login(email, UserAccountBuilder.DEFAULT_PASSWORD);
+	}
+
+	public void loginAs(String email, String password) {
+		authentication.login(email, password);
+	}
+
+	public void logout() {
+		authentication.logout();
 	}
 }

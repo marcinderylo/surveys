@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:mx="library://ns.adobe.com/flex/mx"
          width="100%"
          height="100%"
          creationComplete="onCreationComplete()"
          xmlns:groupsignup="org.adaptiveplatform.surveys.view.groupsignup.*"
-         xmlns:common="org.adaptiveplatform.surveys.view.common.*">
+>
     <fx:Script>
         <![CDATA[
             import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
             import org.adaptiveplatform.surveys.application.ServiceLocator;
-            import org.adaptiveplatform.surveys.application.ViewController;
-            import org.adaptiveplatform.surveys.application.generated.UserDao;
-            import org.adaptiveplatform.surveys.application.generated.UserFacade;
-            import org.adaptiveplatform.surveys.dto.generated.UserDto;
 
             [Bindable]
             private var model:GroupSignupModel;

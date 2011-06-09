@@ -21,6 +21,8 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Sets;
+
 @RemotingDestination
 @Service("userFacade")
 @Transactional
@@ -38,31 +40,24 @@ public class UserFacadeImpl implements UserFacade {
     @Override
     public Long registerUser(RegisterAccountCommand command) {
         ensureCreatorIsAnonymousOrAdmin();
-        UserAccount user = accountFactory.registerNewAccount(command.getName(),
-                command.getPassword(), command.getEmail());
+        UserAccount user = accountFactory.registerNewAccount(command.getName(), command.getPassword(),
+                command.getEmail());
         return user.getId();
     }
 
-    @Secured({Role.ADMINISTRATOR})
+    @Secured({ Role.ADMINISTRATOR })
     @Override
     public void setUserRoles(String email, Set<String> grantedRoles) {
         verifyDoesNotRevokeOwnAdminRights(email, grantedRoles);
-
         final UserAccount user = accountRepository.getExisting(email);
-        user.getPrivileges().clear();
-        for (String role : grantedRoles) {
-            final UserPrivilege privilege = UserPrivilege.getByRole(
-                    role);
-            user.getPrivileges().add(privilege);
-        }
+        user.setRoles(grantedRoles);
     }
 
     private boolean sameUser(UserAccount affectedUser, UserDto currentUser) {
         return affectedUser.getEmail().equals(currentUser.getEmail());
     }
 
-    private void verifyDoesNotRevokeOwnAdminRights(String email,
-            Set<String> grantedRoles) {
+    private void verifyDoesNotRevokeOwnAdminRights(String email, Set<String> grantedRoles) {
         UserDto caller = authentication.getCurrentUser();
         if (caller.getEmail().equals(email)) {
             if (!grantedRoles.contains(Role.ADMINISTRATOR)) {

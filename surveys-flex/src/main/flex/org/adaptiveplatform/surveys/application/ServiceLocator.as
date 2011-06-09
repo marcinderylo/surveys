@@ -3,7 +3,7 @@ package org.adaptiveplatform.surveys.application {
 	import org.adaptiveplatform.surveys.application.AuthenticationService;
 	import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
 	import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
-	import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
+    import org.adaptiveplatform.surveys.application.generated.StudentGroupDao;
 	import org.adaptiveplatform.surveys.application.generated.StudentGroupFacade;
 	import org.adaptiveplatform.surveys.application.generated.SurveyDao;
 	import org.adaptiveplatform.surveys.application.generated.SurveyFacade;
@@ -22,5 +22,7 @@ package org.adaptiveplatform.surveys.application {
 		function get evaluationFacade():EvaluationFacade;
 		function get evaluationDao():EvaluationDao;
 		function get systemInformationDao():SystemInformationDao;
-	}
+
+
+    }
 }

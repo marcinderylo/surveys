@@ -21,7 +21,7 @@ public interface StudentGroupFacade {
     Long createGroup(@NotNull @Valid CreateStudentGroupCommand command);
 
     /**
-     * {@link PublishSurveyTemplateCommand}
+     * @deprecated use researches instead
      */
     void assignSurveyTemplate(@NotNull @Valid PublishSurveyTemplateCommand command);
 

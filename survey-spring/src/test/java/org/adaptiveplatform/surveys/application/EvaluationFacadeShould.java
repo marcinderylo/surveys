@@ -1,6 +1,5 @@
 package org.adaptiveplatform.surveys.application;
 
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.doNothing;
@@ -11,14 +10,13 @@ import org.adaptiveplatform.surveys.domain.QuestionEvaluation;
 import org.adaptiveplatform.surveys.domain.Research;
 import org.adaptiveplatform.surveys.dto.CommentQuestionCommand;
 import org.adaptiveplatform.surveys.service.ResearchRepository;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
- *
  * @author Marcin Deryło
  */
 public class EvaluationFacadeShould {
@@ -30,7 +28,7 @@ public class EvaluationFacadeShould {
     @Mock
     private AuthenticationService authenticationService;
 
-    @BeforeMethod
+    @Before
     public void init() {
         facade = new EvaluationFacadeImpl();
 
@@ -47,8 +45,7 @@ public class EvaluationFacadeShould {
         cmd.setQuestionId(3);
         cmd.setComment("some comment");
 
-        QuestionEvaluation questionEvaluation = givenAResearchWithQuestionEvaluation(
-                12L, 3);
+        QuestionEvaluation questionEvaluation = givenAResearchWithQuestionEvaluation(12L, 3);
 
         // when
         facade.commentQuestion(cmd);
@@ -60,8 +57,7 @@ public class EvaluationFacadeShould {
     @Test
     public void beAbleToRememberUsedSearchPhrasesPerQuestion() throws Exception {
         // given
-        QuestionEvaluation questionEvaluation = givenAResearchWithQuestionEvaluation(
-                13L, 5);
+        QuestionEvaluation questionEvaluation = givenAResearchWithQuestionEvaluation(13L, 5);
 
         // when
         facade.rememberSearchPhrase(13L, 5, "foobar");
@@ -70,15 +66,13 @@ public class EvaluationFacadeShould {
         verify(questionEvaluation).rememberSearchPhrase("foobar");
     }
 
-    private QuestionEvaluation givenAResearchWithQuestionEvaluation(
-            long researchId, int questionNumber) {
+    private QuestionEvaluation givenAResearchWithQuestionEvaluation(long researchId, int questionNumber) {
         Research research = mock(Research.class);
 
         QuestionEvaluation questionEvaluation = mock(QuestionEvaluation.class);
 
         given(researchRepository.getExisting(researchId)).willReturn(research);
-        given(research.getQuestionEvaluation(questionNumber)).willReturn(
-                questionEvaluation);
+        given(research.getQuestionEvaluation(questionNumber)).willReturn(questionEvaluation);
 
         return questionEvaluation;
     }

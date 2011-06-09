@@ -28,7 +28,7 @@ public class GroupSignupModel {
         groupDao.getAvailableGroups() //
             .onSuccess(function(result:ArrayCollection):void {
                 groups=result;
-            }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+            }).onFault(BusinessExceptionHandler.displayAlert());
     }
 
     public function signUp(group:StudentGroupDto):void {
@@ -36,7 +36,7 @@ public class GroupSignupModel {
             var command:GroupSignUpCommand=new GroupSignUpCommand();
             command.groupId=group.id;
             studentGroupFacade.signUpAsStudent(command).onSuccess(function():void {
-            }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+            }).onFault(BusinessExceptionHandler.displayAlert());
         }
     }
 }

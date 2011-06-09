@@ -12,7 +12,7 @@
 			value="org.adaptiveplatform.surveys.domain, org.adaptiveplatform.surveys.dto" />
         <property name="dataSource" ref="dataSource" />
         <property name="schemaUpdate" value="false" />
-        <property name="hibernateProperties" value="hibernateProperties" />
+        <property name="hibernateProperties" ref="hibernateProperties" />
     </bean>
 
     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">

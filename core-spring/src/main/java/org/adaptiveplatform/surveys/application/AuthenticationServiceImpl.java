@@ -11,14 +11,12 @@ import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.security.NoAuthorizationForOtherUserResourceException;
 import org.adaptiveplatform.surveys.exception.security.UserNotAuthenticatedException;
 import org.adaptiveplatform.surveys.service.UserAccountRepository;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-@Profile({"development", "production"})
 @Service("defaultAuthenticationService")
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -39,8 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private Authentication tryToAuthenticate(String username, String password) {
-        UsernamePasswordAuthenticationToken request =
-                new UsernamePasswordAuthenticationToken(username, password);
+        UsernamePasswordAuthenticationToken request = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManager.authenticate(request);
         return authentication;
     }
@@ -71,11 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         dto.setId(user.getId());
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
-        List<String> roles = new ArrayList<String>();
-        for (UserPrivilege privilege : user.getPrivileges()) {
-            roles.add(privilege.role);
-        }
-        dto.setRoles(roles);
+        dto.setRoles(new ArrayList<String>(user.getRoles()));
         return dto;
     }
 

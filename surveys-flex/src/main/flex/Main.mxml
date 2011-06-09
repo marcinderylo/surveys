@@ -6,7 +6,7 @@
                 xmlns:view="org.adaptiveplatform.surveys.view.*"
                 initialize="onInitialize()"
                 creationComplete="onCreationComplete(event)"
-                xmlns:components1="org.adaptiveplatform.surveys.view.components.*"
+                xmlns:components="org.adaptiveplatform.surveys.view.components.*"
                 xmlns:usermanagement="org.adaptiveplatform.surveys.view.usermanagement.*"
                 xmlns:groupmanagement="org.adaptiveplatform.surveys.view.groupmanagement.*"
                 xmlns:groupsignup="org.adaptiveplatform.surveys.view.groupsignup.*"
@@ -15,14 +15,13 @@
     <mx:Metadata>
         [ResourceBundle("adaptive")]
         [ResourceBundle("surveys")]
+        [ResourceBundle("validation")]
     </mx:Metadata>
 
     <mx:Style source="/assets/css/Main.css"/>
     <mx:Script>
         <![CDATA[
         import mx.collections.ArrayCollection;
-        import mx.controls.Alert;
-        import mx.controls.CheckBox;
         import mx.core.Container;
         import mx.core.FlexGlobals;
         import mx.events.FlexEvent;
@@ -33,7 +32,7 @@
         import org.adaptiveplatform.surveys.application.ViewStackViewController;
         import org.adaptiveplatform.surveys.view.View;
 
-        private static const OFFLINE_DEBUG :Boolean = false;
+        private static const OFFLINE_DEBUG:Boolean = false;
 
         private var context:DefaultApplicationContext;
 
@@ -104,11 +103,11 @@
                                   width="80%"
                                   height="46"
                                   verticalGap="0">
-            <components1:NavigationBar id="navigation"
+            <components:NavigationBar id="navigation"
                                        horizontalAlign="left"/>
-            <components1:Title text="{resourceManager.getString('adaptive', 'title.' + viewstack.selectedChild.name)}"
+            <components:Title text="{resourceManager.getString('adaptive', 'title.' + viewstack.selectedChild.name)}"
                                width="100%"/>
-            <components1:UserInformation id="userInfo"
+            <components:UserInformation id="userInfo"
                                          horizontalAlign="right"/>
         </mx:ApplicationControlBar>
 
@@ -148,10 +147,10 @@
                                       creationComplete="registerView(event)"/>
                 <view:EvaluatorStartPage id="evaluatorStartPage"
                                          creationComplete="registerView(event)"/>
-                <view:ViewContainer id="groupSignup"
-                                    creationComplete="registerView(event)">
+                <mx:Canvas id="groupSignup"
+                           creationComplete="registerView(event)">
                     <groupsignup:GroupSignupView/>
-                </view:ViewContainer>
+                </mx:Canvas>
             </mx:ViewStack>
         </mx:Panel>
     </mx:VBox>

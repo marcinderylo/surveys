@@ -45,7 +45,7 @@
 				surveyDao.queryTemplates(surveyTemplateQuery) //
 					.onSuccess(function(result:ArrayCollection):void {
 						surveys=result;
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+					}).onFault(BusinessExceptionHandler.displayAlert());
 			}
 
 			private function onChange(event:Event):void {

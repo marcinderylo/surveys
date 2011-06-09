@@ -84,7 +84,7 @@
 				surveyDao.queryTemplates(surveyTemplateQuery) //
 					.onSuccess(function(result:ArrayCollection):void {
 						surveys = result;
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+					}).onFault(BusinessExceptionHandler.displayAlert());
 			}
 
 			private function removeSurvey():void{
@@ -96,7 +96,7 @@
 				surveyFacade.removeSurveyTemplate( survey.id ).onSuccess( 
 						function():void{ 
 							surveys.removeItemAt(surveys.getItemIndex(survey) );
-					} ).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+					} ).onFault(BusinessExceptionHandler.displayAlert());
 				
 			}
 

@@ -69,7 +69,7 @@
                             });
                         }
                         usersList.dataProvider = result;
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                    }).onFault(BusinessExceptionHandler.displayAlert());
         }
 
         private function resetSearch():void {

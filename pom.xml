@@ -1,4 +1,4 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -153,6 +153,11 @@
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-core</artifactId>
 				<version>${spring-security.version}</version>
@@ -218,7 +223,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-annotations</artifactId>
-				<version>3.4.0.GA</version>
+				<version>3.5.6-Final</version>
 			</dependency>
 			<dependency>
 				<groupId>c3p0</groupId>
@@ -389,6 +394,13 @@
 			<url>http://maven.springframework.org/milestone </url>
 		</repository>
 		<repository>
+			<id>org.springsource.maven.snapshot</id>
+			<url>http://maven.springframework.org/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>sonatype-flexmojos</id>
 			<url>https://repository.sonatype.org/service/local/repositories/flexmojos-releases/content</url>
 		</repository>
@@ -396,10 +408,9 @@
 			<id>sonatype-flex</id>
 			<url>https://repository.sonatype.org/service/local/repositories/flex/content</url>
 		</repository>
-
 		<repository>
 			<id>JBoss</id>
-			<url>http://repository.jboss.com/maven2</url>
+			<url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 		</repository>
 		<repository>
 			<id>codehaus</id>

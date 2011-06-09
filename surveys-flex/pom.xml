@@ -34,7 +34,6 @@
 			<plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
 				<artifactId>flexmojos-maven-plugin</artifactId>
-				<!-- version isn't needed here, but m2eclipse shows errors otherwise -->
 				<version>${flexmojos.version}</version>
 				<extensions>true</extensions>
 				<dependencies>
@@ -182,7 +181,7 @@
 		<dependency>
 			<groupId>org.spicefactory</groupId>
 			<artifactId>spicelib-flex</artifactId>
-			<version>2.4.0</version>
+			<version>2.4</version>
 			<type>swc</type>
 		</dependency>
 

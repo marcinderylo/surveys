@@ -10,10 +10,10 @@ import org.adaptiveplatform.surveys.dto.SurveyQuestionDto;
 
 public class SurveysGenerator {
 	private static final int SURVEYS_NUMBER = 20;
-	private static final int QUESTIONS_NUMBER_MIN = 5;
-	private static final int QUESTIONS_NUMBER_MAX = 20;
+	private static final int QUESTIONS_NUMBER_MIN = 50;
+	private static final int QUESTIONS_NUMBER_MAX = 200;
 	private static final int ANSWERS_NUMBER_MIN = 2;
-	private static final int ANSWERS_NUMBER_MAX = 6;
+	private static final int ANSWERS_NUMBER_MAX = 8;
 
 	private static RandomStringGenerator random = new RandomStringGenerator();
 
@@ -58,7 +58,7 @@ public class SurveysGenerator {
 		for (int i = 0; i < answersNumber; i++) {
 			SurveyQuestionAnswerDto answer = new SurveyQuestionAnswerDto();
 			answer.setNumber(i + 1);
-			answer.setSelected(i == 0);
+			answer.setSelected(i % 3 == 1);
 			answer.setRequiresComment(false);
 			answer.setText(random.sentence());
 			answers.add(answer);

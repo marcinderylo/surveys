@@ -7,16 +7,12 @@
 				close="close(event)"
 				title="{resourceManager.getString('adaptive', 'question')} {currentQuestionNumber+1} / {questions.length}"
 				creationComplete="onCreationComplete()"
-				xmlns:components="adaptlearning.view.components.*"
 				preinitialize="preinitialize()"
 				xmlns:combocheck="org.adaptiveplatform.surveys.view.components.combocheck.*"
-				xmlns:components1="org.adaptiveplatform.surveys.view.components.*"
 				xmlns:renderers="org.adaptiveplatform.surveys.view.renderers.*">
 
 	<mx:Script>
 		<![CDATA[
-			import mx.charts.ChartItem;
-			import mx.charts.chartClasses.Series;
 			import mx.charts.series.BarSeries;
 			import mx.charts.series.BarSet;
 			import mx.collections.ArrayCollection;
@@ -282,7 +278,7 @@
 
 			private function savePhrase(text:String):void {
 				evaluationFacade.rememberSearchPhrase(research.id, currentQuestionNumber + 1, text).onSuccess(function(o:Object):void {
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+					}).onFault(BusinessExceptionHandler.displayAlert());
 			}
 
 			private function onAddItem():void {

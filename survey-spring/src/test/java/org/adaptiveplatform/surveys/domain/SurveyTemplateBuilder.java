@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
-import org.adaptiveplatform.surveys.test.UserAccountToDto;
-
 
 public class SurveyTemplateBuilder {
 
@@ -13,7 +11,7 @@ public class SurveyTemplateBuilder {
 	private final List<QuestionTemplate> questions = new ArrayList<QuestionTemplate>();
 	private Boolean published = true;
 	private UserDto creator;
-    private String description;
+	private String description;
 
 	public SurveyTemplateBuilder(String title) {
 		this.title = title;
@@ -21,7 +19,7 @@ public class SurveyTemplateBuilder {
 
 	public SurveyTemplate build() {
 		SurveyTemplate surveyTemplate = new SurveyTemplate(creator, title);
-        surveyTemplate.setDescription(description);
+		surveyTemplate.setDescription(description);
 		for (QuestionTemplate question : questions) {
 			surveyTemplate.addQuestion(question);
 		}
@@ -43,8 +41,9 @@ public class SurveyTemplateBuilder {
 		return this;
 	}
 
-	public SurveyTemplateBuilder byUser(UserAccount creator) {
-		this.creator = UserAccountToDto.INSTANCE.apply(creator);
+	public SurveyTemplateBuilder byUser(String creatorEmail) {
+		creator = new UserDto();
+		creator.setEmail(creatorEmail);
 		return this;
 	}
 
@@ -52,8 +51,8 @@ public class SurveyTemplateBuilder {
 		return new SurveyTemplateBuilder(title);
 	}
 
-    public SurveyTemplateBuilder describedAs(String description) {
-        this.description = description;
-        return this;
-    }
+	public SurveyTemplateBuilder describedAs(String description) {
+		this.description = description;
+		return this;
+	}
 }

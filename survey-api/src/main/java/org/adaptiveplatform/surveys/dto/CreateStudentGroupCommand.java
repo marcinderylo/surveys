@@ -7,7 +7,7 @@ import org.adaptiveplatform.adapt.commons.validation.constraints.NonBlank;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
 /**
- *
+ * 
  * @author Marcin Deryło
  */
 @RemoteObject
@@ -15,6 +15,7 @@ public class CreateStudentGroupCommand {
 
 	private String groupName;
 	private List<AddGroupMemberCommand> addMemberCommands = new ArrayList<AddGroupMemberCommand>();
+	private Boolean openForSignup = false;
 
 	public CreateStudentGroupCommand() {
 	}
@@ -38,5 +39,13 @@ public class CreateStudentGroupCommand {
 
 	public void setAddMemberCommands(List<AddGroupMemberCommand> addMemberCommands) {
 		this.addMemberCommands = addMemberCommands;
+	}
+
+	public boolean isOpenForSignup() {
+		return openForSignup;
+	}
+
+	public void setOpenForSignup(boolean openForSignup) {
+		this.openForSignup = openForSignup;
 	}
 }

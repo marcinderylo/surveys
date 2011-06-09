@@ -1,24 +1,30 @@
 package org.adaptiveplatform.surveys.application;
 
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.domain.UserAccount;
 import org.adaptiveplatform.surveys.dto.ChangePasswordCommand;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.security.CantChangePasswordException;
 import org.adaptiveplatform.surveys.service.UserAccountRepository;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.AuthenticationException;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import static org.testng.Assert.fail;
+import org.springframework.security.core.AuthenticationException;
 
 public class ChangingPasswordTest {
 
@@ -37,13 +43,13 @@ public class ChangingPasswordTest {
     @Mock
     private PasswordEncoder encoder;
 
-    @BeforeMethod
+    @Before
     public void setUp() {
         facade = new UserFacadeImpl();
         MockitoAnnotations.initMocks(this);
         when(repository.getExisting(anyString())).thenAnswer(returingWantedUser());
-        doAnswer(throwBadCredentialsIfOldPasswordDoesntMatch()).
-                when(authentication).checkCredentials(anyString(), anyString());
+        doAnswer(throwBadCredentialsIfOldPasswordDoesntMatch()).when(authentication).checkCredentials(anyString(),
+                anyString());
         when(encoder.encodePassword(anyString(), anyObject())).thenAnswer(samePassword());
     }
 
@@ -67,7 +73,7 @@ public class ChangingPasswordTest {
             // expect exception
             fail("Exception should have been thrown");
         } catch (CantChangePasswordException e) {
-            //just as expected
+            // just as expected
         }
     }
 
@@ -81,7 +87,7 @@ public class ChangingPasswordTest {
             // expect exception
             fail("Exception should have been thrown");
         } catch (AuthenticationException e) {
-            //just as expected
+            // just as expected
         }
     }
 

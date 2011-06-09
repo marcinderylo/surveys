@@ -23,6 +23,7 @@ import org.adaptiveplatform.surveys.domain.SurveyPublication;
 import org.adaptiveplatform.surveys.domain.SurveyTemplate;
 import org.adaptiveplatform.surveys.dto.AddGroupToResearchCommand;
 import org.adaptiveplatform.surveys.dto.PrepareResearchCommand;
+import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.service.ResearchRepository;
 import org.adaptiveplatform.surveys.service.StudentGroupRepository;
 import org.adaptiveplatform.surveys.service.SurveyPublicationFactory;
@@ -30,18 +31,18 @@ import org.adaptiveplatform.surveys.service.SurveyPublicationRepository;
 import org.adaptiveplatform.surveys.service.SurveyTemplateRepository;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AccessDeniedException;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import com.google.common.collect.Lists;
 
 /**
- *
+ * 
  * @author Marcin Deryło
  */
 public class ResearchCreationTest {
@@ -61,14 +62,14 @@ public class ResearchCreationTest {
     @Mock
     private SurveyPublicationRepository publicationRepository;
 
-    @BeforeMethod
+    @Before
     public void init() {
         facade = new EvaluationFacadeImpl();
 
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test(expectedExceptions = EntityNotFoundException.class)
+    @Test(expected = EntityNotFoundException.class)
     public void cantCreateResearchWithoutSurveyTemplate() throws Exception {
         givenSurveyTemplateDoesNotExist(37L);
 
@@ -79,13 +80,12 @@ public class ResearchCreationTest {
         expectException();
     }
 
-    @Test(expectedExceptions = {AccessDeniedException.class})
+    @Test(expected = AccessDeniedException.class)
     public void cantUseOtherUsersSurveyTemplateForResearch() throws Exception {
         SurveyTemplate template = givenExistingSurveyTemplate(78L);
 
         given(template.getOwnerId()).willReturn(3576L);
-        doThrow(new AccessDeniedException("mock exception")).when(
-                authenticationService).userSecurityCheck(3576L);
+        doThrow(new AccessDeniedException("mock exception")).when(authenticationService).userSecurityCheck(3576L);
         // when
         facade.createResearch(cmd(78L));
 
@@ -106,8 +106,7 @@ public class ResearchCreationTest {
         cmd.setName("test research");
         cmd.setSurveyTemplateId(135L);
         cmd.getGroupsToAdd().add(new AddGroupToResearchCommand(1L));
-        cmd.getGroupsToAdd().add(new AddGroupToResearchCommand(3L, new Date(12345L), new Date(
-                56742L)));
+        cmd.getGroupsToAdd().add(new AddGroupToResearchCommand(3L, new Date(12345L), new Date(56742L)));
 
         givenGroupExists(1L);
         givenGroupExists(3L);
@@ -122,9 +121,8 @@ public class ResearchCreationTest {
             @Override
             public boolean matches(Object item) {
                 Research research = (Research) item;
-                return "test research".equals(research.getName()) && research.
-                        getQuestionEvaluations().size() == 2 && research.
-                        getPublications().size() == 2;
+                return "test research".equals(research.getName()) && research.getQuestionEvaluations().size() == 2
+                        && research.getPublications().size() == 2;
             }
 
             @Override
@@ -140,27 +138,23 @@ public class ResearchCreationTest {
 
     private SurveyTemplate givenExistingSurveyTemplate(Long id) {
         // given
-        SurveyTemplate template =
-                mock(SurveyTemplate.class);
+        SurveyTemplate template = mock(SurveyTemplate.class);
         given(surveyTemplateRepository.getExisting(id)).willReturn(template);
         return template;
     }
 
     private PrepareResearchCommand cmd(long surveyTemplateId) {
-        PrepareResearchCommand cmd =
-                new PrepareResearchCommand();
+        PrepareResearchCommand cmd = new PrepareResearchCommand();
         cmd.setSurveyTemplateId(surveyTemplateId);
         return cmd;
     }
 
     private void givenSurveyTemplateDoesNotExist(Long id) {
         // given
-        given(surveyTemplateRepository.getExisting(id)).
-                willThrow(new EntityNotFoundException());
+        given(surveyTemplateRepository.getExisting(id)).willThrow(new EntityNotFoundException());
     }
 
-    private void givenSurveyTemplateHasQuestions(SurveyTemplate template,
-            int questionsCount) {
+    private void givenSurveyTemplateHasQuestions(SurveyTemplate template, int questionsCount) {
         List<QuestionTemplate> questions = Lists.newArrayList();
         for (int i = 0; i < questionsCount; i++) {
             QuestionTemplate question = mock(QuestionTemplate.class);
@@ -172,6 +166,7 @@ public class ResearchCreationTest {
     private void givenGroupExists(Long id) {
         StudentGroup group = mock(StudentGroup.class);
         given(group.getId()).willReturn(id);
+        given(group.isAssignedAsEvaluator(any(UserDto.class))).willReturn(true);
         given(groupRepository.getExisting(id)).willReturn(group);
     }
 }

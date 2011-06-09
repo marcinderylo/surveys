@@ -3,52 +3,58 @@ package org.adaptiveplatform.surveys;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import javax.sql.DataSource;
+
+import junit.framework.Assert;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/testConfigurationContext.xml")
-public class JdbcTest extends AbstractTestNGSpringContextTests {
+public class JdbcTest {
 
-	@Autowired
-	private DataSource dataSource;
-	private Connection connection;
+    @Autowired
+    private DataSource dataSource;
 
-	@Test
-	public void testIfTableExists() throws Exception {
-		String tableName = "testTable";
-		Assert.assertFalse(checkIfTableExists(tableName));
-		createTable(tableName);
-		Assert.assertTrue(checkIfTableExists(tableName));
-	}
+    private Connection connection;
 
-	private void createTable(String tableName) throws Exception {
-		Statement statement = connection.createStatement();
-		statement.execute("create table " + tableName + " ( N integer );");
-	}
+    @Test
+    public void testIfTableExists() throws Exception {
+        String tableName = "testTable";
+        Assert.assertFalse(checkIfTableExists(tableName));
+        createTable(tableName);
+        Assert.assertTrue(checkIfTableExists(tableName));
+    }
 
-	private boolean checkIfTableExists(String tableName) throws Exception {
-		Statement statement = connection.createStatement();
-		try {
-			statement.executeQuery("select count(*) from " + tableName);
-			return true;
-		} catch (SQLException e) {
-			return false;
-		}
-	}
+    private void createTable(String tableName) throws Exception {
+        Statement statement = connection.createStatement();
+        statement.execute("create table " + tableName + " ( N integer );");
+    }
 
-	@BeforeMethod
-	public void beforeMethod() throws Exception {
-		connection = dataSource.getConnection();
-	}
+    private boolean checkIfTableExists(String tableName) throws Exception {
+        Statement statement = connection.createStatement();
+        try {
+            statement.executeQuery("select count(*) from " + tableName);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 
-	@AfterMethod
-	public void afterMethod() throws Exception {
-		connection.close();
-	}
+    @Before
+    public void beforeMethod() throws Exception {
+        connection = dataSource.getConnection();
+    }
+
+    @After
+    public void afterMethod() throws Exception {
+        connection.close();
+    }
 }

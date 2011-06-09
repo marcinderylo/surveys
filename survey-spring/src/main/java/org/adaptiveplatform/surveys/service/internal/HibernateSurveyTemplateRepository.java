@@ -13,16 +13,14 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class HibernateSurveyTemplateRepository implements
-        SurveyTemplateRepository {
+public class HibernateSurveyTemplateRepository implements SurveyTemplateRepository {
 
     @Resource(name = "sessionFactory")
     private SessionFactory sf;
 
     @Override
     public SurveyTemplate get(Long templateId) {
-        return (SurveyTemplate) sf.getCurrentSession().get(
-                SurveyTemplate.class, templateId);
+        return (SurveyTemplate) sf.getCurrentSession().get(SurveyTemplate.class, templateId);
     }
 
     @Override
@@ -37,13 +35,11 @@ public class HibernateSurveyTemplateRepository implements
 
     @Override
     public boolean exists(UserDto creator, String name) {
-        Criteria crit = sf.getCurrentSession().createCriteria(
-                SurveyTemplate.class);
-        crit.add(Restrictions.eq("title", name)).
-                add(Restrictions.eq("owner.id", creator.getId()));
+        Criteria crit = sf.getCurrentSession().createCriteria(SurveyTemplate.class);
+        crit.add(Restrictions.eq("title", name)).add(Restrictions.eq("owner.id", creator.getId()));
         crit.setProjection(Projections.countDistinct("id"));
 
-        Integer count = (Integer) crit.uniqueResult();
+        Long count = (Long) crit.uniqueResult();
         return count > 0;
     }
 

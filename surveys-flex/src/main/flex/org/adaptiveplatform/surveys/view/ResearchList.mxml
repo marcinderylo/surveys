@@ -45,7 +45,7 @@
 				evaluationDao.queryResearches(researchQuery) //
 					.onSuccess(function(result:ArrayCollection):void {
 						researches=result;
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+					}).onFault(BusinessExceptionHandler.displayAlert());
 			}
 
 			private function resetResearch():void {

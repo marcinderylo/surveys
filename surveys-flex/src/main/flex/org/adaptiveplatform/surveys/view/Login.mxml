@@ -8,58 +8,61 @@
          verticalAlign="middle">
 
     <mx:Metadata>
-		[ResourceBundle("adaptive")]
-	</mx:Metadata>
+        [ResourceBundle("adaptive")]
+    </mx:Metadata>
 
     <mx:Script>
         <![CDATA[
-            import org.adaptiveplatform.surveys.utils.MessageBundle;
-            import mx.controls.Alert;
-            import mx.rpc.Fault;
+        import org.adaptiveplatform.surveys.utils.MessageBundle;
 
-            import org.adaptiveplatform.surveys.application.AuthenticationService;
-            import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-            import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-            import org.adaptiveplatform.surveys.application.ViewController;
-            import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
+        import mx.controls.Alert;
+        import mx.rpc.Fault;
 
-            private var authentication:AuthenticationService;
-            private var systemInformationDao:SystemInformationDao;
-            private var view:ViewController;
+        import org.adaptiveplatform.surveys.application.AuthenticationService;
+        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.ViewController;
+        import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
 
-            [Bindable]
-            private var serverStatus:String="serverStatus_checking";
-            [Bindable]
-            private var msg:MessageBundle;
+        private var authentication:AuthenticationService;
+        private var systemInformationDao:SystemInformationDao;
+        private var view:ViewController;
 
-            private function onCreationComplete():void {
-                authentication=ApplicationContextHolder.context.service.authentication;
-                view=ApplicationContextHolder.context.view;
-                systemInformationDao=ApplicationContextHolder.context.service.systemInformationDao;
-                username.setFocus();
-                updateLocale(initialLocale);
+        [Bindable]
+        private var serverStatus:String = "serverStatus_checking";
+        [Bindable]
+        private var msg:MessageBundle;
+
+        private function onCreationComplete():void {
+            authentication = ApplicationContextHolder.context.service.authentication;
+            view = ApplicationContextHolder.context.view;
+            systemInformationDao = ApplicationContextHolder.context.service.systemInformationDao;
+            username.setFocus();
+            updateLocale(initialLocale);
+        }
+
+        public function initializeView(login:String = null):void {
+            if (login != null) {
+                username.text = login;
             }
 
-            public function initializeView(login:String=null):void {
-                if (login != null) {
-                    username.text=login;
-                }
+            systemInformationDao.getSystemVersion().onSuccess(
+                    function(version:String) {
+                        serverStatus = "serverStatus_online";
+                    }).onFault(function(fault:Fault) {
+                serverStatus = "serverStatus_offline";
+            });
+        }
 
-                systemInformationDao.getSystemVersion().onSuccess(function(version:String) {
-                    serverStatus="serverStatus_online";
-                }).onFault(function(fault:Fault) {
-                    serverStatus="serverStatus_offline";
-                });
-            }
-
-            protected function loginClicked(ignore:MouseEvent=null):void {
-                loginBtn.enabled=false;
-                authentication.login(username.text, password.text) //
-                    .onSuccess(function(result:Object=null):void {
+        protected function loginClicked(ignore:MouseEvent = null):void {
+            loginBtn.enabled = false;
+            authentication.login(username.text, password.text)//
+                    .onSuccess(
+                    function(result:Object = null):void {
                         unlockLoginButton();
-                        username.text=null;
-                        password.text=null;
-                        var authorities:Array=result.authorities;
+                        username.text = null;
+                        password.text = null;
+                        var authorities:Array = result.authorities;
                         if (authorities.indexOf("ROLE_ADMINISTRATOR") > -1) { // FIXME hardcode
                             view.goto(View.USERS_LIST);
                         } else if (authorities.indexOf("ROLE_TEACHER") > -1) {
@@ -71,50 +74,51 @@
                         } else {
                             Alert.show("your account has no privleges", "authorization error");
                         }
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager, "error.loginFailed")).onFault(unlockLoginButton);
-            }
+                    }).onFault(BusinessExceptionHandler.displayAlert("error.loginFailed")).onFault(unlockLoginButton);
+            password.text = "";
+        }
 
-            private function unlockLoginButton(args:*=null):void {
-                loginBtn.enabled=true;
-            }
+        private function unlockLoginButton(args:* = null):void {
+            loginBtn.enabled = true;
+        }
 
-            /**
-             *  The locales which this application supports.
-             *  This is the dataProvider for the Language combobox.
-             */
-            private var locales:Array=["pl_PL", "en_US"];
+        /**
+         *  The locales which this application supports.
+         *  This is the dataProvider for the Language combobox.
+         */
+        private var locales:Array = ["pl_PL", "en_US"];
 
-            /**
-             *  The initial locale that the application uses.
-             *  We attempt to load this from a local SharedObject at startup,
-             *  but default to "en_US" if this SharedObject doesn't exist.
-             */
-            private var initialLocale:String="pl_PL";
+        /**
+         *  The initial locale that the application uses.
+         *  We attempt to load this from a local SharedObject at startup,
+         *  but default to "en_US" if this SharedObject doesn't exist.
+         */
+        private var initialLocale:String = "pl_PL";
 
-            private function languageComboBoxLabelFunction(item:Object):String {
-                var locale:String=String(item);
-                return msg.string("locale_" + locale);
-            }
+        private function languageComboBoxLabelFunction(item:Object):String {
+            var locale:String = String(item);
+            return msg.string("locale_" + locale);
+        }
 
-            private function languageComboBoxChanged(event:Event):void {
-                var newLocale:String=String(langCmbBox.selectedItem);
-                updateLocale(newLocale);
-            }
+        private function languageComboBoxChanged(event:Event):void {
+            var newLocale:String = String(langCmbBox.selectedItem);
+            updateLocale(newLocale);
+        }
 
-            private function updateLocale(newLocale:String):void {
-                var sharedObject:SharedObject=SharedObject.getLocal("savedData");
-                sharedObject.data["locale"]=newLocale;
+        private function updateLocale(newLocale:String):void {
+            var sharedObject:SharedObject = SharedObject.getLocal("savedData");
+            sharedObject.data["locale"] = newLocale;
 
-                resourceManager.localeChain=[newLocale];
-                resourcesChanged();
-                updateLanguageComboBox();
-            }
+            resourceManager.localeChain = [newLocale];
+            resourcesChanged();
+            updateLanguageComboBox();
+        }
 
-            private function updateLanguageComboBox():void {
-                var oldSelectedItem:Object=langCmbBox.selectedItem;
-                langCmbBox.dataProvider=locales;
-                langCmbBox.selectedItem=oldSelectedItem;
-            }
+        private function updateLanguageComboBox():void {
+            var oldSelectedItem:Object = langCmbBox.selectedItem;
+            langCmbBox.dataProvider = locales;
+            langCmbBox.selectedItem = oldSelectedItem;
+        }
         ]]>
     </mx:Script>
     <mx:HBox>

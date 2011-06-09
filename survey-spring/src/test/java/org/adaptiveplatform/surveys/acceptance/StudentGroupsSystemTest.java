@@ -1,23 +1,34 @@
-package org.adaptiveplatform.surveys.application;
+package org.adaptiveplatform.surveys.acceptance;
 
-import org.adaptiveplatform.surveys.dto.SetGroupSignUpModeCommand;
-import static org.adaptiveplatform.surveys.test.Asserts.assertCollectionSize;
-import static org.adaptiveplatform.surveys.test.Asserts.assertEmpty;
-import static org.adaptiveplatform.surveys.test.Asserts.expectException;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
-import static org.testng.Assert.assertTrue;
+import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
+import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
+import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
+import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
+import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
+import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
+import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Collection;
 import java.util.List;
+
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
-import org.adaptiveplatform.surveys.db.SqlScriptImporter;
-import org.adaptiveplatform.surveys.domain.Role;
+
+import org.adaptiveplatform.surveys.application.StudentGroupDao;
+import org.adaptiveplatform.surveys.application.StudentGroupFacade;
+import org.adaptiveplatform.surveys.application.SurveyFacade;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
 import org.adaptiveplatform.surveys.dto.AddGroupMemberCommand;
 import org.adaptiveplatform.surveys.dto.ChangeGroupMembersCommand;
 import org.adaptiveplatform.surveys.dto.CreateStudentGroupCommand;
 import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
 import org.adaptiveplatform.surveys.dto.GroupSignUpCommand;
+import org.adaptiveplatform.surveys.dto.SetGroupSignUpModeCommand;
 import org.adaptiveplatform.surveys.dto.StudentGroupDto;
 import org.adaptiveplatform.surveys.dto.StudentGroupQuery;
 import org.adaptiveplatform.surveys.exception.CantQueryGroupsAsEvaluatorException;
@@ -26,70 +37,76 @@ import org.adaptiveplatform.surveys.exception.DeletingGroupWithPublishedTemplate
 import org.adaptiveplatform.surveys.exception.GroupAlreadyExistsException;
 import org.adaptiveplatform.surveys.exception.NoSuchGroupException;
 import org.adaptiveplatform.surveys.exception.PublishedSurveyTemplateAlreadyFilledException;
-import org.adaptiveplatform.surveys.service.AuthenticationServiceMock;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author Marcin Deryło
  */
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:/testConfigurationContext.xml")
-public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+public class StudentGroupsSystemTest {
 
     public static final String EXISTING_GROUP_NAME = "some group";
-    @Resource
-    private SqlScriptImporter ex;
-    @Resource
-    private AuthenticationServiceMock authMock;
     @Resource
     private StudentGroupFacade groupFacade;
     @Resource
     private StudentGroupDao groupDao;
     @Resource
     private SurveyFacade surveyFacade;
+    @Resource
+    private CoreFixtureBuilder users;
+    @Resource
+    private SurveysFixtureBuilder surveys;
 
-    @BeforeMethod
-    public void beforeMethod() throws Exception {
-        ex.executeScript("groupsSystemTestImport.sql");
-    }
+    @Before
+    public void initializeData() throws Exception {
+        users.createUser(student("student@adapt.com"));
+        users.createUser(teacher("teacher@adapt.com"));
+        users.createUser(teacher("bad_teacher@adapt.com"));
+        users.createUser(evaluator("evaluator@adapt.com"));
+        users.createUser(evaluator("evaluator2@adapt.com"));
 
-    @AfterMethod
-    public void afterMethod() throws Exception {
-        ex.executeScript("deleteAll.sql");
-        authMock.logout();
+        users.loginAs("teacher@adapt.com");
+        surveys.createGroup(group("some group").withEvaluator("evaluator@adapt.com").withStudent("student@adapt.com"));
+        surveys.createGroup(group("another group").openForSignup());
+        Long groupWithResearch = surveys.createGroup(group("yet another group").withEvaluator("evaluator@adapt.com")
+                .withStudent("student@adapt.com").openForSignup());
+
+        users.loginAs("evaluator@adapt.com");
+        Long templateId = surveys.createTemplate(template("not published survey").withQuestions(
+                openQuestion("qwestion")));
+        surveys.createResearch(research().withSurvey(templateId).forGroup(groupWithResearch));
     }
 
     @Test
     public void shouldTeacherCreateUserGroup() throws Exception {
         authenticatedAsTeacher();
         // when
-        Long groupId = groupFacade.createGroup(new CreateStudentGroupCommand(
-                "test group"));
+        Long groupId = groupFacade.createGroup(new CreateStudentGroupCommand("test group"));
         // then
         StudentGroupDto dto = groupDao.getGroup(groupId);
         assertEquals(dto.getGroupName(), "test group");
 
-        assertCollectionSize(dto.getAdministrators(), 1);
-        assertEquals(first(dto.getAdministrators()).getId(), id(2L));
-
-        assertEmpty(dto.getEvaluators());
-        assertEmpty(dto.getStudents());
+        assertThat(dto.getAdministrators()).hasSize(1);
+        assertThat(dto.getEvaluators()).isEmpty();
+        assertThat(dto.getStudents()).isEmpty();
     }
 
-    @Test(expectedExceptions = AccessDeniedException.class)
+    @Test(expected = AccessDeniedException.class)
     public void cantAllowNonTeacherToCreateGroup() throws Exception {
         // given
-        authMock.authenticate(2L, "teacher@adapt.com", Role.EVALUATOR, Role.USER,
-                Role.ADMINISTRATOR);
+        users.loginAs("evaluator@adapt.com");
         // when
-        groupFacade.createGroup(new CreateStudentGroupCommand(
-                "test group"));
-        // then
-        expectException();
+        groupFacade.createGroup(new CreateStudentGroupCommand("test group"));
+        // then - exception should be thrown
     }
 
     @Test
@@ -97,10 +114,9 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         // given
         authenticatedAsTeacher();
         // when
-        CreateStudentGroupCommand createGroupCmd =
-                new CreateStudentGroupCommand("test group");
-        createGroupCmd.getAddMemberCommands().add(new AddGroupMemberCommand(
-                "student@adapt.com", GroupRoleEnum.STUDENT.name()));
+        CreateStudentGroupCommand createGroupCmd = new CreateStudentGroupCommand("test group");
+        createGroupCmd.getAddMemberCommands().add(
+                new AddGroupMemberCommand("student@adapt.com", GroupRoleEnum.STUDENT.name()));
         createGroupCmd.getAddMemberCommands().add(
                 new AddGroupMemberCommand("evaluator@adapt.com", GroupRoleEnum.EVALUATOR.name()));
 
@@ -108,11 +124,8 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         // then
         StudentGroupDto dto = groupDao.getGroup(groupId);
 
-        assertCollectionSize(dto.getEvaluators(), 1);
-        assertEquals(first(dto.getEvaluators()).getId(), id(3L));
-
-        assertCollectionSize(dto.getStudents(), 1);
-        assertEquals(first(dto.getStudents()).getId(), id(1L));
+        assertThat(dto.getEvaluators()).hasSize(1);
+        assertThat(dto.getStudents()).hasSize(1);
     }
 
     @Test
@@ -120,17 +133,16 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         // given
         authenticatedAsTeacher();
         // when
-        ChangeGroupMembersCommand cmd =
-                removeMemberCmd(1L, "student@adapt.com");
+        ChangeGroupMembersCommand cmd = removeMemberCmd(1L, "student@adapt.com");
 
         groupFacade.changeGroupMembers(cmd);
 
         // then
         StudentGroupDto group = groupDao.getGroup(1L);
-        assertEmpty(group.getStudents());
+        assertThat(group.getStudents()).isEmpty();
     }
 
-    @Test(expectedExceptions = {CantRemoveSelfFromGroupException.class})
+    @Test(expected = CantRemoveSelfFromGroupException.class)
     public void cantTeacherRemoveHimselfFromTheGroup() throws Exception {
         // given
         authenticatedAsTeacher();
@@ -145,41 +157,36 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
     public void shouldAddGroupMembersAfterCreation() throws Exception {
         // given
         authenticatedAsTeacher();
-        Long groupId = groupFacade.createGroup(new CreateStudentGroupCommand(
-                "test group"));
+        Long groupId = groupFacade.createGroup(new CreateStudentGroupCommand("test group"));
         // when
         ChangeGroupMembersCommand cmd = changeCmd(groupId);
 
-        cmd.getAddMembers().add(new AddGroupMemberCommand("student@adapt.com",
-                GroupRoleEnum.STUDENT.name()));
+        cmd.getAddMembers().add(new AddGroupMemberCommand("student@adapt.com", GroupRoleEnum.STUDENT.name()));
 
         groupFacade.changeGroupMembers(cmd);
 
         // then
         StudentGroupDto group = groupDao.getGroup(1L);
-        assertCollectionSize(group.getStudents(), 1);
+        assertThat(group.getStudents()).hasSize(1);
     }
 
-    @Test(expectedExceptions = {NoSuchGroupException.class})
+    @Test(expected = NoSuchGroupException.class)
     public void shouldAllowOnlyGroupAdminsToSeeItsDetails() throws Exception {
         // given
-        authMock.authenticate(4L, "bad_teacher@adapt.com", Role.TEACHER,
-                Role.USER);
+        users.loginAs("bad_teacher@adapt.com");
         // when
         groupDao.getGroup(1L);
-        // then
-        expectException();
+        // then - exception should be thrown
     }
 
     @Test
     public void shouldEvaluatorReadHisGroups() throws Exception {
         // given
-        authMock.authenticate(3L, "evaluator@adapt.com", Role.EVALUATOR,
-                Role.USER);
+        users.loginAs("evaluator@adapt.com");
         // when
         List<StudentGroupDto> groups = groupDao.query(evaluatorQuery());
         // then
-        assertCollectionSize(groups, 2);
+        assertThat(groups).hasSize(2);
     }
 
     @Test
@@ -189,7 +196,7 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         // when
         List<StudentGroupDto> groups = groupDao.query(adminQuery());
         // then
-        assertCollectionSize(groups, 3);
+        assertThat(groups).hasSize(3);
     }
 
     @Test
@@ -205,21 +212,15 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
     }
 
     @Test
-    public void cantAllowTeacherToReadGroupsHeIsNotAssignedTo() throws
-            Exception {
-        authMock.authenticate(4L, "bad_teacher@adapt.com", Role.TEACHER,
-                Role.USER);
-
-        assertEmpty(groupDao.query(adminQuery()));
+    public void cantAllowTeacherToReadGroupsHeIsNotAssignedTo() throws Exception {
+        users.loginAs("bad_teacher@adapt.com");
+        assertThat(groupDao.query(adminQuery())).isEmpty();
     }
 
     @Test
-    public void cantAllowEvaluatorToReadGroupsHeIsNotAssignedTo() throws
-            Exception {
-        authMock.authenticate(5L, "evaluator2@adapt.com", Role.EVALUATOR,
-                Role.USER);
-
-        assertEmpty(groupDao.query(evaluatorQuery()));
+    public void cantAllowEvaluatorToReadGroupsHeIsNotAssignedTo() throws Exception {
+        users.loginAs("evaluator2@adapt.com");
+        assertThat(groupDao.query(evaluatorQuery())).isEmpty();
     }
 
     @Test
@@ -231,57 +232,47 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         StudentGroupDto group = groupDao.getGroup(1L);
 
         // then
-        assertCollectionSize(group.getStudents(), 1);
-        assertCollectionSize(group.getEvaluators(), 1);
-        assertCollectionSize(group.getAdministrators(), 1);
-
+        assertThat(group.getStudents()).hasSize(1);
+        assertThat(group.getEvaluators()).hasSize(1);
+        assertThat(group.getAdministrators()).hasSize(1);
     }
 
-    @Test(expectedExceptions = CantQueryGroupsAsEvaluatorException.class)
+    @Test(expected = CantQueryGroupsAsEvaluatorException.class)
     public void cantTeacherReadGroupsAsEvaluator() throws Exception {
         // given/
         authenticatedAsTeacher();
         // when
         groupDao.query(evaluatorQuery());
-        // then
-        expectException();
+        // then - exception should be thrown
     }
 
     @Test
-    public void shouldAdminRemoveGroupWithoutSurveyTemplatesAssigned()
-            throws Exception {
+    public void shouldAdminRemoveGroupWithoutSurveyTemplatesAssigned() throws Exception {
         // given
         authenticatedAsTeacher();
         // when
         groupFacade.removeGroup(2L);
         // then
         List<StudentGroupDto> groups = groupDao.query(adminQuery());
-        assertCollectionSize(groups, 2);
-        assertEquals(first(groups).getId(), id(1L));
+        assertThat(groups).hasSize(2);
     }
 
-    @Test(expectedExceptions = {
-        DeletingGroupWithPublishedTemplatesException.class})
-    public void cantRemoveGroupWithSurveyTemplatesAssigned() throws
-            Exception {
+    @Test(expected = DeletingGroupWithPublishedTemplatesException.class)
+    public void cantRemoveGroupWithSurveyTemplatesAssigned() throws Exception {
         // given
         authenticatedAsTeacher();
         // when
         groupFacade.removeGroup(3L);
-        // then
-        expectException();
+        // then - exception should be thrown
     }
 
-    @Test(expectedExceptions = {
-        PublishedSurveyTemplateAlreadyFilledException.class})
-    public void cantRemoveTemplateFromGroupIfItHasBeenFilledByStudents()
-            throws Exception {
+    @Test(expected = PublishedSurveyTemplateAlreadyFilledException.class)
+    public void cantRemoveTemplateFromGroupIfItHasBeenFilledByStudents() throws Exception {
         authenticateAsStudent();
         surveyFacade.startFilling(1L);
         // when
         groupFacade.removeSurveyTemplate(1L);
-        // then
-        expectException();
+        // then - exception should be thrown
     }
 
     @Test
@@ -293,23 +284,21 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         // when
         final List<StudentGroupDto> groups = groupDao.query(query);
         // then
-        assertCollectionSize(groups, 2);
+        assertThat(groups).hasSize(2);
     }
 
-    @Test(expectedExceptions = {ConstraintViolationException.class})
+    @Test(expected = ConstraintViolationException.class)
     public void cantCreateGroupWithPureWhitespaceName() throws Exception {
         authenticatedAsTeacher();
         groupFacade.createGroup(new CreateStudentGroupCommand(" \n \t  "));
-        expectException();
+        // then - exception should be thrown
     }
 
-    @Test(expectedExceptions = {GroupAlreadyExistsException.class})
-    public void cantTeacherCreateGroupWithSameNameAsExistingOne() throws
-            Exception {
+    @Test(expected = GroupAlreadyExistsException.class)
+    public void cantTeacherCreateGroupWithSameNameAsExistingOne() throws Exception {
         authenticatedAsTeacher();
-        groupFacade.createGroup(new CreateStudentGroupCommand(
-                EXISTING_GROUP_NAME));
-        expectException();
+        groupFacade.createGroup(new CreateStudentGroupCommand(EXISTING_GROUP_NAME));
+        // then - exception should be thrown
     }
 
     @Test
@@ -325,31 +314,27 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         authenticatedAsTeacher();
         final StudentGroupDto group = groupDao.getGroup(groupId);
         assertTrue(group.getStudentsCanSignUp());
-        assertCollectionSize(group.getStudents(), 1);
-        assertEquals(first(group.getStudents()).getId(), id(1L));
+        assertThat(group.getStudents()).hasSize(1);
     }
 
     @Test
     public void shouldListGroupsStudentsCanJoinOnTheirOwn() throws Exception {
         // given
         authenticateAsStudent();
-        assertCollectionSize(groupDao.getAvailableGroups(), 1);
+        assertThat(groupDao.getAvailableGroups()).hasSize(1);
         groupFacade.signUpAsStudent(new GroupSignUpCommand(2L));
         // when
         final List<StudentGroupDto> groups = groupDao.getAvailableGroups();
         // then
-        assertEmpty(groups);
+        assertThat(groups).isEmpty();
     }
 
     private void authenticatedAsTeacher() {
-        // given
-        authMock.authenticate(2L, "teacher@adapt.com",
-                Role.TEACHER, Role.USER);
+        users.loginAs("teacher@adapt.com");
     }
 
     private void authenticateAsStudent() {
-        // given
-        authMock.authenticate(1L, "student@adapt.com", Role.USER, Role.STUDENT);
+        users.loginAs("student@adapt.com");
     }
 
     private static <T> T first(Collection<T> collection) {
@@ -358,10 +343,6 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         } else {
             return collection.iterator().next();
         }
-    }
-
-    private static Long id(long i) {
-        return Long.valueOf(i);
     }
 
     private static StudentGroupQuery adminQuery() {
@@ -378,8 +359,7 @@ public class StudentGroupsSystemTest extends AbstractTestNGSpringContextTests {
         return cmd;
     }
 
-    private static ChangeGroupMembersCommand removeMemberCmd(Long groupId,
-            String email) {
+    private static ChangeGroupMembersCommand removeMemberCmd(Long groupId, String email) {
         ChangeGroupMembersCommand cmd = changeCmd(groupId);
         cmd.getRemoveMembers().add(email);
         return cmd;

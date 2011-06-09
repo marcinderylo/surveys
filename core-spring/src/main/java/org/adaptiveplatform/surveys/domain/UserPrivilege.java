@@ -1,23 +1,23 @@
 package org.adaptiveplatform.surveys.domain;
 
-
 public enum UserPrivilege {
 
 	/**
 	 * Registered and authenticated user.
 	 */
 	USER(Role.USER),
-
+	/**
+	 * Student
+	 */
+	STUDENT(Role.STUDENT),
 	/**
 	 * Special account with virtually unlimited privileges.
 	 */
 	ADMINISTRATOR(Role.ADMINISTRATOR),
-
 	/**
 	 * 
 	 */
 	TEACHER(Role.TEACHER),
-
 	/**
 	 * 
 	 */

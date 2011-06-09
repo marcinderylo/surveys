@@ -8,6 +8,6 @@ public class StaticPagesController {
 
 	@RequestMapping("/")
 	public String defaultPage() {
-		return "forward:/static/surveys-web.swf";
+		return "redirect:/static/surveys-flex.swf";
 	}
 }

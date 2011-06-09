@@ -1,19 +1,20 @@
 package org.adaptiveplatform.surveys.application;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
+
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.domain.UserAccount;
 import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.security.NotAllowedToRegisterUserException;
 import org.adaptiveplatform.surveys.service.UserAccountFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import static org.testng.Assert.assertEquals;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import static org.testng.Assert.fail;
 
 public class UserRegistrationTest {
 
@@ -30,7 +31,7 @@ public class UserRegistrationTest {
     @Mock
     private UserAccount createdAccount;
 
-    @BeforeMethod
+    @Before
     public void setUp() {
         facade = new UserFacadeImpl();
         MockitoAnnotations.initMocks(this);
@@ -45,7 +46,7 @@ public class UserRegistrationTest {
         // when
         final Long id = facade.registerUser(new RegisterAccountCommand(NAME, PASSWORD, MAIL));
         // then
-        assertEquals(id, CREATED_USER_ID);
+        assertEquals(CREATED_USER_ID, id);
     }
 
     @Test

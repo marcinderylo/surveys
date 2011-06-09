@@ -17,8 +17,6 @@ public class GroupManagementModel {
 
     private var studentGroupFacade:StudentGroupFacade;
     private var groupDao:StudentGroupDao;
-    private var resourceManager:IResourceManager;
-
 
     [Bindable]
     public var groups:ArrayCollection;
@@ -32,10 +30,9 @@ public class GroupManagementModel {
     [Bindable]
     public var createGroupCommandValidator:CommandValidator = new CommandValidator(true);
 
-    public function GroupManagementModel(studentGroupFacade:StudentGroupFacade, groupDao:StudentGroupDao, resourceManager:IResourceManager) {
+    public function GroupManagementModel(studentGroupFacade:StudentGroupFacade, groupDao:StudentGroupDao) {
         this.studentGroupFacade = studentGroupFacade;
         this.groupDao = groupDao;
-        this.resourceManager = resourceManager;
         createGroupCommand = new CreateStudentGroupCommand();
     }
 
@@ -45,7 +42,7 @@ public class GroupManagementModel {
                 .onSuccess(
                 function(result:ArrayCollection):void {
                     groups = result;
-                }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                }).onFault(BusinessExceptionHandler.displayAlert());
     }
 
     public function createNewGroup():void {
@@ -54,7 +51,7 @@ public class GroupManagementModel {
                     function(result:Object):void {
                         createGroupCommand = new CreateStudentGroupCommand();
                         findGroups();
-                    }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                    }).onFault(BusinessExceptionHandler.displayAlert());
         }
     }
 
@@ -71,7 +68,7 @@ public class GroupManagementModel {
         studentGroupFacade.setGroupSignUpMode(command).onSuccess(
                 function(...ignore):void {
                     resetGroups();
-                }).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+                }).onFault(BusinessExceptionHandler.displayAlert());
     }
 
     [PostConstruct]

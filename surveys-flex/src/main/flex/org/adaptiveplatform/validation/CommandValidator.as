@@ -6,6 +6,10 @@ import flash.utils.Dictionary;
 
 import mx.events.PropertyChangeEvent;
 
+import mx.resources.IResourceManager;
+
+import mx.resources.ResourceManager;
+
 import org.spicefactory.lib.reflect.ClassInfo;
 import org.spicefactory.lib.reflect.Metadata;
 import org.spicefactory.lib.reflect.Property;
@@ -14,6 +18,7 @@ import org.spicefactory.lib.reflect.Property;
 public class CommandValidator extends EventDispatcher {
 
     private static const METADATA_HANDLERS = [SizeValidator, NotNullValidator, ValidIdValidator, NonBlankValidator, MinValidator];
+    private const VALIDATORS_BUNDLE_NAME:String = "validation";
 
     public static const VALIDATED:String = "validated";
 
@@ -21,6 +26,7 @@ public class CommandValidator extends EventDispatcher {
 
     private var _source:Object;
     private var automaticValidation:Boolean;
+
 
     public function CommandValidator(automaticValidation:Boolean = false) {
         this.automaticValidation = automaticValidation;
@@ -35,7 +41,7 @@ public class CommandValidator extends EventDispatcher {
 
     public function validate():Boolean {
         _errorStrings = new Dictionary();
-        var errorOccured:Boolean = false;
+        var validationPassed:Boolean = true;
 
         var info:ClassInfo = ClassInfo.forInstance(_source);
         for each(var property:Property in info.getProperties()) {
@@ -44,14 +50,18 @@ public class CommandValidator extends EventDispatcher {
                     var value:Object = property.getValue(_source);
                     var validationProblem:String = (o as MetaValidator).validate(value);
                     if (validationProblem != null) {
-                        errorOccured = true;
-                        _errorStrings[property.name] = validationProblem;
+                        validationPassed = false;
+                        putValidationError(property.name, validationProblem);
                     }
                 }
             }
         }
         dispatchEvent(new Event(VALIDATED));
-        return errorOccured;
+        return validationPassed;
+    }
+
+    private function putValidationError(name:String, validationProblem:String):void {
+        _errorStrings[name] = validationProblem;
     }
 
     public function get errorStrings():Dictionary {

@@ -90,7 +90,7 @@
 				evaluationFacade.createResearch(researchCommand) //
 					.onSuccess(function(o:Object):void {
 						goToList();
-					}).onFault(BusinessExceptionHandler.displayAlert(resourceManager));
+					}).onFault(BusinessExceptionHandler.displayAlert());
 			}
 
 			private function test(e:Event):void {

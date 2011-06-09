@@ -12,13 +12,10 @@
         http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd"
     profile="production">
 
-<!--     get it from jndi-->
-    <context:property-placeholder location="classpath:/jdbc-psql.properties" />
-
 <!--         should probably fetch that from JNDI too-->
     <util:properties id="hibernateProperties" location="classpath:/hibernate-postgres.properties" />
 
-    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/Surveys" expected-type="java.sql.DataSource"/>
+    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/Surveys" expected-type="javax.sql.DataSource"/>
 <!--         might include conditional initialization of database schema using jdbc:initialize-database -->
 
 </beans>

@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.dto.UserQuery;
+import org.adaptiveplatform.surveys.exception.security.EmailNotRegisteredException;
 import org.adaptiveplatform.surveys.exception.security.NotAllowedToViewUserDetailsException;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -50,7 +51,12 @@ public class HibernateUserDao implements UserDao {
 		if (isUserAdministrator(caller) || caller.getEmail().equals(email)) {
 			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(UserDto.class);
 			criteria.add(Restrictions.naturalId().set(UserDto.EMAIL, email));
-			return (UserDto) criteria.uniqueResult();
+
+			Object uniqueResult = criteria.uniqueResult();
+			if (uniqueResult == null) {
+				throw new EmailNotRegisteredException(email);
+			}
+			return (UserDto) uniqueResult;
 		} else {
 			throw new NotAllowedToViewUserDetailsException();
 		}
