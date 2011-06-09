@@ -32,6 +32,11 @@ public class UserAccountBuilder {
         return this;
     }
 
+    public UserAccountBuilder withName(String name) {
+        command.setName(name);
+        return this;
+    }
+
     public UserAccountBuilder inRoles(String... roles) {
         this.roles.addAll(Arrays.asList(roles));
         return this;
@@ -50,7 +55,7 @@ public class UserAccountBuilder {
     }
 
     public static UserAccountBuilder student(String email) {
-        return user(email).inRoles(Role.STUDENT);
+        return user(email);
     }
 
     public static UserAccountBuilder evaluator(String email) {
@@ -60,5 +65,4 @@ public class UserAccountBuilder {
     public static UserAccountBuilder teacher(String email) {
         return user(email).inRoles(Role.TEACHER);
     }
-
 }

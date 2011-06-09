@@ -1,4 +1,4 @@
-package org.adaptiveplatform.surveys.test;
+package org.adaptiveplatform.surveys.sampledata;
 
 import java.util.ArrayList;
 import java.util.Date;
