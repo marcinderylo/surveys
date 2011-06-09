@@ -2,14 +2,13 @@ package org.adaptiveplatform.surveys.acceptance;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQuestion;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.singleChoiceQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -22,7 +21,6 @@ import org.adaptiveplatform.surveys.application.SurveyFacade;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
 import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
 import org.adaptiveplatform.surveys.dto.CreateSurveyTemplateCommand;
-import org.adaptiveplatform.surveys.dto.PublishSurveyTemplateCommand;
 import org.adaptiveplatform.surveys.dto.QuestionTemplateDto;
 import org.adaptiveplatform.surveys.dto.QuestionTypeEnum;
 import org.adaptiveplatform.surveys.dto.SurveyTemplateDto;
@@ -48,10 +46,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould {
 
-    /**
-     * Login (email) of a user with evaluator privileges.
-     */
-    public static final String EVALUATOR_LOGIN = "eval@eval.com";
     @Resource
     private SurveyFacade facade;
     @Resource
@@ -61,20 +55,16 @@ public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould {
     @Resource
     private SurveysFixtureBuilder surveys;
 
-    private Long groupId;
     private Long inaccessibleGroupId;
     private Long existingTemplateId;
 
     @Before
     public void beforeMethod() throws Exception {
-        users.createUser(evaluator(EVALUATOR_LOGIN));
-        users.createUser(teacher("teacher@umcs.com.pl"));
-
-        users.loginAs("teacher@umcs.com.pl");
-        groupId = surveys.createGroup(group("test group").withEvaluator(EVALUATOR_LOGIN));
+        users.loginAsTeacher();
+        surveys.createGroup(group("test group").withEvaluator(EVALUATOR_EMAIL));
         inaccessibleGroupId = surveys.createGroup(group("inaccessible group"));
 
-        users.loginAs(EVALUATOR_LOGIN);
+        users.loginAsEvaluator();
         existingTemplateId = surveys.createTemplate(template("a test template").withQuestions(
                 /* multiple choice question (nr 1) */
                 multiChoiceQuestion("multi-choice question").withAnswers(answer("answer 1"), answer("answer 2"),
@@ -161,7 +151,7 @@ public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould {
     public void notBeAbleToChangeTheNameWhenAnotherTemplateWithSuchNameExists() throws Exception {
         final String existingTemplateName = "some template name";
         // given
-        users.loginAs(EVALUATOR_LOGIN);
+        users.loginAs(EVALUATOR_EMAIL);
         surveys.createTemplate(template(existingTemplateName).withQuestions(openQuestion("some open question")));
 
         CreateSurveyTemplateCommand command = new CreateSurveyTemplateCommand();
@@ -173,13 +163,6 @@ public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould {
 
     private void assertTemplateName(SurveyTemplateDto template, String expectedName) {
         assertEquals(template.getName(), expectedName);
-    }
-
-    private static PublishSurveyTemplateCommand publishCmd(Long surveyTemplateId, Long groupId) {
-        PublishSurveyTemplateCommand command = new PublishSurveyTemplateCommand();
-        command.getSurveyTemplateIds().add(surveyTemplateId.intValue());
-        command.setGroupId(groupId);
-        return command;
     }
 
     private void assertQuestion(SurveyTemplateDto template, int i, QuestionTypeEnum type, String questionText) {

@@ -1,16 +1,11 @@
 package org.adaptiveplatform.surveys.service;
 
-import java.util.Set;
-
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.UserAccount;
-import org.adaptiveplatform.surveys.domain.UserPrivilege;
 import org.adaptiveplatform.surveys.exception.security.EmailAddressAlreadyRegisteredException;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Sets;
 
 @Service("userAccountFactory")
 public class UserAccountFactory {

@@ -1,18 +1,19 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.TEACHER_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
 import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
 import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -54,6 +55,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class StudentGroupsSystemTest {
 
+    private static final String ANOTHER_EVALUATOR_EMAIL = "anotherEvaluator@adapt.com";
+    private static final String ANOTHER_TEACHER_EMAIL = "anotherTeacher@adapt.com";
     public static final String EXISTING_GROUP_NAME = "some group";
     @Resource
     private StudentGroupFacade groupFacade;
@@ -68,19 +71,16 @@ public class StudentGroupsSystemTest {
 
     @Before
     public void initializeData() throws Exception {
-        users.createUser(student("student@adapt.com"));
-        users.createUser(teacher("teacher@adapt.com"));
-        users.createUser(teacher("bad_teacher@adapt.com"));
-        users.createUser(evaluator("evaluator@adapt.com"));
-        users.createUser(evaluator("evaluator2@adapt.com"));
+        users.createUser(teacher(ANOTHER_TEACHER_EMAIL));
+        users.createUser(evaluator(ANOTHER_EVALUATOR_EMAIL));
 
-        users.loginAs("teacher@adapt.com");
-        surveys.createGroup(group("some group").withEvaluator("evaluator@adapt.com").withStudent("student@adapt.com"));
+        users.loginAsTeacher();
+        surveys.createGroup(group("some group").withEvaluator(EVALUATOR_EMAIL).withStudent(STUDENT_EMAIL));
         surveys.createGroup(group("another group").openForSignup());
-        Long groupWithResearch = surveys.createGroup(group("yet another group").withEvaluator("evaluator@adapt.com")
-                .withStudent("student@adapt.com").openForSignup());
+        Long groupWithResearch = surveys.createGroup(group("yet another group").withEvaluator(EVALUATOR_EMAIL)
+                .withStudent(STUDENT_EMAIL).openForSignup());
 
-        users.loginAs("evaluator@adapt.com");
+        users.loginAsEvaluator();
         Long templateId = surveys.createTemplate(template("not published survey").withQuestions(
                 openQuestion("qwestion")));
         surveys.createResearch(research().withSurvey(templateId).forGroup(groupWithResearch));
@@ -88,7 +88,7 @@ public class StudentGroupsSystemTest {
 
     @Test
     public void shouldTeacherCreateUserGroup() throws Exception {
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
         Long groupId = groupFacade.createGroup(new CreateStudentGroupCommand("test group"));
         // then
@@ -103,7 +103,7 @@ public class StudentGroupsSystemTest {
     @Test(expected = AccessDeniedException.class)
     public void cantAllowNonTeacherToCreateGroup() throws Exception {
         // given
-        users.loginAs("evaluator@adapt.com");
+        users.loginAsEvaluator();
         // when
         groupFacade.createGroup(new CreateStudentGroupCommand("test group"));
         // then - exception should be thrown
@@ -112,13 +112,13 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldAddGroupMembersUponCreation() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
         CreateStudentGroupCommand createGroupCmd = new CreateStudentGroupCommand("test group");
         createGroupCmd.getAddMemberCommands().add(
-                new AddGroupMemberCommand("student@adapt.com", GroupRoleEnum.STUDENT.name()));
+                new AddGroupMemberCommand(STUDENT_EMAIL, GroupRoleEnum.STUDENT.name()));
         createGroupCmd.getAddMemberCommands().add(
-                new AddGroupMemberCommand("evaluator@adapt.com", GroupRoleEnum.EVALUATOR.name()));
+                new AddGroupMemberCommand(EVALUATOR_EMAIL, GroupRoleEnum.EVALUATOR.name()));
 
         Long groupId = groupFacade.createGroup(createGroupCmd);
         // then
@@ -131,12 +131,10 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldRemoveGroupMembers() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
-        ChangeGroupMembersCommand cmd = removeMemberCmd(1L, "student@adapt.com");
-
+        ChangeGroupMembersCommand cmd = removeMemberCmd(1L, STUDENT_EMAIL);
         groupFacade.changeGroupMembers(cmd);
-
         // then
         StudentGroupDto group = groupDao.getGroup(1L);
         assertThat(group.getStudents()).isEmpty();
@@ -145,10 +143,9 @@ public class StudentGroupsSystemTest {
     @Test(expected = CantRemoveSelfFromGroupException.class)
     public void cantTeacherRemoveHimselfFromTheGroup() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
-        groupFacade.changeGroupMembers(removeMemberCmd(1L, "teacher@adapt.com"));
-
+        groupFacade.changeGroupMembers(removeMemberCmd(1L, TEACHER_EMAIL));
         // then
         fail("Exception should have been thrown");
     }
@@ -156,15 +153,12 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldAddGroupMembersAfterCreation() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         Long groupId = groupFacade.createGroup(new CreateStudentGroupCommand("test group"));
         // when
         ChangeGroupMembersCommand cmd = changeCmd(groupId);
-
-        cmd.getAddMembers().add(new AddGroupMemberCommand("student@adapt.com", GroupRoleEnum.STUDENT.name()));
-
+        cmd.getAddMembers().add(new AddGroupMemberCommand(STUDENT_EMAIL, GroupRoleEnum.STUDENT.name()));
         groupFacade.changeGroupMembers(cmd);
-
         // then
         StudentGroupDto group = groupDao.getGroup(1L);
         assertThat(group.getStudents()).hasSize(1);
@@ -173,7 +167,7 @@ public class StudentGroupsSystemTest {
     @Test(expected = NoSuchGroupException.class)
     public void shouldAllowOnlyGroupAdminsToSeeItsDetails() throws Exception {
         // given
-        users.loginAs("bad_teacher@adapt.com");
+        users.loginAs(ANOTHER_TEACHER_EMAIL);
         // when
         groupDao.getGroup(1L);
         // then - exception should be thrown
@@ -182,7 +176,7 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldEvaluatorReadHisGroups() throws Exception {
         // given
-        users.loginAs("evaluator@adapt.com");
+        users.loginAs(EVALUATOR_EMAIL);
         // when
         List<StudentGroupDto> groups = groupDao.query(evaluatorQuery());
         // then
@@ -192,7 +186,7 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldTeacherReadHisGroups() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
         List<StudentGroupDto> groups = groupDao.query(adminQuery());
         // then
@@ -202,7 +196,7 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldReadGroupsSortedByName() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
         List<StudentGroupDto> groups = groupDao.query(adminQuery());
         // then
@@ -213,20 +207,20 @@ public class StudentGroupsSystemTest {
 
     @Test
     public void cantAllowTeacherToReadGroupsHeIsNotAssignedTo() throws Exception {
-        users.loginAs("bad_teacher@adapt.com");
+        users.loginAs(ANOTHER_TEACHER_EMAIL);
         assertThat(groupDao.query(adminQuery())).isEmpty();
     }
 
     @Test
     public void cantAllowEvaluatorToReadGroupsHeIsNotAssignedTo() throws Exception {
-        users.loginAs("evaluator2@adapt.com");
+        users.loginAs(ANOTHER_EVALUATOR_EMAIL);
         assertThat(groupDao.query(evaluatorQuery())).isEmpty();
     }
 
     @Test
     public void shouldTeacherReadGroupsUnanonymized() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
 
         // when
         StudentGroupDto group = groupDao.getGroup(1L);
@@ -240,7 +234,7 @@ public class StudentGroupsSystemTest {
     @Test(expected = CantQueryGroupsAsEvaluatorException.class)
     public void cantTeacherReadGroupsAsEvaluator() throws Exception {
         // given/
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
         groupDao.query(evaluatorQuery());
         // then - exception should be thrown
@@ -249,7 +243,7 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldAdminRemoveGroupWithoutSurveyTemplatesAssigned() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
         groupFacade.removeGroup(2L);
         // then
@@ -260,7 +254,7 @@ public class StudentGroupsSystemTest {
     @Test(expected = DeletingGroupWithPublishedTemplatesException.class)
     public void cantRemoveGroupWithSurveyTemplatesAssigned() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         // when
         groupFacade.removeGroup(3L);
         // then - exception should be thrown
@@ -268,7 +262,7 @@ public class StudentGroupsSystemTest {
 
     @Test(expected = PublishedSurveyTemplateAlreadyFilledException.class)
     public void cantRemoveTemplateFromGroupIfItHasBeenFilledByStudents() throws Exception {
-        authenticateAsStudent();
+        users.loginAsStudent();
         surveyFacade.startFilling(1L);
         // when
         groupFacade.removeSurveyTemplate(1L);
@@ -278,7 +272,7 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldQueryGroupsByName() throws Exception {
         // given
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         StudentGroupQuery query = adminQuery();
         query.setGroupNamePattern("anot");
         // when
@@ -289,14 +283,14 @@ public class StudentGroupsSystemTest {
 
     @Test(expected = ConstraintViolationException.class)
     public void cantCreateGroupWithPureWhitespaceName() throws Exception {
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         groupFacade.createGroup(new CreateStudentGroupCommand(" \n \t  "));
         // then - exception should be thrown
     }
 
     @Test(expected = GroupAlreadyExistsException.class)
     public void cantTeacherCreateGroupWithSameNameAsExistingOne() throws Exception {
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         groupFacade.createGroup(new CreateStudentGroupCommand(EXISTING_GROUP_NAME));
         // then - exception should be thrown
     }
@@ -305,13 +299,13 @@ public class StudentGroupsSystemTest {
     public void shouldBeAbleToOpenGroupForStudentToSignUpThemselves() throws Exception {
         // given
         final long groupId = 2L;
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         groupFacade.setGroupSignUpMode(new SetGroupSignUpModeCommand(groupId, true));
         // when
-        authenticateAsStudent();
+        users.loginAsStudent();
         groupFacade.signUpAsStudent(new GroupSignUpCommand(groupId));
         // then
-        authenticatedAsTeacher();
+        users.loginAsTeacher();
         final StudentGroupDto group = groupDao.getGroup(groupId);
         assertTrue(group.getStudentsCanSignUp());
         assertThat(group.getStudents()).hasSize(1);
@@ -320,29 +314,13 @@ public class StudentGroupsSystemTest {
     @Test
     public void shouldListGroupsStudentsCanJoinOnTheirOwn() throws Exception {
         // given
-        authenticateAsStudent();
+        users.loginAsStudent();
         assertThat(groupDao.getAvailableGroups()).hasSize(1);
         groupFacade.signUpAsStudent(new GroupSignUpCommand(2L));
         // when
         final List<StudentGroupDto> groups = groupDao.getAvailableGroups();
         // then
         assertThat(groups).isEmpty();
-    }
-
-    private void authenticatedAsTeacher() {
-        users.loginAs("teacher@adapt.com");
-    }
-
-    private void authenticateAsStudent() {
-        users.loginAs("student@adapt.com");
-    }
-
-    private static <T> T first(Collection<T> collection) {
-        if (collection.isEmpty()) {
-            return null;
-        } else {
-            return collection.iterator().next();
-        }
     }
 
     private static StudentGroupQuery adminQuery() {

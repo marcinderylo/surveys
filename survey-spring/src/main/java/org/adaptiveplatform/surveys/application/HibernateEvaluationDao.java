@@ -17,6 +17,7 @@ import org.adaptiveplatform.surveys.dto.FilledSurveyDto;
 import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.ResearchDto;
 import org.adaptiveplatform.surveys.dto.ResearchesQuery;
+import org.adaptiveplatform.surveys.dto.StudentGroupDto;
 import org.adaptiveplatform.surveys.dto.SurveyQuestionDto;
 import org.adaptiveplatform.surveys.exception.NoSuchResearchException;
 import org.adaptiveplatform.surveys.service.EvaluationActivityDao;
@@ -35,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Maps;
-import org.adaptiveplatform.surveys.dto.StudentGroupDto;
 
 @Service("evaluationDao")
 @RemotingDestination

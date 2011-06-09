@@ -1,13 +1,12 @@
 package org.adaptiveplatform.surveys.acceptance;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -56,23 +55,19 @@ public class EvaluationAcceptanceTest {
     private Long researchId, filledSurveyId;
 
     @Before
-    public void init() {
-        users.createUser(teacher("teacher@adapt.com").withPassword("teacher"));
-        users.createUser(evaluator("eval1@adapt.com").withPassword("eval"));
-        users.createUser(student("student@adapt.com").withPassword("student"));
+    public void setupInitialData() {
+        users.loginAsTeacher();
+        Long groupId = surveys.createGroup(group("some test group").withEvaluator(EVALUATOR_EMAIL).withStudent(
+                STUDENT_EMAIL));
 
-        users.loginAs("teacher@adapt.com", "teacher");
-        Long groupId = surveys.createGroup(group("some test group").withEvaluator("eval1@adapt.com").withStudent(
-                "student@adapt.com"));
-
-        users.loginAs("eval1@adapt.com", "eval");
+        users.loginAsEvaluator();
         Long template1 = surveys.createTemplate(template("template1").withQuestions(openQuestion("question 1.1")));
         researchId = surveys.createResearch(research().withSurvey(template1).forGroup(groupId));
 
-        users.loginAs("student@adapt.com", "student");
+        users.loginAsStudent();
         filledSurveyId = surveys.fillAndSubmitSurvey(template1, groupId);
 
-        users.loginAs("eval1@adapt.com", "eval");
+        users.loginAsEvaluator();
     }
 
     @Test

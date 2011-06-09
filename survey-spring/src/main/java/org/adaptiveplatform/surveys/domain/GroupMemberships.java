@@ -1,17 +1,19 @@
 package org.adaptiveplatform.surveys.domain;
 
-import com.google.common.collect.Sets;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.hibernate.annotations.CollectionOfElements;
+
+import com.google.common.collect.Sets;
 
 @Embeddable
 public class GroupMemberships implements Serializable {

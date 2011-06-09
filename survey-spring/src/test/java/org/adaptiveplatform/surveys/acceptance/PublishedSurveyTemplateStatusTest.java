@@ -1,13 +1,12 @@
 package org.adaptiveplatform.surveys.acceptance;
 
 import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -48,22 +47,18 @@ public class PublishedSurveyTemplateStatusTest {
 
     @Before
     public void havingTwoPublicationsWithSameGroupAndSurveyTemplate() {
-        users.createUser(student("john@doe.com"));
-        users.createUser(evaluator("keyser@soze.com"));
-        users.createUser(teacher("AnApacheWithATomahawk@foo.com"));
+        users.loginAsTeacher();
+        Long groupId = surveys.createGroup(group("test group").withStudent(STUDENT_EMAIL)
+                .withEvaluator(EVALUATOR_EMAIL));
 
-        users.loginAs("AnApacheWithATomahawk@foo.com");
-        Long groupId = surveys.createGroup(group("test group").withStudent("john@doe.com").withEvaluator(
-                "keyser@soze.com"));
-
-        users.loginAs("keyser@soze.com");
+        users.loginAsEvaluator();
         Long templateId = surveys.createTemplate(template("some survey").withQuestions(
                 multiChoiceQuestion("another not published question").withAnswers(answer("dobrze"))));
 
         filledPublicationId = surveys.createResearch(research().withSurvey(templateId).forGroup(groupId));
         notFilledPublicationId = surveys.createResearch(research().withSurvey(templateId).forGroup(groupId));
 
-        users.loginAs("john@doe.com");
+        users.loginAsStudent();
         surveys.fillAndSubmitSurvey(filledPublicationId, groupId);
     }
 

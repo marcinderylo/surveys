@@ -1,7 +1,5 @@
 package org.adaptiveplatform.surveys.application;
 
-import org.adaptiveplatform.surveys.dto.GroupSignUpCommand;
-import org.adaptiveplatform.surveys.dto.SetGroupSignUpModeCommand;
 import static org.adaptiveplatform.surveys.utils.Collections42.asLongs;
 import static org.adaptiveplatform.surveys.utils.DateTimeUtils.asDateTime;
 
@@ -20,7 +18,9 @@ import org.adaptiveplatform.surveys.dto.AddGroupMemberCommand;
 import org.adaptiveplatform.surveys.dto.ChangeGroupMembersCommand;
 import org.adaptiveplatform.surveys.dto.ChangeSurveyPublicationCommand;
 import org.adaptiveplatform.surveys.dto.CreateStudentGroupCommand;
+import org.adaptiveplatform.surveys.dto.GroupSignUpCommand;
 import org.adaptiveplatform.surveys.dto.PublishSurveyTemplateCommand;
+import org.adaptiveplatform.surveys.dto.SetGroupSignUpModeCommand;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.CantRemoveSelfFromGroupException;
 import org.adaptiveplatform.surveys.exception.DeletingGroupWithPublishedTemplatesException;

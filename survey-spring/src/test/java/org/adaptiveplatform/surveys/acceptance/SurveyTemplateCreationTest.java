@@ -5,7 +5,6 @@ import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQ
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.singleChoiceQuestion;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -14,7 +13,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.application.SurveyDao;
-import org.adaptiveplatform.surveys.application.SurveyFacade;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
 import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
 import org.adaptiveplatform.surveys.dto.SurveyTemplateDto;
@@ -36,9 +34,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class SurveyTemplateCreationTest {
 
-    public static final String EVALUATOR_LOGIN = "eval@eval.com";
-    @Resource
-    private SurveyFacade facade;
     @Resource
     private SurveyDao dao;
     @Resource
@@ -48,8 +43,7 @@ public class SurveyTemplateCreationTest {
 
     @Before
     public void beforeMethod() throws Exception {
-        users.createUser(evaluator(EVALUATOR_LOGIN).withPassword("s3cr3t"));
-        users.loginAs(EVALUATOR_LOGIN, "s3cr3t");
+        users.loginAsEvaluator();
     }
 
     @Test

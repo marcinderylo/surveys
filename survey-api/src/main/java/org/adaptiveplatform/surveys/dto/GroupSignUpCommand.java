@@ -1,6 +1,7 @@
 package org.adaptiveplatform.surveys.dto;
 
 import java.io.Serializable;
+
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 
 @RemoteObject

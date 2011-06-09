@@ -1,13 +1,12 @@
 package org.adaptiveplatform.surveys.acceptance;
 
 import static java.util.Arrays.asList;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.HashSet;
@@ -40,10 +39,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class PublishedSurveysQueryingTest {
 
-    private static final String TEACHER_LOGIN = "teacher@adapt.com";
-    private static final String EVALUATOR_LOGIN = "eval@eval.com";
-    private static final String STUDENT_LOGIN = "student@eval.com";
-
     @Resource
     private SurveyDao dao;
     @Resource
@@ -51,92 +46,78 @@ public class PublishedSurveysQueryingTest {
     @Resource
     private CoreFixtureBuilder users;
 
-    private Long[] groupIds;
-    private Long[] templateIds;
+    private static final int RESEARCHES_COUNT = 3;
+    private Long[] groupIds = new Long[RESEARCHES_COUNT];
+    private Long[] templateIds = new Long[RESEARCHES_COUNT];
     private Set<Long> readTemplateIds = new HashSet<Long>();
 
     @Before
     public void beforeEveryMethodExecutes() throws Exception {
-        users.createUser(evaluator(EVALUATOR_LOGIN));
-        users.createUser(student(STUDENT_LOGIN));
-        users.createUser(teacher(TEACHER_LOGIN));
+        for (int i = 0; i < RESEARCHES_COUNT; i++) {
+            users.loginAsTeacher();
+            groupIds[i] = surveys.createGroup(group("group" + i).withEvaluator(EVALUATOR_EMAIL).withStudent(
+                    STUDENT_EMAIL));
 
-        templateIds = new Long[3];
-        groupIds = new Long[3];
-        for (int i = 0; i < 3; i++) {
-            users.loginAs(TEACHER_LOGIN);
-            groupIds[i] = surveys.createGroup(group("group" + i).withEvaluator(EVALUATOR_LOGIN).withStudent(
-                    STUDENT_LOGIN));
-
-            users.loginAs(EVALUATOR_LOGIN);
+            users.loginAsEvaluator();
             templateIds[i] = surveys.createTemplate(template("template" + i).withQuestions(openQuestion("question")));
-
             surveys.createResearch(research().withSurvey(templateIds[i]).forGroup(groupIds[i]));
         }
     }
 
     @Test
     public void evaluatorShouldBeAbleToQueryPublishedTemplatesFromASingleGroup() throws Exception {
-        givenEvaluatorIsLoggedIn();
+        users.loginAsEvaluator();
         whenQueriesFollowingGroupsForPublishedTemplatesAsEvaluator(groupIds[0]);
         thenFollowingPublishedTemplatesAreRead(templateIds[0]);
     }
 
     @Test
     public void evaluatorShouldBeAbleToQueryPublishedTemplatesFromMultipleGroups() throws Exception {
-        givenEvaluatorIsLoggedIn();
+        users.loginAsEvaluator();
         whenQueriesFollowingGroupsForPublishedTemplatesAsEvaluator(groupIds[0], groupIds[1]);
         thenFollowingPublishedTemplatesAreRead(templateIds[0], templateIds[1]);
     }
 
     @Test
     public void evaluatorShouldBeAbleToQueryPublishedTemplatesFromAllHisGroups() throws Exception {
-        givenEvaluatorIsLoggedIn();
+        users.loginAsEvaluator();
         whenQueriesAllGroupsForPublishedTemplatesAsEvaluator();
         thenFollowingPublishedTemplatesAreRead(templateIds);
     }
 
     @Test
     public void studentShouldBeAbleToQueryPublishedTemplatesFromASingleGroup() throws Exception {
-        givenStudentIsLoggedIn();
+        users.loginAsStudent();
         whenQueriesFollowingGroupsForPublishedTemplatesAsStudent(groupIds[0]);
         thenFollowingPublishedTemplatesAreRead(templateIds[0]);
     }
 
     @Test
     public void studentShouldBeAbleToQueryPublishedTemplatesFromMultipleGroups() throws Exception {
-        givenStudentIsLoggedIn();
+        users.loginAsStudent();
         whenQueriesFollowingGroupsForPublishedTemplatesAsStudent(groupIds[1], groupIds[2]);
         thenFollowingPublishedTemplatesAreRead(templateIds[1], templateIds[2]);
     }
 
     @Test
     public void studentShouldBeAbleToQueryPublishedTemplatesFromAllGroups() throws Exception {
-        givenStudentIsLoggedIn();
+        users.loginAsStudent();
         whenQueriesAllGroupsForPublishedTemplatesAsStudent();
         thenFollowingPublishedTemplatesAreRead(templateIds);
     }
 
     @Test
     public void studentShouldBeAbleToQueryPublishedTemplatesByGroupName() throws Exception {
-        givenStudentIsLoggedIn();
+        users.loginAsStudent();
         whenQueriesPublishedTemplatesAsStudentWithKeyword("up2");
         thenFollowingPublishedTemplatesAreRead(templateIds[2]);
     }
 
     @Test
     public void studentShouldBeAbleToQueryPublishedTemplatesByTemplateName() throws Exception {
-        givenStudentIsLoggedIn();
+        users.loginAsStudent();
         whenQueriesPublishedTemplatesAsStudentWithKeyword("te1");
         thenFollowingPublishedTemplatesAreRead(templateIds[1]);
-    }
-
-    private void givenEvaluatorIsLoggedIn() {
-        users.loginAs(EVALUATOR_LOGIN);
-    }
-
-    private void givenStudentIsLoggedIn() {
-        users.loginAs(STUDENT_LOGIN);
     }
 
     private void whenQueriesFollowingGroupsForPublishedTemplatesAsEvaluator(Long... groupIds) {

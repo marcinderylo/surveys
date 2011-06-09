@@ -1,13 +1,14 @@
 package org.adaptiveplatform.surveys.domain;
 
-import org.adaptiveplatform.surveys.exception.OneOfSelectedAnswersDisallowsOthersException;
-import org.adaptiveplatform.surveys.exception.SingleChoiceQuestionAnswersMustDisallowEachOtherException;
-import org.adaptiveplatform.surveys.exception.AtLeastOneAnswerRequiredException;
-import org.adaptiveplatform.surveys.exception.MultipleAnswersForSingleChoiceQuestionException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.adaptiveplatform.surveys.dto.QuestionTypeEnum;
+import org.adaptiveplatform.surveys.exception.AtLeastOneAnswerRequiredException;
+import org.adaptiveplatform.surveys.exception.MultipleAnswersForSingleChoiceQuestionException;
+import org.adaptiveplatform.surveys.exception.OneOfSelectedAnswersDisallowsOthersException;
 import org.adaptiveplatform.surveys.exception.OpenQuestionHaveNoAnswersException;
+import org.adaptiveplatform.surveys.exception.SingleChoiceQuestionAnswersMustDisallowEachOtherException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 

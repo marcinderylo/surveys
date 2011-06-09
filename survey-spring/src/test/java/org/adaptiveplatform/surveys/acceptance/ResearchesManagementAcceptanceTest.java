@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ResearchesManagementAcceptanceTest {
 
+    private static final String ANOTHER_EVALUATOR_EMAIL = "anothereval@gmail.com";
     @Resource
     private CoreFixtureBuilder users;
     @Resource
@@ -57,11 +58,10 @@ public class ResearchesManagementAcceptanceTest {
      * TODO researches should be created for groups.
      */
     @Before
-    public void init() throws Exception {
-        users.createUser(evaluator("eval1@adapt.com").withPassword("first"));
-        users.createUser(evaluator("eval2@adapt.com").withPassword("second"));
+    public void setupInitialData() throws Exception {
+        users.createUser(evaluator(ANOTHER_EVALUATOR_EMAIL));
 
-        users.loginAs("eval1@adapt.com", "first");
+        users.loginAsEvaluator();
         template1Id = surveys.createTemplate(template("template1").withQuestions(openQuestion("question 1.1")));
         research1Id = surveys.createResearch(research().withName("Test research").withSurvey(template1Id));
 
@@ -70,7 +70,7 @@ public class ResearchesManagementAcceptanceTest {
         // sense
         Thread.sleep(2);
 
-        users.loginAs("eval2@adapt.com", "second");
+        users.loginAs(ANOTHER_EVALUATOR_EMAIL);
         template2Id = surveys.createTemplate(template("template2").withQuestions(openQuestion("question 2.1")));
         Thread.sleep(2);
         template3Id = surveys.createTemplate(template("template3").withQuestions(openQuestion("question 3.1")));
@@ -81,7 +81,7 @@ public class ResearchesManagementAcceptanceTest {
 
     @Test
     public void shouldFindResearchesByName() throws Exception {
-        users.loginAs("eval1@adapt.com", "first");
+        users.loginAsEvaluator();
         // when
         whenQueryingResearchesHavingNameLike("t res");
         // then
@@ -118,7 +118,7 @@ public class ResearchesManagementAcceptanceTest {
 
     @Test
     public void shouldGetResearchWithDetailsById() throws Exception {
-        users.loginAs("eval1@adapt.com", "first");
+        users.loginAsEvaluator();
         // when
         whenReadingSpecificResearch(research1Id);
         // then
@@ -133,7 +133,7 @@ public class ResearchesManagementAcceptanceTest {
 
     @Test(expected = NoSuchResearchException.class)
     public void shouldNotAllowGettingResearchesOfOtherUsers() throws Exception {
-        users.loginAs("eval1@adapt.com", "first");
+        users.loginAsEvaluator();
         // when
         whenReadingSpecificResearch(research3Id);
         // then - exception should be thrown

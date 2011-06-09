@@ -1,7 +1,9 @@
 package org.adaptiveplatform.surveys.dto;
 
 import java.io.Serializable;
+
 import javax.validation.constraints.NotNull;
+
 import org.adaptiveplatform.adapt.commons.validation.constraints.ValidId;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 

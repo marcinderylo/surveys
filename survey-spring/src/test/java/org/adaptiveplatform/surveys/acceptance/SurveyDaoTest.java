@@ -1,6 +1,8 @@
 package org.adaptiveplatform.surveys.acceptance;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
@@ -40,6 +42,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class SurveyDaoTest {
 
+    private static final String ANOTHER_EVALUATOR_EMAIL = "anotherEvaluator@ada.pt";
+    private static final String ANOTHER_STUDENT_EMAIL = "tom@foo.com";
+
     @Resource
     private SurveyDao dao;
     @Resource
@@ -55,17 +60,14 @@ public class SurveyDaoTest {
 
     @Before
     public void beforeMethod() throws Exception {
-        users.createUser(student("john@doe.com"));
-        users.createUser(student("tom@foo.com"));
-        users.createUser(evaluator("evaluator@adapt.com"));
-        users.createUser(evaluator("anotherEvaluator@ada.pt"));
+        users.createUser(student(ANOTHER_STUDENT_EMAIL));
+        users.createUser(evaluator(ANOTHER_EVALUATOR_EMAIL));
 
-        groupId = surveys.createGroup(group("test group").withEvaluator("evaluator@adapt.com").withStudent(
-                "john@doe.com"));
-        anotherGroupId = surveys.createGroup(group("another group").withStudent("tom@foo.com").withEvaluator(
-                "evaluator@adapt.com"));
+        groupId = surveys.createGroup(group("test group").withEvaluator(EVALUATOR_EMAIL).withStudent(STUDENT_EMAIL));
+        anotherGroupId = surveys.createGroup(group("another group").withStudent(ANOTHER_STUDENT_EMAIL).withEvaluator(
+                EVALUATOR_EMAIL));
 
-        users.loginAs("evaluator@adapt.com");
+        users.loginAs(EVALUATOR_EMAIL);
         filledTemplateId = surveys.createTemplate(template("sample survey").withDescription("test survey template")
                 .withQuestions(openQuestion("open")));
         notFilledTemplateId = surveys.createTemplate(template("another survey").withQuestions(openQuestion("open")));
@@ -75,14 +77,14 @@ public class SurveyDaoTest {
         surveys.createResearch(research().withSurvey(notFilledTemplateId).forGroup(groupId));
         surveys.createResearch(research().withSurvey(filledTemplateId).forGroup(anotherGroupId));
 
-        users.loginAs("john@doe.com");
+        users.loginAs(STUDENT_EMAIL);
         filledSurveyId = surveys.fillAndSubmitSurvey(filledTemplateId, groupId);
     }
 
     @Test
     public void shouldStudentReadHisFilledSurvey() throws Exception {
         // given
-        users.loginAs("john@doe.com");
+        users.loginAsStudent();
         // when
         final FilledSurveyDto survey = dao.getSurvey(filledSurveyId);
         // then
@@ -92,7 +94,7 @@ public class SurveyDaoTest {
     @Test
     public void shouldEvaluatorReadFilledSurveyForHisPublication() throws Exception {
         // given
-        users.loginAs("evaluator@adapt.com");
+        users.loginAsEvaluator();
         // when
         final FilledSurveyDto survey = dao.getSurvey(filledSurveyId);
         // then
@@ -102,7 +104,7 @@ public class SurveyDaoTest {
     @Test(expected = FilledSurveyDoesNotExistException.class)
     public void cantReadFilledSurveyIfNotOwnerNorEvaluatorWhoCreatedThePublication() throws Exception {
         // given
-        users.loginAs("anotherEvaluator@ada.pt");
+        users.loginAs(ANOTHER_EVALUATOR_EMAIL);
         // when
         dao.getSurvey(filledSurveyId);
         // then - exception should be thrown
@@ -115,7 +117,7 @@ public class SurveyDaoTest {
         query.setTemplateId(filledTemplateId);
         query.setGroupId(groupId);
 
-        users.loginAs("evaluator@adapt.com");
+        users.loginAsEvaluator();
         // when
         List<FilledSurveyDto> surveys = dao.querySurveys(query);
 
@@ -125,7 +127,7 @@ public class SurveyDaoTest {
 
     @Test
     public void surveyShouldBeAvailableForStudent() throws Exception {
-        users.loginAs("john@doe.com");
+        users.loginAsStudent();
         // when
         List<PublishedSurveyTemplateDto> surveys = dao.queryPublishedTemplates(new PublishedSurveyTemplateQuery(
                 GroupRoleEnum.STUDENT));
@@ -137,7 +139,7 @@ public class SurveyDaoTest {
     @Test
     public void shouldStudentSeeOnlyPublicationsFromHisGroups() throws Exception {
         // given
-        users.loginAs("john@doe.com");
+        users.loginAsStudent();
         // when
         List<PublishedSurveyTemplateDto> surveys = dao.queryPublishedTemplates(new PublishedSurveyTemplateQuery(
                 GroupRoleEnum.STUDENT));
@@ -147,7 +149,7 @@ public class SurveyDaoTest {
 
     @Test
     public void shouldStudentSeeStartedButNotYetSubmittedSurveys() throws Exception {
-        users.loginAs("tom@foo.com");
+        users.loginAs(ANOTHER_STUDENT_EMAIL);
         surveys.fillSurvey(filledTemplateId, anotherGroupId);
 
         List<PublishedSurveyTemplateDto> publishedSurveys = dao

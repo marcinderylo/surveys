@@ -6,7 +6,6 @@ import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.domain.UserAccount;
-import org.adaptiveplatform.surveys.domain.UserPrivilege;
 import org.adaptiveplatform.surveys.dto.ChangePasswordCommand;
 import org.adaptiveplatform.surveys.dto.RegisterAccountCommand;
 import org.adaptiveplatform.surveys.dto.UserDto;
@@ -20,8 +19,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
 
 @RemotingDestination
 @Service("userFacade")

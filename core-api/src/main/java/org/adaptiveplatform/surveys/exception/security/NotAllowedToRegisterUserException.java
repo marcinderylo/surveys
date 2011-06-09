@@ -1,6 +1,7 @@
 package org.adaptiveplatform.surveys.exception.security;
 
 import java.io.Serializable;
+
 import org.adaptiveplatform.codegenerator.api.RemoteException;
 import org.adaptiveplatform.surveys.exception.BusinessException;
 

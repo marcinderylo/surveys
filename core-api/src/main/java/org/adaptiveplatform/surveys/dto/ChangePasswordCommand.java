@@ -1,9 +1,10 @@
 package org.adaptiveplatform.surveys.dto;
 
 import java.io.Serializable;
+
+import org.adaptiveplatform.adapt.commons.validation.constraints.NonBlank;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 import org.apache.bval.constraints.Email;
-import org.adaptiveplatform.adapt.commons.validation.constraints.NonBlank;
 
 @RemoteObject
 public class ChangePasswordCommand implements Serializable {

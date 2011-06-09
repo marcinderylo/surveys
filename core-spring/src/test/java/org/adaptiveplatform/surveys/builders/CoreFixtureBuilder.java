@@ -1,5 +1,6 @@
 package org.adaptiveplatform.surveys.builders;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.application.AuthenticationService;
@@ -10,40 +11,62 @@ import org.springframework.stereotype.Service;
 @Service
 public class CoreFixtureBuilder {
 
-	private static final String ADMIN_EMAIL = "adaptserver@gmail.com";
-	private static final String ADMIN_PASSWORD = "adapt2010";
+    public static final String ADMIN_EMAIL = "adaptserver@gmail.com";
+    private static final String ADMIN_PASSWORD = "adapt2010";
+    public static final String STUDENT_EMAIL = "student@gmail.com";
+    public static final String TEACHER_EMAIL = "teacher@gmail.com";
+    public static final String EVALUATOR_EMAIL = "evaluator@gmail.com";
 
-	@Resource
-	private UserFacade facade;
+    @Resource
+    private UserFacade facade;
 
-	@Resource
-	private AuthenticationService authentication;
+    @Resource
+    private AuthenticationService authentication;
 
-	public Long createUser(UserAccountBuilder user) {
-		authentication.logout();
-		RegisterAccountCommand command = user.build();
-		Long userId = facade.registerUser(command);
+    @PostConstruct
+    public void createUsers() {
+        createUser(UserAccountBuilder.student(STUDENT_EMAIL));
+        createUser(UserAccountBuilder.teacher(TEACHER_EMAIL));
+        createUser(UserAccountBuilder.evaluator(EVALUATOR_EMAIL));
+    }
 
-		if (!user.getRoles().isEmpty()) {
-			loginAsAdmin();
-			facade.setUserRoles(command.getEmail(), user.getRoles());
-		}
-		return userId;
-	}
+    public Long createUser(UserAccountBuilder user) {
+        authentication.logout();
+        RegisterAccountCommand command = user.build();
+        Long userId = facade.registerUser(command);
 
-	public void loginAsAdmin() {
-		loginAs(ADMIN_EMAIL, ADMIN_PASSWORD);
-	}
+        if (!user.getRoles().isEmpty()) {
+            loginAsAdmin();
+            facade.setUserRoles(command.getEmail(), user.getRoles());
+        }
+        return userId;
+    }
 
-	public void loginAs(String email) {
-		authentication.login(email, UserAccountBuilder.DEFAULT_PASSWORD);
-	}
+    public void loginAsAdmin() {
+        loginAs(ADMIN_EMAIL, ADMIN_PASSWORD);
+    }
 
-	public void loginAs(String email, String password) {
-		authentication.login(email, password);
-	}
+    public void loginAsTeacher() {
+        loginAs(TEACHER_EMAIL);
+    }
 
-	public void logout() {
-		authentication.logout();
-	}
+    public void loginAsEvaluator() {
+        loginAs(EVALUATOR_EMAIL);
+    }
+
+    public void loginAsStudent() {
+        loginAs(STUDENT_EMAIL);
+    }
+
+    public void loginAs(String email) {
+        authentication.login(email, UserAccountBuilder.DEFAULT_PASSWORD);
+    }
+
+    public void loginAs(String email, String password) {
+        authentication.login(email, password);
+    }
+
+    public void logout() {
+        authentication.logout();
+    }
 }

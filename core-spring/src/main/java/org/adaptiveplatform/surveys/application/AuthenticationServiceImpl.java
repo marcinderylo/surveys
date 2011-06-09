@@ -1,12 +1,10 @@
 package org.adaptiveplatform.surveys.application;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.domain.UserAccount;
-import org.adaptiveplatform.surveys.domain.UserPrivilege;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.security.NoAuthorizationForOtherUserResourceException;
 import org.adaptiveplatform.surveys.exception.security.UserNotAuthenticatedException;

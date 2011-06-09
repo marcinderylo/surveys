@@ -2,7 +2,6 @@ package org.adaptiveplatform.surveys.exception;
 
 import org.adaptiveplatform.codegenerator.api.Param;
 import org.adaptiveplatform.codegenerator.api.RemoteException;
-import org.adaptiveplatform.surveys.exception.BusinessException;
 
 /**
  *

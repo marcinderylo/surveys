@@ -1,14 +1,13 @@
 package org.adaptiveplatform.surveys.acceptance;
 
 import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQuestion;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.singleChoiceQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.List;
@@ -40,8 +39,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class HavingAPublishedSurveyTemplateEvaluatorShould {
 
-    public static final String EVALUATOR_LOGIN = "eval@eval.com";
-
     @Resource
     private SurveysFixtureBuilder surveys;
     @Resource
@@ -56,13 +53,10 @@ public class HavingAPublishedSurveyTemplateEvaluatorShould {
 
     @Before
     public void beforeMethod() throws Exception {
-        users.createUser(evaluator(EVALUATOR_LOGIN).withPassword("eval"));
-        users.createUser(teacher("teacher@umcs.com.pl").withPassword("teacher"));
+        users.loginAsTeacher();
+        groupId = surveys.createGroup(group("test group").withEvaluator(EVALUATOR_EMAIL));
 
-        users.loginAs("teacher@umcs.com.pl", "teacher");
-        groupId = surveys.createGroup(group("test group").withEvaluator(EVALUATOR_LOGIN));
-
-        users.loginAs(EVALUATOR_LOGIN, "eval");
+        users.loginAsEvaluator();
         existingTemplateId = surveys.createTemplate(template("a test template").withQuestions(
                 /* multiple choice question (nr 1) */
                 multiChoiceQuestion("multi-choice question").withAnswers(answer("answer 1"), answer("answer 2"),
@@ -73,7 +67,6 @@ public class HavingAPublishedSurveyTemplateEvaluatorShould {
                         answer("other: ...").requiresComment()),
                 /* open question (nr 3) */
                 openQuestion("open question")));
-
     }
 
     @Test

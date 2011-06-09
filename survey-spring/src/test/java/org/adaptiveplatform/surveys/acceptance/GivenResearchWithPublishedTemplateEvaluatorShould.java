@@ -1,13 +1,12 @@
 package org.adaptiveplatform.surveys.acceptance;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -46,26 +45,21 @@ public class GivenResearchWithPublishedTemplateEvaluatorShould {
 
     @Before
     public void init() throws Exception {
-        users.createUser(teacher("teacher@adapt.com").withPassword("foo"));
-        users.createUser(evaluator("eval1@adapt.com").withPassword("eval"));
-        users.createUser(student("student@adapt.com").withPassword("bar"));
+        users.loginAsTeacher();
+        groupId = surveys.createGroup(group("group").withEvaluator(EVALUATOR_EMAIL).withStudent(STUDENT_EMAIL));
 
-        users.loginAs("teacher@adapt.com", "foo");
-        groupId = surveys.createGroup(group("group").withEvaluator("eval1@adapt.com").withStudent("student@adapt.com"));
-
-        users.loginAs("eval1@adapt.com", "eval");
+        users.loginAsEvaluator();
         templateId = surveys.createTemplate(template("template1").withQuestions(openQuestion("question 1.1")));
-
         researchId = surveys.createResearch(research().forGroup(groupId).withSurvey(templateId));
     }
 
     @Test
     public void beAbleToFetchSubmittedSurveys() throws Exception {
         // given
-        users.loginAs("student@adapt.com", "bar");
+        users.loginAsStudent();
         Long filledSurveyId = surveys.fillAndSubmitSurvey(templateId, groupId);
         // when
-        users.loginAs("eval1@adapt.com", "eval");
+        users.loginAsEvaluator();
         ResearchDto research = dao.get(researchId);
         // then
         assertEquals(filledSurveyId, getOnlyElement(research.getSubmittedSurveys()).getId());
@@ -74,10 +68,10 @@ public class GivenResearchWithPublishedTemplateEvaluatorShould {
     @Test
     public void notBeAbleToFetchStartedButNotYetSubmittedSurveys() throws Exception {
         // given
-        users.loginAs("student@adapt.com", "bar");
+        users.loginAsStudent();
         surveys.fillSurvey(templateId, groupId);
         // when
-        users.loginAs("eval1@adapt.com", "eval");
+        users.loginAsEvaluator();
         final ResearchDto research = dao.get(researchId);
         // then
         assertThat(research.getSubmittedSurveys()).isEmpty();

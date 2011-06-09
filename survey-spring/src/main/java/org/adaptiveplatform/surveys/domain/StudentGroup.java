@@ -3,13 +3,13 @@ package org.adaptiveplatform.surveys.domain;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.ConflictingGroupRoleException;

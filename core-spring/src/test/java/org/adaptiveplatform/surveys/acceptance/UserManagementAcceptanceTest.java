@@ -56,7 +56,7 @@ public class UserManagementAcceptanceTest {
         // given
         userFacade.registerUser(new RegisterAccountCommand("user2", "s3cr3t", "alice@adapt.pl"));
         // when
-        logIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        authenticationService.login(ADMIN_EMAIL, ADMIN_PASSWORD);
         UserDto user = userDao.getByEmail("alice@adapt.pl");
         // then
         assertEquals(user.getName(), "user2");
@@ -69,7 +69,7 @@ public class UserManagementAcceptanceTest {
         fixture.createUser(student("alice@adapt.pl"));
         fixture.createUser(student("bob@adapt.pl"));
         // when
-        logIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        authenticationService.login(ADMIN_EMAIL, ADMIN_PASSWORD);
         UserQuery userQuery = new UserQuery();
         userQuery.setNameContains("ali");
         List<UserDto> results = userDao.query(userQuery);
@@ -82,7 +82,7 @@ public class UserManagementAcceptanceTest {
         // given
         userFacade.registerUser(new RegisterAccountCommand("annon", "s3cr3t", "anonym@anonym.com"));
         // when
-        logIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        authenticationService.login(ADMIN_EMAIL, ADMIN_PASSWORD);
         userFacade.setUserRoles("anonym@anonym.com", Collections.singleton(Role.EVALUATOR));
         // then
         final UserDto user = userDao.getByEmail("anonym@anonym.com");
@@ -94,7 +94,7 @@ public class UserManagementAcceptanceTest {
         // given
         userFacade.registerUser(new RegisterAccountCommand("annon", "s3cr3t", "anonym@anonym.com"));
         // when
-        logIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        authenticationService.login(ADMIN_EMAIL, ADMIN_PASSWORD);
         userFacade.setUserRoles("anonym@anonym.com", Collections.singleton("ROLE_NONEXISTING"));
         // then - exception should have been thrown
     }
@@ -102,13 +102,9 @@ public class UserManagementAcceptanceTest {
     @Test(expected = CantRevokeOwnAdminRights.class)
     public void cantRemoveAdminRoleFromSelf() throws Exception {
         // when
-        logIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        authenticationService.login(ADMIN_EMAIL, ADMIN_PASSWORD);
         userFacade.setUserRoles(ADMIN_EMAIL, Collections.singleton(Role.USER));
         // then - exception should have been thrown
-    }
-
-    private void logIn(String email, String password) {
-        authenticationService.login(email, password);
     }
 
     @Before

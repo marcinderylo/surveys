@@ -5,6 +5,7 @@
 package org.adaptiveplatform.surveys.exception;
 
 import java.io.Serializable;
+
 import org.adaptiveplatform.codegenerator.api.Param;
 import org.adaptiveplatform.codegenerator.api.RemoteException;
 

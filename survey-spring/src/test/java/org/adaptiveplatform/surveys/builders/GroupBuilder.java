@@ -1,6 +1,5 @@
 package org.adaptiveplatform.surveys.builders;
 
-import org.adaptiveplatform.surveys.domain.Role;
 import org.adaptiveplatform.surveys.dto.AddGroupMemberCommand;
 import org.adaptiveplatform.surveys.dto.CreateStudentGroupCommand;
 import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
