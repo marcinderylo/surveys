@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -12,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Immutable;
 
 /**
@@ -33,7 +33,7 @@ public class AnswerEvaluationDto implements Serializable {
     @Column(name = "ANSWERED_QUESTION_ID", insertable = false, updatable = false)
     private Long answeredQuestionId;
     @Immutable
-    @CollectionOfElements(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(name = "ASSIGNED_TAGS", joinColumns = {
         @JoinColumn(name = "ANSWER_EVALUATION_ID")})
     @Column(name = "TAG")

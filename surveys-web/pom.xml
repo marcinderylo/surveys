@@ -12,7 +12,21 @@
 		<version>0.9.1-SNAPSHOT</version>
 	</parent>
 
+	<properties>
+		<netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+		<spring.profiles.active>development</spring.profiles.active>
+		<jasperreports.version>4.0.1</jasperreports.version>
+		<timestamp>${maven.build.timestamp}</timestamp>
+	</properties>
+
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
@@ -239,11 +253,7 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-	<properties>
-		<netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-		<spring.profiles.active>development</spring.profiles.active>
-		<jasperreports.version>4.0.1</jasperreports.version>
-	</properties>
+
 	<profiles>
 		<profile>
 			<id>surveys-dev</id>

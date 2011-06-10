@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +18,6 @@ import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.exception.PublishingTemplateWithoutQuestionsException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
@@ -36,9 +36,7 @@ public class SurveyTemplate implements Serializable {
     private String title;
     @Column(name = "DESCRIPTION")
     private String description;
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.DELETE_ORPHAN,
-        org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "TEMPLATE", nullable = false)
     @IndexColumn(base = 1, name = QuestionTemplate.NUMBER)
     private List<QuestionTemplate> questions;
@@ -96,8 +94,7 @@ public class SurveyTemplate implements Serializable {
 
     @Override
     public String toString() {
-        return "SurveyTemplate [id=" + id + ", title=" + title + ", questions="
-                + questions + "]";
+        return "SurveyTemplate [id=" + id + ", title=" + title + ", questions=" + questions + "]";
     }
 
     public void removeQuestions() {

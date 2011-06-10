@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,7 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.Validate;
-import org.hibernate.annotations.CollectionOfElements;
 
 /**
  *
@@ -34,12 +34,12 @@ public class QuestionEvaluation implements Serializable {
     private QuestionTemplate question;
     @Column(name = "COMMENT", length = 2048)
     private String evaluationComment;
-    @CollectionOfElements
+    @ElementCollection
     @JoinTable(name = "EVALUATOR_DEFINED_TAGS", joinColumns = {
         @JoinColumn(name = "QUESTION_EVALUATION_ID")})
     @Column(name = "TAG")
     private Set<String> definedTags = new HashSet<String>();
-    @CollectionOfElements
+    @ElementCollection
     @JoinTable(name = "SEARCH_PHRASES", joinColumns = {
         @JoinColumn(name = "QUESTION_EVALUATION_ID")})
     @Column(name = "SEARCH_PHRASE")

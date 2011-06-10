@@ -136,10 +136,6 @@ public class HibernateSurveyDao implements SurveyDao {
         return templates;
     }
 
-    private boolean querySpecifiesKeyword(PublishedSurveyTemplateQuery query) {
-        return StringUtils.hasText(query.getKeyword());
-    }
-
     private boolean thereAreGroupsSpecifiedInQuery(PublishedSurveyTemplateQuery query) {
         return query.getGroupIds() != null && !query.getGroupIds().isEmpty();
     }

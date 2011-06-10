@@ -135,14 +135,6 @@ public class StudentGroup implements Serializable {
         return members.getRoleOf(user);
     }
 
-    private void validateNotInGroupYet(UserDto user) {
-        Collection<GroupRole> roles = rolesOf(user);
-        if (!roles.isEmpty()) {
-            throw new ConflictingGroupRoleException(user.getEmail(), name, roles.iterator().next().
-                    asPublicRole());
-        }
-    }
-
     public void removeMember(UserDto user) {
         Collection<GroupRole> roles = rolesOf(user);
         Validate.isTrue(!roles.isEmpty(), "User '" + user.getName()

@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.adaptiveplatform.surveys.application.SurveyDao;
@@ -25,10 +26,11 @@ import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
 import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
 import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateQuery;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-// @Profile("development")
+@Profile("development")
 public class SurveysSampleData {
 
     @Resource
@@ -45,6 +47,7 @@ public class SurveysSampleData {
 
     private RandomStringGenerator random = new RandomStringGenerator();
 
+    @PostConstruct
     public void addSampleSurveysData() {
         registerStudents(10);
         createGroups(6);

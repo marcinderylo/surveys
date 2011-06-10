@@ -6,20 +6,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 
 import org.adaptiveplatform.surveys.dto.UserDto;
-import org.hibernate.annotations.CollectionOfElements;
 
 import com.google.common.collect.Sets;
 
 @Embeddable
 public class GroupMemberships implements Serializable {
 
-    @CollectionOfElements(targetElement = GroupMember.class)
-    @JoinTable(name = "STUDENT_GROUPS_MEMBERS", joinColumns = {@JoinColumn(name = "GROUP_ID")})
+    @ElementCollection(targetClass = GroupMember.class)
+    @JoinTable(name = "STUDENT_GROUPS_MEMBERS", joinColumns = { @JoinColumn(name = "GROUP_ID") })
     private List<GroupMember> members = new ArrayList<GroupMember>();
 
     void addMemberWithRole(UserDto user, GroupRole role) {

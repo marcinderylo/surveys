@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.Validate;
-import org.hibernate.annotations.CollectionOfElements;
 
 /**
  * @author Marcin Deryło
@@ -36,7 +36,7 @@ public class AnswerEvaluation implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ANSWERED_QUESTION_ID")
     private AnsweredQuestion answeredQuestion;
-    @CollectionOfElements(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(name = "ASSIGNED_TAGS", joinColumns = {
         @JoinColumn(name = "ANSWER_EVALUATION_ID")})
     @Column(name = "TAG")

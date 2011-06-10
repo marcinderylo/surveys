@@ -81,7 +81,7 @@ public class UserPrivilegeType implements UserType {
     }
 
     @Override
-    public Class returnedClass() {
+    public Class<?> returnedClass() {
         return UserPrivilege.class;
     }
 

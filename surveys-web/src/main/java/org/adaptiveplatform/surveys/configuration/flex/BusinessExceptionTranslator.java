@@ -59,7 +59,7 @@ public class BusinessExceptionTranslator implements ExceptionTranslator {
 			return "null";
 		}
 		if (param instanceof Collection) {
-			final Collection collectionParam = (Collection) param;
+			final Collection<?> collectionParam = (Collection<?>) param;
 			return encodeCollection(collectionParam);
 		}
 		return encodeSingleValueParameter(param);
@@ -70,7 +70,7 @@ public class BusinessExceptionTranslator implements ExceptionTranslator {
 		return NullSafeToString.INSTANCE.apply(param);
 	}
 
-	private String encodeCollection(Collection collectionParam) {
+	private String encodeCollection(Collection<?> collectionParam) {
 		Collection<String> elementRepresentations = Collections2.transform(
 				collectionParam, new NullSafeToString());
 		return "[" + StringUtils.join(elementRepresentations, ",") + "]";

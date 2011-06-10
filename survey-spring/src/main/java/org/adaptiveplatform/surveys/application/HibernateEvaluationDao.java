@@ -40,7 +40,7 @@ import com.google.common.collect.Maps;
 @Service("evaluationDao")
 @RemotingDestination
 @Transactional(propagation = Propagation.REQUIRED)
-@Secured({Role.EVALUATOR})
+@Secured({ Role.EVALUATOR })
 public class HibernateEvaluationDao implements EvaluationDao {
 
     @Resource
@@ -59,8 +59,7 @@ public class HibernateEvaluationDao implements EvaluationDao {
         return research;
     }
 
-    private ResearchDto getExistingResearch(Long researchId) throws
-            HibernateException {
+    private ResearchDto getExistingResearch(Long researchId) throws HibernateException {
         final Session s = sf.getCurrentSession();
         final Query q = s.getNamedQuery(ResearchDto.Queries.GET_RESEARCH);
         q.setParameter("id", researchId);
@@ -74,20 +73,17 @@ public class HibernateEvaluationDao implements EvaluationDao {
 
     private void includeSubmittedSurveys(ResearchDto research) {
         final Session s = sf.getCurrentSession();
-        List<Long> publishedSurveyIds = s.getNamedQuery(
-                PublishedSurveyTemplateDto.Query.GET_IDS_IN_RESEARCH).
-                setParameter("id", research.getId()).list();
+        List<Long> publishedSurveyIds = s.getNamedQuery(PublishedSurveyTemplateDto.Query.GET_IDS_IN_RESEARCH)
+                .setParameter("id", research.getId()).list();
         if (!publishedSurveyIds.isEmpty()) {
-            List<FilledSurveyDto> filledSurveys = s.getNamedQuery(
-                    FilledSurveyDto.Query.GET_FOR_RESEARCH).setParameterList(
-                    "publishedSurveyTemplates", publishedSurveyIds).list();
+            List<FilledSurveyDto> filledSurveys = s.getNamedQuery(FilledSurveyDto.Query.GET_FOR_RESEARCH)
+                    .setParameterList("publishedSurveyTemplates", publishedSurveyIds).list();
             research.setSubmittedSurveys(filledSurveys);
         }
     }
 
     private void includeAssignedTags(ResearchDto research) {
-        final Criteria criteria =
-                sf.getCurrentSession().createCriteria(AnswerEvaluationDto.class);
+        final Criteria criteria = sf.getCurrentSession().createCriteria(AnswerEvaluationDto.class);
         criteria.add(Restrictions.eq("researchId", research.getId()));
         List<AnswerEvaluationDto> answerEvaluations = criteria.list();
         Map<Long, Set<String>> tags = Maps.newHashMap();
@@ -105,9 +101,9 @@ public class HibernateEvaluationDao implements EvaluationDao {
     }
 
     private void includeGroups(ResearchDto research) {
-        List<String> groupNames = sf.getCurrentSession().getNamedQuery(
-                StudentGroupDto.Query.GET_GROUP_NAMES_IN_RESEARCH).
-                setParameter("researchId", research.getId()).list();
+        List<String> groupNames = sf.getCurrentSession()
+                .getNamedQuery(StudentGroupDto.Query.GET_GROUP_NAMES_IN_RESEARCH)
+                .setParameter("researchId", research.getId()).list();
         research.getGroups().addAll(groupNames);
     }
 
@@ -130,16 +126,14 @@ public class HibernateEvaluationDao implements EvaluationDao {
         return researches;
     }
 
-    private List<ResearchDto> findMatchingResearches(List<Long> usersResearches,
-            ResearchesQuery queryCriteria) {
+    private List<ResearchDto> findMatchingResearches(List<Long> usersResearches, ResearchesQuery queryCriteria) {
         final Session session = sf.getCurrentSession();
         final Criteria criteria = session.createCriteria(ResearchDto.class);
         narrowSearch(criteria, usersResearches, queryCriteria);
         return criteria.list();
     }
 
-    private void narrowSearch(final Criteria criteria,
-            List<Long> usersResearches, ResearchesQuery queryCriteria) {
+    private void narrowSearch(final Criteria criteria, List<Long> usersResearches, ResearchesQuery queryCriteria) {
         narrowToUsersResearches(criteria, usersResearches);
         if (areCriteriaSpecified(queryCriteria)) {
             addNameRestrictionsIfSpecified(queryCriteria, criteria);
@@ -147,8 +141,7 @@ public class HibernateEvaluationDao implements EvaluationDao {
         }
     }
 
-    private void narrowToUsersResearches(final Criteria criteria,
-            List<Long> availableResearches) {
+    private void narrowToUsersResearches(final Criteria criteria, List<Long> availableResearches) {
         criteria.add(Restrictions.in("id", availableResearches));
     }
 
@@ -156,33 +149,27 @@ public class HibernateEvaluationDao implements EvaluationDao {
         return query != null;
     }
 
-    private void addTemplateRestrictionsIfSpecified(ResearchesQuery query,
-            final Criteria criteria) {
+    private void addTemplateRestrictionsIfSpecified(ResearchesQuery query, final Criteria criteria) {
         final Long templateId = query.getSurveyTemplateId();
         if (templateId != null && templateId != 0) {
             criteria.add(Restrictions.eq("templateDto.id", templateId));
         }
     }
 
-    private void addNameRestrictionsIfSpecified(ResearchesQuery query,
-            final Criteria criteria) {
+    private void addNameRestrictionsIfSpecified(ResearchesQuery query, final Criteria criteria) {
         final String researchName = query.getName();
         if (StringUtils.hasText(researchName)) {
-            criteria.add(Restrictions.ilike("name", researchName,
-                    MatchMode.ANYWHERE));
+            criteria.add(Restrictions.ilike("name", researchName, MatchMode.ANYWHERE));
         }
     }
 
     private List<Long> findResearchesOfCurrentUser() {
-        Query q = sf.getCurrentSession().getNamedQuery(
-                Research.Queries.LIST_RESEARCHES);
-        q.setParameter("evaluatorId", authenticationService.getCurrentUser().
-                getId());
+        Query q = sf.getCurrentSession().getNamedQuery(Research.Queries.LIST_RESEARCHES);
+        q.setParameter("evaluatorId", authenticationService.getCurrentUser().getId());
         return q.list();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<EvaluationActivityDto> queryActivities(ActivitiesQuery query) {
         return activityDao.query(query, authenticationService.getCurrentUser());

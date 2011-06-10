@@ -13,13 +13,12 @@
 	<import resource="classpath:/production-deployment-profile.xml" />
 	<import resource="classpath:/development-deployment-profile.xml" />
 
+	<util:properties id="warDeploymentProperties"
+		location="classpath:/war-deployment.properties" />
+
 	<!-- security -->
 	<sec:http entry-point-ref="preAuthenticatedEntryPoint" />
 
 	<bean id="preAuthenticatedEntryPoint"
 		class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
-
-	<!-- FOR DEVELOPER TESTING ONLY -->
-	<bean class="org.adaptiveplatform.surveys.sampledata.SurveysSampleData"
-		init-method="addSampleSurveysData" />
 </beans>

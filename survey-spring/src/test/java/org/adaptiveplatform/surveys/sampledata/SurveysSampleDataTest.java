@@ -2,6 +2,7 @@ package org.adaptiveplatform.surveys.sampledata;
 
 import static com.google.common.collect.Iterables.get;
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -14,17 +15,19 @@ import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
 import org.adaptiveplatform.surveys.dto.ResearchDto;
 import org.adaptiveplatform.surveys.dto.SurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.SurveyTemplateQuery;
-import org.junit.Before;
+import org.adaptiveplatform.surveys.dto.UserDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:/testConfigurationContext.xml")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("development")
 public class SurveysSampleDataTest {
 
     @Resource
@@ -42,17 +45,16 @@ public class SurveysSampleDataTest {
     @Resource
     private EvaluationDao evaluationDao;
 
-    @Before
-    public void beforeEachMethod() throws Exception {
-        sampleData.addSampleSurveysData();
-        users.logout();
-    }
-
     @Test
     public void shouldUsersExist() throws Exception {
         users.loginAsAdmin();
-        userDao.getByEmail("evaluator@gmail.com");
-        userDao.getByEmail("student@gmail.com");
+        assertUserExists("evaluator@gmail.com");
+        assertUserExists("student@gmail.com");
+    }
+
+    private void assertUserExists(String email) {
+        UserDto user = userDao.getByEmail(email);
+        assertEquals(email, user.getEmail());
     }
 
     @Test
