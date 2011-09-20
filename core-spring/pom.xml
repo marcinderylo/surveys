@@ -20,8 +20,8 @@
 				<executions>
 					<execution>
 						<goals>
-							<goal>jar</goal>
-							<goal>test-jar</goal>
+							<goal>jar-no-fork</goal>
+							<goal>test-jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>
