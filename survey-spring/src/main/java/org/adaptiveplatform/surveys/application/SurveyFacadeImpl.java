@@ -65,6 +65,7 @@ public class SurveyFacadeImpl implements SurveyFacade {
     }
 
     @Secured(Role.USER)
+    @Override
     public void submit(Long surveyId) {
         FilledSurvey survey = repository.get(surveyId);
         survey.submit();

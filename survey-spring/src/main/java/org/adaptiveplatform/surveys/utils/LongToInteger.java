@@ -5,7 +5,7 @@ import com.google.common.base.Function;
 /**
  * @author Marcin Deryło
  */
-public final class LongToInteger implements Function<Long, Integer> {
+final class LongToInteger implements Function<Long, Integer> {
 
     public static final LongToInteger INSTANCE =
             new LongToInteger();
