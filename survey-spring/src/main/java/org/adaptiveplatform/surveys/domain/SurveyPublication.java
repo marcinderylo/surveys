@@ -12,9 +12,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.Validate;
+import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
 /**
  *  Represents a survey template assigned to a group, with data about publication
@@ -23,8 +25,8 @@ import org.joda.time.DateTime;
  *  @author Marcin Derylo
  */
 @Entity
-@Table(name = "SURVEY_PUBLICATIONS", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"GROUP_ID", "TEMPLATE_ID"})})
+@Table(name = "SURVEY_PUBLICATIONS", 
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"GROUP_ID", "TEMPLATE_ID"})})
 public class SurveyPublication implements Serializable {
 
         @Id
@@ -32,20 +34,15 @@ public class SurveyPublication implements Serializable {
         private Long id;
         @NaturalId(mutable = false)
         @ManyToOne(optional = false)
-        @JoinColumn(name = "TEMPLATE_ID", insertable = true, updatable = false, nullable =
-        false)
+        @JoinColumn(name = "TEMPLATE_ID", insertable = true, updatable = false, nullable = false)
         private SurveyTemplate surveyTemplate;
         @NaturalId(mutable = false)
         @ManyToOne(optional = false)
-        @JoinColumn(name = "GROUP_ID", insertable = true, updatable = false, nullable =
-        false)
+        @JoinColumn(name = "GROUP_ID", insertable = true, updatable = false, nullable = false)
         private StudentGroup studentGroup;
-        @Column(name = "ENABLED_FROM")
-        @Type(type = "org.joda.time.contrib.hibernate.PersistentDateTime")
-        private DateTime enabledFrom;
-        @Column(name = "ENABLED_TO")
-        @Type(type = "org.joda.time.contrib.hibernate.PersistentDateTime")
-        private DateTime enabledTo;
+        @Type(type = "org.joda.time.contrib.hibernate.PersistentInterval")
+        @Columns( columns={@Column(name="ENABLED_FROM"),@Column(name="ENABLED_TO")})
+        private Interval availabilityPeriod;
 
         protected SurveyPublication() {
             // To be used only by object persistence framework
@@ -74,9 +71,7 @@ public class SurveyPublication implements Serializable {
          * for given group.
          */
         public boolean isFillingEnabled(DateTime date) {
-                boolean beforeStart = enabledFrom != null && date.isBefore(enabledFrom);
-                boolean afterExpiration = enabledTo != null && date.isAfter(enabledTo);
-                return !(beforeStart || afterExpiration);
+                return availabilityPeriod.contains(date);
         }
 
         public StudentGroup getGroup() {
@@ -84,10 +79,8 @@ public class SurveyPublication implements Serializable {
         }
 
         public void enableFillingInPeriod(DateTime from, DateTime to) {
-                if(from != null && to != null) {
-                        Validate.isTrue(from.isBefore(to),"dates don't form valid time period");
-                }
-                this.enabledFrom = from;
-                this.enabledTo = to;
+                DateTime start = from != null ? from : new DateTime(0);
+                DateTime end = to != null ? to : new DateTime(Long.MAX_VALUE);
+                this.availabilityPeriod = new Interval(start, end);
         }
 }

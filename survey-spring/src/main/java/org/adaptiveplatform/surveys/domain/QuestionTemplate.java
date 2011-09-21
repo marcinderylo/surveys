@@ -91,10 +91,6 @@ public class QuestionTemplate implements Serializable {
         return text;
     }
 
-    public String getHtmlText() {
-        return htmlText;
-    }
-
     public QuestionType getType() {
         return type;
     }
