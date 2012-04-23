@@ -1,33 +1,27 @@
 package org.adaptiveplatform.surveys.sampledata;
 
-import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
-import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
-import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
-import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQuestion;
-import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
-import static org.adaptiveplatform.surveys.builders.QuestionBuilder.singleChoiceQuestion;
-import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
-import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
 import org.adaptiveplatform.surveys.application.SurveyDao;
-import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.GroupBuilder;
-import org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.*;
 import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
 import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateQuery;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
+import static org.adaptiveplatform.surveys.builders.QuestionBuilder.*;
+import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
+import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
+import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
 
 @Component
 @Profile("development")
@@ -39,6 +33,8 @@ public class SurveysSampleData {
     private SurveysFixtureBuilder surveys;
     @Resource
     private SurveyDao surveyDao;
+    @Resource
+    private CreateUsersOnStartup needsToBeLoadedEarlier;
 
     private Set<Long> groupIds = new HashSet<Long>();
     private Set<Long> researchIds = new HashSet<Long>();

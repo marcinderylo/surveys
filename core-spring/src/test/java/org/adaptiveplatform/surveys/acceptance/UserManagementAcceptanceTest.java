@@ -1,14 +1,7 @@
 package org.adaptiveplatform.surveys.acceptance;
 
-import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.google.common.collect.Iterables;
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.AuthenticationService;
 import org.adaptiveplatform.surveys.application.UserDao;
 import org.adaptiveplatform.surveys.application.UserFacade;
@@ -20,21 +13,19 @@ import org.adaptiveplatform.surveys.dto.UserQuery;
 import org.adaptiveplatform.surveys.exception.security.CantRevokeOwnAdminRights;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.google.common.collect.Iterables;
+import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.List;
+
+import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Rafał Jamróz
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class UserManagementAcceptanceTest {
+public class UserManagementAcceptanceTest extends ContainerEnabledTest {
 
     private static final String ADMIN_EMAIL = "adaptserver@gmail.com";
     private static final String ADMIN_PASSWORD = "adapt2010";

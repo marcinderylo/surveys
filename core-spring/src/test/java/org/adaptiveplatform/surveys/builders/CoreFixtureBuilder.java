@@ -23,13 +23,6 @@ public class CoreFixtureBuilder {
     @Resource
     private AuthenticationService authentication;
 
-    @PostConstruct
-    public void createUsers() {
-        createUser(UserAccountBuilder.student(STUDENT_EMAIL));
-        createUser(UserAccountBuilder.teacher(TEACHER_EMAIL));
-        createUser(UserAccountBuilder.evaluator(EVALUATOR_EMAIL));
-    }
-
     public Long createUser(UserAccountBuilder user) {
         authentication.logout();
         RegisterAccountCommand command = user.build();

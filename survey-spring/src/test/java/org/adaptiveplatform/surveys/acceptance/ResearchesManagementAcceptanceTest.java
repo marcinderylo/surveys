@@ -1,5 +1,19 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import com.google.common.collect.Lists;
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
+import org.adaptiveplatform.surveys.application.EvaluationDao;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.dto.*;
+import org.adaptiveplatform.surveys.exception.NoSuchResearchException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+import java.util.List;
+
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
@@ -7,39 +21,11 @@ import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.templa
 import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
 import static org.fest.assertions.Assertions.assertThat;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.adaptiveplatform.surveys.application.EvaluationDao;
-import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
-import org.adaptiveplatform.surveys.dto.ActivitiesQuery;
-import org.adaptiveplatform.surveys.dto.ActivityTypeEnum;
-import org.adaptiveplatform.surveys.dto.EvaluationActivityDto;
-import org.adaptiveplatform.surveys.dto.QuestionEvaluationDto;
-import org.adaptiveplatform.surveys.dto.ResearchDto;
-import org.adaptiveplatform.surveys.dto.ResearchesQuery;
-import org.adaptiveplatform.surveys.exception.NoSuchResearchException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.google.common.collect.Lists;
-
 /**
  * @author Rafał Jamróz
  * @author Marcin Deryło
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class ResearchesManagementAcceptanceTest {
+public class ResearchesManagementAcceptanceTest extends ContainerEnabledTest {
 
     private static final String ANOTHER_EVALUATOR_EMAIL = "anothereval@gmail.com";
     @Resource
@@ -204,7 +190,7 @@ public class ResearchesManagementAcceptanceTest {
     }
 
     private void assertActivity(EvaluationActivityDto item, Long expectedId, String expectedName,
-            ActivityTypeEnum expectedType) {
+                                ActivityTypeEnum expectedType) {
         Assert.assertEquals("Activity description", expectedName, item.getName());
         Assert.assertEquals("Activity type", expectedType, item.getType());
         Assert.assertEquals("Activity ID", expectedId, item.getId());

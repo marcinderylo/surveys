@@ -1,8 +1,22 @@
 package org.adaptiveplatform.surveys.acceptance;
 
-import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
-import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
-import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.TEACHER_EMAIL;
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
+import org.adaptiveplatform.surveys.application.StudentGroupDao;
+import org.adaptiveplatform.surveys.application.StudentGroupFacade;
+import org.adaptiveplatform.surveys.application.SurveyFacade;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.dto.*;
+import org.adaptiveplatform.surveys.exception.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.security.access.AccessDeniedException;
+
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+import java.util.List;
+
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.*;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
 import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
@@ -10,50 +24,12 @@ import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.templa
 import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
 import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.teacher;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
-import org.adaptiveplatform.surveys.application.StudentGroupDao;
-import org.adaptiveplatform.surveys.application.StudentGroupFacade;
-import org.adaptiveplatform.surveys.application.SurveyFacade;
-import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
-import org.adaptiveplatform.surveys.dto.AddGroupMemberCommand;
-import org.adaptiveplatform.surveys.dto.ChangeGroupMembersCommand;
-import org.adaptiveplatform.surveys.dto.CreateStudentGroupCommand;
-import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
-import org.adaptiveplatform.surveys.dto.GroupSignUpCommand;
-import org.adaptiveplatform.surveys.dto.SetGroupSignUpModeCommand;
-import org.adaptiveplatform.surveys.dto.StudentGroupDto;
-import org.adaptiveplatform.surveys.dto.StudentGroupQuery;
-import org.adaptiveplatform.surveys.exception.CantQueryGroupsAsEvaluatorException;
-import org.adaptiveplatform.surveys.exception.CantRemoveSelfFromGroupException;
-import org.adaptiveplatform.surveys.exception.DeletingGroupWithPublishedTemplatesException;
-import org.adaptiveplatform.surveys.exception.GroupAlreadyExistsException;
-import org.adaptiveplatform.surveys.exception.NoSuchGroupException;
-import org.adaptiveplatform.surveys.exception.PublishedSurveyTemplateAlreadyFilledException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.*;
 
 /**
  * @author Marcin Deryło
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class StudentGroupsSystemTest {
+public class StudentGroupsSystemTest extends ContainerEnabledTest {
 
     private static final String ANOTHER_EVALUATOR_EMAIL = "anotherEvaluator@adapt.com";
     private static final String ANOTHER_TEACHER_EMAIL = "anotherTeacher@adapt.com";

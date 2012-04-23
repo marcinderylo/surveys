@@ -1,13 +1,6 @@
 package org.adaptiveplatform.surveys.sampledata;
 
-import static com.google.common.collect.Iterables.get;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.EvaluationDao;
 import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.application.UserDao;
@@ -17,18 +10,17 @@ import org.adaptiveplatform.surveys.dto.SurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.SurveyTemplateQuery;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-@ActiveProfiles("development")
-public class SurveysSampleDataTest {
+import javax.annotation.Resource;
+import java.util.List;
+
+import static com.google.common.collect.Iterables.get;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+
+@ActiveProfiles({"development", "test"})
+public class SurveysSampleDataTest extends ContainerEnabledTest {
 
     @Resource
     private SurveysSampleData sampleData;

@@ -1,20 +1,6 @@
 package org.adaptiveplatform.surveys.acceptance;
 
-import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
-import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
-import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
-import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
-import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQuestion;
-import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
-import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
 import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
@@ -24,16 +10,20 @@ import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateQuery;
 import org.adaptiveplatform.surveys.dto.SurveyStatusEnum;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class PublishedSurveyTemplateStatusTest {
+import javax.annotation.Resource;
+import java.util.List;
+
+import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
+import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
+import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
+import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQuestion;
+import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
+import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
+import static org.junit.Assert.*;
+
+public class PublishedSurveyTemplateStatusTest extends ContainerEnabledTest {
 
     @Resource
     private SurveyDao dao;
@@ -87,7 +77,7 @@ public class PublishedSurveyTemplateStatusTest {
     }
 
     private void assertPublicationStatus(List<PublishedSurveyTemplateDto> publications, Long publicationId,
-            SurveyStatusEnum expectedStatus) {
+                                         SurveyStatusEnum expectedStatus) {
         PublishedSurveyTemplateDto publication = selectPublication(publicationId, publications);
         if (publication == null) {
             fail("No such published survey template (ID=" + publicationId + ")");
@@ -96,7 +86,7 @@ public class PublishedSurveyTemplateStatusTest {
     }
 
     private PublishedSurveyTemplateDto selectPublication(Long publicationId,
-            List<PublishedSurveyTemplateDto> publications) {
+                                                         List<PublishedSurveyTemplateDto> publications) {
         for (PublishedSurveyTemplateDto publication : publications) {
             if (publicationId.equals(publication.getId())) {
                 return publication;

@@ -1,10 +1,6 @@
 package org.adaptiveplatform.surveys.acceptance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import javax.annotation.Resource;
-
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.AuthenticationService;
 import org.adaptiveplatform.surveys.application.UserDao;
 import org.adaptiveplatform.surveys.application.UserFacade;
@@ -14,20 +10,17 @@ import org.adaptiveplatform.surveys.exception.security.EmailAddressAlreadyRegist
 import org.adaptiveplatform.surveys.exception.security.NotAllowedToViewUserDetailsException;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.Resource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rafał Jamróz
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class UserRegistrationAcceptanceTest {
+public class UserRegistrationAcceptanceTest extends ContainerEnabledTest {
 
     @Resource
     private UserFacade userFacade;
