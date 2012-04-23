@@ -17,7 +17,7 @@
             }
         ]]>
     </mx:Script>
-	<mx:FormHeading label="Group details"/>
+	<mx:FormHeading label="{resourceManager.getString('adaptive', 'groupManagement.groupDetails')}"/>
     <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.groupName')}">
         <mx:Label text="{model.selectedGroup.groupName}"/>
     </mx:FormItem>

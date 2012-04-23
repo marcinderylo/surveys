@@ -158,5 +158,6 @@
                 </mx:Canvas>
             </mx:ViewStack>
         </mx:Panel>
+        <mx:Image id="loader1" source="@Embed(source='assets/images/baner_projektu.png')"/>
     </mx:VBox>
 </mx:Application>
