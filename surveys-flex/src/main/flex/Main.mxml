@@ -22,6 +22,7 @@
     <mx:Script>
         <![CDATA[
         import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
         import mx.core.Container;
         import mx.core.FlexGlobals;
         import mx.events.FlexEvent;
@@ -56,11 +57,15 @@
         }
 
         private function getChannel():String {
-            var baseUrl:String = Main(FlexGlobals.topLevelApplication).url;
-            var pattern:RegExp = new RegExp("http://[^/]*/");
-            var hostUrl:String = "http://localhost:8080/";
-            if (pattern.test(baseUrl) == true) {
-                hostUrl = pattern.exec(baseUrl).toString();
+            var hostUrl:String = this.parameters.serverUrl;
+            if (hostUrl == null) {
+                var baseUrl:String = Main(FlexGlobals.topLevelApplication).url;
+                var pattern:RegExp = new RegExp("http://[^/]*/");
+                if (pattern.test(baseUrl) == true) {
+                    hostUrl = pattern.exec(baseUrl).toString();
+                } else {
+                    hostUrl = "http://localhost:8080/"; //default host url
+                }
             }
             return hostUrl;
         }
@@ -104,11 +109,11 @@
                                   height="46"
                                   verticalGap="0">
             <components:NavigationBar id="navigation"
-                                       horizontalAlign="left"/>
+                                      horizontalAlign="left"/>
             <components:Title text="{resourceManager.getString('adaptive', 'title.' + viewstack.selectedChild.name)}"
-                               width="100%"/>
+                              width="100%"/>
             <components:UserInformation id="userInfo"
-                                         horizontalAlign="right"/>
+                                        horizontalAlign="right"/>
         </mx:ApplicationControlBar>
 
         <mx:Panel width="95%"

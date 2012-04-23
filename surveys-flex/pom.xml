@@ -16,17 +16,10 @@
 	<properties>
 		<flexmojos.version>3.9</flexmojos.version>
 		<flexsdk.version>4.1.0.16076</flexsdk.version>
-		<skip.flex.tests>false</skip.flex.tests>
+		<skip.flex.tests>true</skip.flex.tests>
 		<configurationReport>true</configurationReport>
 	</properties>
-	<profiles>
-		<profile>
-			<id>bamboo</id>
-			<properties>
-				<skip.flex.tests>true</skip.flex.tests>
-			</properties>
-		</profile>
-	</profiles>
+
 	<build>
 		<sourceDirectory>src/main/flex</sourceDirectory>
 		<testSourceDirectory>src/test/flex</testSourceDirectory>
@@ -64,7 +57,7 @@
 					<resourceBundlePath>${basedir}/src/main/locale/{locale}
                     </resourceBundlePath>
 					<sourceFile>Main.mxml</sourceFile>
-					<storepass />
+					<storepass>secret</storepass>
 				</configuration>
 				<executions>
 					<execution>

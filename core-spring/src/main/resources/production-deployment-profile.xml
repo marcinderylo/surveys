@@ -15,7 +15,7 @@
 <!--         should probably fetch that from JNDI too-->
     <util:properties id="hibernateProperties" location="classpath:/hibernate-postgres.properties" />
 
-    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/Surveys" expected-type="javax.sql.DataSource"/>
+    <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/surveys" expected-type="javax.sql.DataSource"/>
 <!--         might include conditional initialization of database schema using jdbc:initialize-database -->
 
 </beans>

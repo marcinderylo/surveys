@@ -9,19 +9,21 @@
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
 			<outputFileNameMapping>
-				surveys-flex.swf
+                ${surveys-flex.swf.outputName}.swf
 			</outputFileNameMapping>
 			<includes>
 				<include>org.adaptiveplatform.surveys:surveys-flex</include>
 			</includes>
 		</dependencySet>
+		<!-- ignored - html wrapper is inside surveys-web now
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
 			<unpack>true</unpack>
+            <filtered>true</filtered>
 			<includes>
-				<!--  <include>adaptive-platform:adaptive-platform-flex:*:resource</include> -->
 				<include>*:resources</include>
 			</includes>
 		</dependencySet>
+        -->
 	</dependencySets>
 </assembly>

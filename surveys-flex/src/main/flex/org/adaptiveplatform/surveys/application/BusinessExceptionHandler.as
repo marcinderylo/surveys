@@ -15,7 +15,7 @@ public class BusinessExceptionHandler {
     }
 
     public static function displayAlert(defaultMessage:String = null):Function {
-        return function(fault:Fault):void {
+        return function (fault:Fault):void {
             var resources:IResourceManager = ResourceManager.getInstance();
             var key:String;
             if (fault.faultCode.substr(0, 4) == BUSINESS_EXCEPTION_PREFIX) {
