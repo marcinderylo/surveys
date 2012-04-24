@@ -29,6 +29,7 @@
         import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateQuery;
         import org.adaptiveplatform.surveys.view.components.NewSurveyQuestion;
         import org.adaptiveplatform.surveys.view.renderers.QuestionTypeItemRenderer;
+        import mx.core.FlexGlobals;
 
         private var authentication:AuthenticationService;
         private var surveyDao:SurveyDao;
@@ -167,9 +168,9 @@
         }
 
         private function manageQuestion(question:QuestionTemplateDto):void {
-            var surveyForm:NewSurveyQuestion = PopUpManager.createPopUp(Application.application as DisplayObject, NewSurveyQuestion, true) as NewSurveyQuestion;
+            var surveyForm:NewSurveyQuestion = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, NewSurveyQuestion, true) as NewSurveyQuestion;
             surveyForm.initializeView(survey, question);
-            surveyForm.x = (Application.application.width - surveyForm.width ) / 2;
+            surveyForm.x = (FlexGlobals.topLevelApplication.width - surveyForm.width ) / 2;
             PopUpManager.centerPopUp(surveyForm);
         }
 

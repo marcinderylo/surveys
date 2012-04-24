@@ -6,7 +6,7 @@
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
-			
+            import mx.core.FlexGlobals;
 			import org.adaptiveplatform.surveys.application.AuthenticationService;
 			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
@@ -40,7 +40,7 @@
 
 			private function logout():void {
 				Alert.show(resourceManager.getString('adaptive', 'logout.confirmation'),
-					null,Alert.YES | Alert.NO, Application.application as Application,
+					null,Alert.YES | Alert.NO, FlexGlobals.topLevelApplication as Application,
 					function(eventObj:CloseEvent):void{
 						if (eventObj.detail==Alert.YES) {
 							authentication.logout().onSuccess(views.gotoOnSuccess(View.LOGIN));

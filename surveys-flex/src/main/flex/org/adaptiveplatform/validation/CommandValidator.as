@@ -17,7 +17,7 @@ import org.spicefactory.lib.reflect.Property;
 [Bindable(event="validated")]
 public class CommandValidator extends EventDispatcher {
 
-    private static const METADATA_HANDLERS = [SizeValidator, NotNullValidator, ValidIdValidator, NonBlankValidator, MinValidator];
+    private static const METADATA_HANDLERS:Array = [SizeValidator, NotNullValidator, ValidIdValidator, NonBlankValidator, MinValidator];
     private const VALIDATORS_BUNDLE_NAME:String = "validation";
 
     public static const VALIDATED:String = "validated";

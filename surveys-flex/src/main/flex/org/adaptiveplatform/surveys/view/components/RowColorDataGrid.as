@@ -7,6 +7,9 @@ package org.adaptiveplatform.surveys.view.components
 
 	public class RowColorDataGrid extends DataGrid {
 		public var rowColorFunction:Function;
+
+		public function RowcolorDataGrid():void {
+		}
    
 		override protected function drawRowBackground(s:Sprite, rowIndex:int, y:Number, height:Number, color:uint, dataIndex:int):void {
 			if(rowColorFunction != null && dataProvider != null) {

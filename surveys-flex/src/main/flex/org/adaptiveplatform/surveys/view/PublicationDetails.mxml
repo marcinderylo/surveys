@@ -16,7 +16,8 @@
 			import mx.managers.PopUpManager;
 			import mx.rpc.Fault;
 			import mx.rpc.events.FaultEvent;
-			
+            import mx.core.FlexGlobals;
+
 			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
 			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
 			import org.adaptiveplatform.surveys.application.ViewController;
@@ -89,7 +90,7 @@
 			}
 
 			private function viewQuestionDetails():void {
-				var questionDetails:FilledQuestionDetails=PopUpManager.createPopUp(Application.application as DisplayObject, FilledQuestionDetails, true) as FilledQuestionDetails;
+				var questionDetails:FilledQuestionDetails=PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, FilledQuestionDetails, true) as FilledQuestionDetails;
 				questionDetails.research=research;
 				questionDetails.questions=research.templateDto.questions;
 				questionDetails.currentQuestionNumber=questionGrid.selectedIndex;
@@ -97,7 +98,7 @@
 			}
 
 			private function viewFilledSurveyDetails():void {
-				var surveyDetails:FilledSurveyDetails=PopUpManager.createPopUp(Application.application as DisplayObject, FilledSurveyDetails, true) as FilledSurveyDetails;
+				var surveyDetails:FilledSurveyDetails=PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject, FilledSurveyDetails, true) as FilledSurveyDetails;
 				surveyDetails.filledSurveys=filledSurveys;
 				surveyDetails.currentSurveyNumber=userGrid.selectedIndex;
 				PopUpManager.centerPopUp(surveyDetails);

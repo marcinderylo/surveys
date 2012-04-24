@@ -18,7 +18,7 @@ public class CreateStudentGroupCommandValidator {
 
     private var _errors:Dictionary = new Dictionary();
 
-    public var groupName;
+    public var groupName:String;
 
     public function CreateStudentGroupCommandValidator() {
     }
