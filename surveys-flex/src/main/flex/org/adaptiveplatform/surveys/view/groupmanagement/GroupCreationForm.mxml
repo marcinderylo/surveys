@@ -13,7 +13,7 @@
         <validators:CreateStudentGroupCommandValidator/>
     </fx:Declarations>
     <mx:Form>
-        <mx:FormHeading label="Create group"/>
+        <mx:FormHeading label="{resourceManager.getString('adaptive', 'groupManagement.createGroup')}"/>
         <mx:FormItem label="{resourceManager.getString('adaptive', 'groupManagement.newGroupName')}">
             <mx:TextInput id="groupNameTxt"
                           width="100%"

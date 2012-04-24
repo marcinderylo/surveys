@@ -54,6 +54,6 @@
     <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupCreation')}"
                    visible="{groupsManagementVisible}"
                    includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_CREATION)}"/>
-    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupSignup')}" visible="{groupSignup}"
-                   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>
+    <!--<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupSignup')}" visible="{groupSignup}"
+                   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>-->
 </mx:HBox>

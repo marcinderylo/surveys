@@ -1,50 +1,36 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
+import org.adaptiveplatform.surveys.application.SurveyDao;
+import org.adaptiveplatform.surveys.application.SurveyFacade;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.dto.*;
+import org.adaptiveplatform.surveys.exception.NotAllowedToPublishTemplatesInGroupException;
+import org.adaptiveplatform.surveys.exception.SurveyTemplateAlreadyExistsException;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+import java.util.List;
+
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.adaptiveplatform.surveys.builders.AnswerBuilder.answer;
 import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
 import static org.adaptiveplatform.surveys.builders.GroupBuilder.group;
-import static org.adaptiveplatform.surveys.builders.QuestionBuilder.multiChoiceQuestion;
-import static org.adaptiveplatform.surveys.builders.QuestionBuilder.openQuestion;
-import static org.adaptiveplatform.surveys.builders.QuestionBuilder.singleChoiceQuestion;
+import static org.adaptiveplatform.surveys.builders.QuestionBuilder.*;
 import static org.adaptiveplatform.surveys.builders.ResearchBuilder.research;
 import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.template;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.adaptiveplatform.surveys.application.SurveyDao;
-import org.adaptiveplatform.surveys.application.SurveyFacade;
-import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
-import org.adaptiveplatform.surveys.dto.CreateSurveyTemplateCommand;
-import org.adaptiveplatform.surveys.dto.QuestionTemplateDto;
-import org.adaptiveplatform.surveys.dto.QuestionTypeEnum;
-import org.adaptiveplatform.surveys.dto.SurveyTemplateDto;
-import org.adaptiveplatform.surveys.dto.SurveyTemplateQuery;
-import org.adaptiveplatform.surveys.exception.NotAllowedToPublishTemplatesInGroupException;
-import org.adaptiveplatform.surveys.exception.SurveyTemplateAlreadyExistsException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 /**
  * Integration tests requiring an existing survey template and usual user test
  * data.
- * 
+ *
  * @author Marcin Deryło
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould {
+public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould extends ContainerEnabledTest {
 
     @Resource
     private SurveyFacade facade;

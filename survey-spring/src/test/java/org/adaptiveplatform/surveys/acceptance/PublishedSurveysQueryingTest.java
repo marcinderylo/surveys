@@ -1,5 +1,6 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
 import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
@@ -9,11 +10,6 @@ import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateQuery;
 import org.adaptiveplatform.surveys.utils.Collections42;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import java.util.HashSet;
@@ -33,10 +29,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Rafał Jamróz
  * @author Marcin Deryło
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class PublishedSurveysQueryingTest {
+public class PublishedSurveysQueryingTest extends ContainerEnabledTest {
+
     @Resource
     private SurveyDao dao;
     @Resource

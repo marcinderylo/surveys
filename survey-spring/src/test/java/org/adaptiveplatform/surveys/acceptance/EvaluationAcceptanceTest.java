@@ -1,5 +1,19 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
+import org.adaptiveplatform.surveys.application.EvaluationDao;
+import org.adaptiveplatform.surveys.application.EvaluationFacade;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.dto.*;
+import org.adaptiveplatform.surveys.test.Asserts;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collection;
+
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
 import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
@@ -10,38 +24,11 @@ import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.templa
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import javax.annotation.Resource;
-
-import org.adaptiveplatform.surveys.application.EvaluationDao;
-import org.adaptiveplatform.surveys.application.EvaluationFacade;
-import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
-import org.adaptiveplatform.surveys.dto.CommentQuestionCommand;
-import org.adaptiveplatform.surveys.dto.FilledSurveyDto;
-import org.adaptiveplatform.surveys.dto.QuestionEvaluationDto;
-import org.adaptiveplatform.surveys.dto.ResearchDto;
-import org.adaptiveplatform.surveys.dto.SurveyQuestionDto;
-import org.adaptiveplatform.surveys.dto.TagAnswerCommand;
-import org.adaptiveplatform.surveys.test.Asserts;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 /**
  * @author Rafał Jamróz
  * @author Marcin Deryło
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class EvaluationAcceptanceTest {
+public class EvaluationAcceptanceTest extends ContainerEnabledTest {
 
     @Resource
     private EvaluationDao dao;
@@ -95,7 +82,7 @@ public class EvaluationAcceptanceTest {
 
     @Test
     public void shouldAllowToTagAnsweredQuestions() throws Exception {
-        final String[] TAGS = new String[] { "interesting!", "boring:/" };
+        final String[] TAGS = new String[]{"interesting!", "boring:/"};
         // when
         facade.tagAnswer(createTagCommand(TAGS));
         // then
@@ -111,8 +98,8 @@ public class EvaluationAcceptanceTest {
     public void shouldAllowEvaluatorToChangeTags() throws Exception {
         // given
         final String INITIALLY_SET_TAG = "interesting!";
-        final String[] FINALLY_SET_TAGS = new String[] { "bad", "good", "ugly" };
-        final String[] ALL_TAGS = new String[] { "bad", "good", "ugly", "interesting!" };
+        final String[] FINALLY_SET_TAGS = new String[]{"bad", "good", "ugly"};
+        final String[] ALL_TAGS = new String[]{"bad", "good", "ugly", "interesting!"};
         facade.tagAnswer(createTagCommand(INITIALLY_SET_TAG));
         // when
         facade.tagAnswer(createTagCommand(FINALLY_SET_TAGS));

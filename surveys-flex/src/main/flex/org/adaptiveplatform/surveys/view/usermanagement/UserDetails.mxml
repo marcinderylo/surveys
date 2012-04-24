@@ -36,7 +36,7 @@
         <s:VerticalLayout/>
     </s:layout>
     <mx:Form label="{resourceManager.getString('adaptive', 'usermanagement.details')}">
-		<mx:FormHeading label="User details"/>
+		<mx:FormHeading label="{resourceManager.getString('adaptive', 'usermanagement.details')}"/>
         <mx:FormItem label="{resourceManager.getString('adaptive', 'name')}">
             <mx:Label text="{_user.name}"
                       selectable="true"/>
@@ -54,8 +54,8 @@
                            label="{resourceManager.getString('adaptive', 'userManagement.changePassword.button')}"/>
             </mx:HBox>
         </mx:FormItem>
-		<mx:FormHeading label="Roles"/>
-        <mx:FormItem label="roles (click to add/remove)">
+		<mx:FormHeading label="{resourceManager.getString('adaptive', 'usermanagement.roles')}"/>
+        <mx:FormItem label="{resourceManager.getString('adaptive', 'usermanagement.roles.desc')}">
             <usermanagement:UserRolesList roles="{roles}"
                                      currentUserEmail="{currentUser}"
                                      selectedUser="{_user}"/>

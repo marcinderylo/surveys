@@ -1,5 +1,17 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
+import org.adaptiveplatform.surveys.application.SurveyDao;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.dto.*;
+import org.adaptiveplatform.surveys.exception.FilledSurveyDoesNotExistException;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+import java.util.List;
+
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
 import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
@@ -10,37 +22,9 @@ import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.templa
 import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.evaluator;
 import static org.adaptiveplatform.surveys.builders.UserAccountBuilder.student;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.adaptiveplatform.surveys.application.SurveyDao;
-import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
-import org.adaptiveplatform.surveys.dto.FilledSurveyDto;
-import org.adaptiveplatform.surveys.dto.FilledSurveyQuery;
-import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
-import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateDto;
-import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateQuery;
-import org.adaptiveplatform.surveys.exception.FilledSurveyDoesNotExistException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class SurveyDaoTest {
+public class SurveyDaoTest extends ContainerEnabledTest {
 
     private static final String ANOTHER_EVALUATOR_EMAIL = "anotherEvaluator@ada.pt";
     private static final String ANOTHER_STUDENT_EMAIL = "tom@foo.com";

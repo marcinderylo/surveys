@@ -1,5 +1,15 @@
 package org.adaptiveplatform.surveys.acceptance;
 
+import org.adaptiveplatform.surveys.ContainerEnabledTest;
+import org.adaptiveplatform.surveys.application.EvaluationDao;
+import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.dto.ResearchDto;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.EVALUATOR_EMAIL;
 import static org.adaptiveplatform.surveys.builders.CoreFixtureBuilder.STUDENT_EMAIL;
@@ -10,28 +20,11 @@ import static org.adaptiveplatform.surveys.builders.SurveyTemplateBuilder.templa
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-import javax.annotation.Resource;
-
-import org.adaptiveplatform.surveys.application.EvaluationDao;
-import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
-import org.adaptiveplatform.surveys.dto.ResearchDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 /**
  * @author Rafał Jamróz
  * @author Marcin Deryło
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:/testConfigurationContext.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class GivenResearchWithPublishedTemplateEvaluatorShould {
+public class GivenResearchWithPublishedTemplateEvaluatorShould extends ContainerEnabledTest {
 
     @Resource
     private EvaluationDao dao;
