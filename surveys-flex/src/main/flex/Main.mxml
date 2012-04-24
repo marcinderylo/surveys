@@ -40,7 +40,7 @@
 
         private function onInitialize():void {
             var channelName:String = "my-amf";
-            var destination:String = "surveys-web/messagebroker/amf";
+            var destination:String = "messagebroker/amf";
             var channelUrl:String = getChannel();
             channelUrl = channelUrl + destination;
 

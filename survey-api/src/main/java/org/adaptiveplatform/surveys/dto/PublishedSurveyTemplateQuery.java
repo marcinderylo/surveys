@@ -21,7 +21,7 @@ public class PublishedSurveyTemplateQuery implements Serializable {
     private Integer status;
     private Set<Integer> groupIds = new HashSet<Integer>();
 
-    protected PublishedSurveyTemplateQuery() {
+    public PublishedSurveyTemplateQuery() {
     }
 
     public PublishedSurveyTemplateQuery(GroupRoleEnum runAs) {

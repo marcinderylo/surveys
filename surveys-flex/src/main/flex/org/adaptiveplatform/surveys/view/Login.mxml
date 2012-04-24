@@ -13,16 +13,16 @@
 
     <mx:Script>
         <![CDATA[
-        import org.adaptiveplatform.surveys.utils.MessageBundle;
-
         import mx.controls.Alert;
+        import mx.resources.IResourceManager;
+        import mx.resources.ResourceManager;
         import mx.rpc.Fault;
 
-        import org.adaptiveplatform.surveys.application.AuthenticationService;
-        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
         import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.AuthenticationService;
         import org.adaptiveplatform.surveys.application.ViewController;
         import org.adaptiveplatform.surveys.application.generated.SystemInformationDao;
+        import org.adaptiveplatform.surveys.utils.MessageBundle;
 
         private var authentication:AuthenticationService;
         private var systemInformationDao:SystemInformationDao;
@@ -47,18 +47,18 @@
             }
 
             systemInformationDao.getSystemVersion().onSuccess(
-                    function(version:String) {
+                    function (version:String) {
                         serverStatus = "serverStatus_online";
-                    }).onFault(function(fault:Fault) {
-                serverStatus = "serverStatus_offline";
-            });
+                    }).onFault(function (fault:Fault) {
+                        serverStatus = "serverStatus_offline";
+                    });
         }
 
         protected function loginClicked(ignore:MouseEvent = null):void {
             loginBtn.enabled = false;
             authentication.login(username.text, password.text)//
                     .onSuccess(
-                    function(result:Object = null):void {
+                    function (result:Object = null):void {
                         unlockLoginButton();
                         username.text = null;
                         password.text = null;
@@ -74,7 +74,11 @@
                         } else {
                             Alert.show("your account has no privleges", "authorization error");
                         }
-                    }).onFault(BusinessExceptionHandler.displayAlert("error.loginFailed")).onFault(unlockLoginButton);
+                    }).onFault(
+                    function ():void {
+                        var resources:IResourceManager = ResourceManager.getInstance();
+                        Alert.show(resources.getString("adaptive", "error.loginFailed"), resources.getString("adaptive", "error"));
+                    }).onFault(unlockLoginButton);
             password.text = "";
         }
 

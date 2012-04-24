@@ -6,3 +6,9 @@ target/
 #########################
 *.iml
 .idea/
+
+.gradle/
+
+# Ignoring generated DTOs
+surveys-flex/src/main/flex/org/adaptiveplatform/surveys/application/generated
+surveys-flex/src/main/flex/org/adaptiveplatform/surveys/dto/generated/*Base.as
