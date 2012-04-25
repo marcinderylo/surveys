@@ -21,7 +21,7 @@ public class SampleIntegrationTest {
     public function test1():void {
         var channelName:String = "my-amf";
         var destination:String = "messagebroker/amf";
-        var serverUrl:String = "htttp://localhost:8080/";
+        var serverUrl:String = "htttp://localhost:8081/surveys-web/";
         var channelUrl:String = serverUrl + destination;
 
         var channels:ChannelSet = createChannels(channelName, channelUrl);
@@ -32,7 +32,7 @@ public class SampleIntegrationTest {
         var systemInformationDao:RemoteSystemInformationDao = new RemoteSystemInformationDao();
         systemInformationDao.remoteService = remoteService;
 
-        call(systemInformationDao.getSystemVersion(), function (version:String):void {
+        call(systemInformationDao.getSystemVersion(), function(version:String):void {
             assertEquals("0.9.1.SNAPSHOT", version);
         });
     }

@@ -15,8 +15,10 @@
     <properties>
         <flexmojos.version>4.2-beta</flexmojos.version>
         <flexsdk.version>4.1.0.16076</flexsdk.version>
-        <skip.flex.tests>true</skip.flex.tests>
         <configurationReport>true</configurationReport>
+        <skip.flex.tests>false</skip.flex.tests>
+        <maven.test.failure.ignore>true</maven.test.failure.ignore>
+        <surefire.printSummary>false</surefire.printSummary>
     </properties>
 
     <build>
@@ -48,7 +50,7 @@
                 </dependencies>
                 <configuration>
                     <targetPlayer>10.0.0</targetPlayer>
-                    <skipTest>${skip.flex.tests}</skipTest>
+                    <skipTest>true</skipTest>
                     <sourceFile>Main.mxml</sourceFile>
                     <storepass>wat</storepass>
                 </configuration>
@@ -78,6 +80,82 @@
                                 </translatePackages>
                             </extraOptions>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test-run</goal>
+                        </goals>
+                        <configuration>
+                            <skipTest>${skip.flex.tests}</skipTest>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.adaptiveplatform.commons</groupId>
+                <artifactId>surefire-report-verifier-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>
+                                verify
+                            </goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.2.0</version>
+                <configuration>
+                    <configuration>
+                        <properties>
+                            <cargo.servlet.port>8081</cargo.servlet.port>
+                        </properties>
+                    </configuration>
+                    <container>
+                        <containerId>tomcat6x</containerId>
+                        <zipUrlInstaller>
+                            <url>
+                                http://www.idg.pl/mirrors/apache/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz
+                            </url>
+                        </zipUrlInstaller>
+                    </container>
+                    <deployer>
+                        <deployables>
+                            <deployables>
+                                <groupId>org.adaptiveplatform.surveys</groupId>
+                                <artifactId>surveys-web</artifactId>
+                                <type>war</type>
+                                <properties>
+                                    <context>/surveys-web</context>
+                                </properties>
+                                <pingURL>http://localhost:8081/surveys-web/static/index.html</pingURL>
+                                <pingTimeout>60000</pingTimeout>
+                            </deployables>
+                        </deployables>
+                    </deployer>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-container</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-container</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>undeploy</goal>                        
+                            <goal>stop</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -148,6 +226,14 @@
             <artifactId>spicelib-flex</artifactId>
             <version>2.4</version>
             <type>swc</type>
+        </dependency>
+
+        <!-- application to deploy -->
+        <dependency>
+            <groupId>org.adaptiveplatform.surveys</groupId>
+            <artifactId>surveys-web</artifactId>
+            <type>war</type>
+            <version>${surveys.version}</version>
         </dependency>
 
         <!-- test -->
