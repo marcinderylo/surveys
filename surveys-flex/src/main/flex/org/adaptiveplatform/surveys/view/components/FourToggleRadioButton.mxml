@@ -6,8 +6,8 @@
 		<![CDATA[
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
-			import adaptlearning.serverapi.dto.generated.SurveyQuestionAnswerDto;
 			import mx.events.FlexEvent;
+            import org.adaptiveplatform.surveys.dto.generated.SurveyQuestionAnswerDto;
 
 			[Bindable]
 			public var answer:SurveyQuestionAnswerDto;

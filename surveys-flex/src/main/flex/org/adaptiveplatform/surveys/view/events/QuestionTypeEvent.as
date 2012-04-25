@@ -1,6 +1,8 @@
 package org.adaptiveplatform.surveys.view.events
 {
-	public class QuestionTypeEvent extends flash.events.Event
+    import flash.events.Event;
+
+	public class QuestionTypeEvent extends Event
 	{
 		
 		public static const QUESTION_TYPE_EVENT:String = "changeQuestionTypeProperties";

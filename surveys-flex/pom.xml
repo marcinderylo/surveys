@@ -12,9 +12,9 @@
 	</parent>
 
 	<properties>
-		<flexmojos.version>3.9</flexmojos.version>
+		<flexmojos.version>4.2-beta</flexmojos.version>
 		<flexsdk.version>4.1.0.16076</flexsdk.version>
-		<skip.flex.tests>true</skip.flex.tests>
+		<skip.flex.tests>false</skip.flex.tests>
 		<configurationReport>true</configurationReport>
 	</properties>
 
@@ -48,14 +48,14 @@
 				<configuration>
 					<targetPlayer>10.0.0</targetPlayer>
 					<skipTest>${skip.flex.tests}</skipTest>
-					<compiledLocales>
-						<locale>en_US</locale>
-						<locale>pl_PL</locale>
-					</compiledLocales>
-					<resourceBundlePath>${basedir}/src/main/locale/{locale}
-                    </resourceBundlePath>
+                    <localesCompiled>
+                        <compiled>en_US</compiled>
+                        <compiled>pl_PL</compiled>
+                    </localesCompiled>
+                    <localesSourcePath>${basedir}/src/main/locale/{locale}</localesSourcePath>
 					<sourceFile>Main.mxml</sourceFile>
-					<storepass>secret</storepass>
+					<storepass />
+                    <coverage>true</coverage>
 				</configuration>
 				<executions>
 					<execution>

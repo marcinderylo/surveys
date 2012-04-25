@@ -6,6 +6,9 @@ package org.adaptiveplatform.surveys.application {
 
 		private var view:ViewController;
 
+		public function ApplicationContextHolder():void {
+		}
+
 		public static function initializeMockContext(view:ViewController):void {
 			initialize(new DefaultApplicationContext(view, new StubServiceLocator()));
 		}

@@ -142,10 +142,8 @@ public class PublishedSurveysQueryingTest extends ContainerEnabledTest {
         PublishedSurveyTemplateQuery query = createQueryForGroups(groupIds, role);
         query.setKeyword(keyword);
         final List<PublishedSurveyTemplateDto> templates = dao.queryPublishedTemplates(query);
-        System.out.println("Read following templates: ");
         for (PublishedSurveyTemplateDto template : templates) {
             readTemplateIds.add(template.getTemplateId());
-            System.out.println(template);
         }
     }
 
