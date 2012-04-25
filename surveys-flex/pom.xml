@@ -50,7 +50,7 @@
 					<skipTest>${skip.flex.tests}</skipTest>
                     <localesCompiled>
                         <compiled>en_US</compiled>
-                        <compiled>pl_PL</compiled>
+                        <compiled>pl_PL,en_US</compiled>
                     </localesCompiled>
                     <localesSourcePath>${basedir}/src/main/locale/{locale}</localesSourcePath>
 					<sourceFile>Main.mxml</sourceFile>
