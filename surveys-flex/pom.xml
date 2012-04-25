@@ -54,7 +54,7 @@
                     </localesCompiled>
                     <localesSourcePath>${basedir}/src/main/locale/{locale}</localesSourcePath>
 					<sourceFile>Main.mxml</sourceFile>
-					<storepass />
+                    <storepass>wat</storepass>
                     <coverage>true</coverage>
 				</configuration>
 				<executions>

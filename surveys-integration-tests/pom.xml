@@ -13,9 +13,10 @@
     <name>Surveys - integration tests suite</name>
 
     <properties>
-        <flexmojos.version>3.9</flexmojos.version>
+        <flexmojos.version>4.2-beta</flexmojos.version>
         <flexsdk.version>4.1.0.16076</flexsdk.version>
-        <skip.flex.tests>false</skip.flex.tests>
+        <skip.flex.tests>true</skip.flex.tests>
+        <configurationReport>true</configurationReport>
     </properties>
 
     <build>
@@ -49,7 +50,7 @@
                     <targetPlayer>10.0.0</targetPlayer>
                     <skipTest>${skip.flex.tests}</skipTest>
                     <sourceFile>Main.mxml</sourceFile>
-                    <storepass>secret</storepass>
+                    <storepass>wat</storepass>
                 </configuration>
                 <executions>
                     <execution>
@@ -186,12 +187,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>local</id>
-        </profile>
-    </profiles>
 
     <repositories>
         <repository>
