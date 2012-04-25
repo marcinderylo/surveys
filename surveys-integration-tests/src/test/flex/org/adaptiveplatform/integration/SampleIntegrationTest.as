@@ -22,14 +22,14 @@ public class SampleIntegrationTest {
         var channelName:String = "my-amf";
         var destination:String = "messagebroker/amf";
         var serverUrl:String = "htttp://localhost:8080/";
-        var channelUrl = serverUrl + destination;
+        var channelUrl:String = serverUrl + destination;
 
         var channels:ChannelSet = createChannels(channelName, channelUrl);
         var remoteService:RemoteServiceImpl = new RemoteServiceImpl();
         remoteService.channelSet = channels;
 
-        var authentication = new AuthenticationServiceRemote(channels);
-        var systemInformationDao = new RemoteSystemInformationDao();
+        var authentication:AuthenticationServiceRemote = new AuthenticationServiceRemote(channels);
+        var systemInformationDao:RemoteSystemInformationDao = new RemoteSystemInformationDao();
         systemInformationDao.remoteService = remoteService;
 
         call(systemInformationDao.getSystemVersion(), function (version:String):void {
