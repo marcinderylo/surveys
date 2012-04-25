@@ -37,7 +37,8 @@
 		<module>survey-spring</module>
 		<module>surveys-flex</module>
 		<module>surveys-web</module>
-	</modules>
+        <module>surveys-integration-tests</module>
+    </modules>
 
 	<build>
 		<pluginManagement>

@@ -12,3 +12,5 @@ target/
 # Ignoring generated DTOs
 surveys-flex/src/main/flex/org/adaptiveplatform/surveys/application/generated
 surveys-flex/src/main/flex/org/adaptiveplatform/surveys/dto/generated/*Base.as
+surveys-integration-tests/src/main/flex/org/adaptiveplatform/surveys/application/generated
+surveys-integration-tests/src/main/flex/org/adaptiveplatform/surveys/dto/generated/*Base.as
