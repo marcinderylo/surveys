@@ -14,6 +14,9 @@ import org.flexunit.async.Async;
 
 public class SampleIntegrationTest {
 
+    /** TODO - only the first remote call should have a longer timeout because the application might still be deploying */
+    const REMOTE_CALL_TIMEOUT:int = 10000;
+
     public function SampleIntegrationTest() {
     }
 
@@ -32,7 +35,7 @@ public class SampleIntegrationTest {
         var systemInformationDao:RemoteSystemInformationDao = new RemoteSystemInformationDao();
         systemInformationDao.remoteService = remoteService;
 
-        call(systemInformationDao.getSystemVersion(), function(version:String):void {
+        call(systemInformationDao.getSystemVersion(), function (version:String):void {
             assertEquals("0.9.1.SNAPSHOT", version);
         });
     }
@@ -41,7 +44,7 @@ public class SampleIntegrationTest {
         var successHandler:Function = function (event:ResultEvent, passThrough:Object):void {
             onSuccess(event.result);
         };
-        resultHandler.addListener(Async.asyncHandler(this, successHandler, 500, null, handleTimeout), onFault);
+        resultHandler.addListener(Async.asyncHandler(this, successHandler, REMOTE_CALL_TIMEOUT, null, handleTimeout), onFault);
     }
 
 
