@@ -48,21 +48,23 @@
                 } else {
                     var icon:Image=new Image();
                     icon.source=iconFunction(data as String);
-                    icon.toolTip=resourceManager.getString('adaptive', data as String);
-                    var text:Label=new Label();
-                    text.text=resourceManager.getString('adaptive', data as String);
-                    if (user != null) {
-                        roleEnabled.selected=user.roles.contains(data as String);
+                    if(icon!=null){
+                        icon.toolTip=resourceManager.getString('adaptive', data as String);
+                        var text:Label=new Label();
+                        text.text=resourceManager.getString('adaptive', data as String);
+                        if (user != null) {
+                            roleEnabled.selected=user.roles.contains(data as String);
+                        }
+                        this.addChild(roleEnabled);
+                        this.addChild(icon);
+                        this.addChild(text);
                     }
-                    this.addChild(roleEnabled);
-                    this.addChild(icon);
-                    this.addChild(text);
                 }
             }
 
             private function iconFunction(role:String):Class {
                 switch (role) {
-                    case UserRole.USER:
+                    case UserRole.STUDENT:
                         return student;
                     case UserRole.ADMINISTRATOR:
                         return administrator;
@@ -70,8 +72,9 @@
                         return teacher;
                     case UserRole.EVALUATOR:
                         return evaluator;
+                    default:
+                        return null;
                 }
-                return student;
             }
 
             public function set user(value:UserDto):void {

@@ -55,7 +55,7 @@ public class UserAccountBuilder {
     }
 
     public static UserAccountBuilder student(String email) {
-        return user(email);
+        return user(email).inRoles(Role.STUDENT);
     }
 
     public static UserAccountBuilder evaluator(String email) {

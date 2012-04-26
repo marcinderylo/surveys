@@ -32,11 +32,11 @@
 
         public function onUpdateComplete():void {
             usersVisible = authentication.inRole(UserRole.ADMINISTRATOR);
-            fillingSurveysVisible = authentication.inRole(UserRole.USER);
+            fillingSurveysVisible = authentication.inRole(UserRole.STUDENT);
             groupsManagementVisible = authentication.inRole(UserRole.TEACHER);
             publicationOfSurveyVisible = authentication.inRole(UserRole.EVALUATOR);
             evaluatorStartPageVisible = authentication.inRole(UserRole.EVALUATOR);
-            groupSignup = authentication.inRole(UserRole.USER);
+            groupSignup = authentication.inRole(UserRole.STUDENT);
         }
         ]]>
 	</mx:Script>
@@ -54,6 +54,6 @@
     <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupCreation')}"
                    visible="{groupsManagementVisible}"
                    includeInLayout="{groupsManagementVisible}" click="{views.goto(View.GROUP_CREATION)}"/>
-    <!--<mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupSignup')}" visible="{groupSignup}"
-                   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>-->
+    <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupSignup')}" visible="{groupSignup}"
+                   includeInLayout="{groupSignup}" click="{views.goto(View.GROUP_SIGNUP)}"/>
 </mx:HBox>

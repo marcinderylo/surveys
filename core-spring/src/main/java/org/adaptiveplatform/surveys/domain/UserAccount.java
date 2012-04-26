@@ -55,6 +55,7 @@ public class UserAccount implements Serializable {
 		this();
 		this.password = password;
 		this.email = email;
+        privileges.add(UserPrivilege.STUDENT);
 	}
 
 	public void removeAllRoles() {
