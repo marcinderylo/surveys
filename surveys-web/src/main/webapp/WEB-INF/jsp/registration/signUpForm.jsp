@@ -3,12 +3,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <layout:application pageTitle="New User Registration">
-    <c:if test="${not empty errorsCount}">
-        validation failed with ${errorsCount} errors
-    </c:if>
-
-    <form:form>
-        <form:errors path="*"/>
+    <form:form commandName="registerAccountFormCommand">
+        <form:errors/>
         <table>
             <tr>
                 <td>Name:</td>

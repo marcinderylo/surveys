@@ -6,6 +6,9 @@
     <title>${pageTitle}</title>
 </head>
 <body>
+<div>
+    ${notice}
+</div>
 <jsp:doBody/>
 </body>
 </html>

@@ -9,9 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Controller
 @RequestMapping("signUp")
@@ -19,17 +19,17 @@ public class RegistrationController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String singUpForm(Model model) {
-        model.addAttribute("command", new RegisterAccountFormCommand());
+        model.addAttribute("registerAccountFormCommand", new RegisterAccountFormCommand());
         return "registration/signUpForm";
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String signUpUser(Model model, @Valid RegisterAccountFormCommand command, BindingResult bindingResult) {
+    public String signUpUser(Model model, @Valid RegisterAccountFormCommand command, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("command", command);
-            model.addAttribute("errorsCount", bindingResult.getErrorCount());
+            model.addAttribute("registerAccountFormCommand", command);
             return "registration/signUpForm";
         } else {
+            redirectAttributes.addFlashAttribute("notice", "you have registered successfully");
             return "redirect:/";
         }
     }
