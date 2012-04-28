@@ -6,6 +6,8 @@ import org.adaptiveplatform.adapt.commons.validation.constraints.NonBlank;
 import org.adaptiveplatform.codegenerator.api.RemoteObject;
 import org.apache.bval.constraints.Email;
 
+import javax.validation.constraints.NotNull;
+
 @RemoteObject
 public class RegisterAccountCommand implements Serializable {
 	private static final long serialVersionUID = -3059429636827523198L;
@@ -23,6 +25,7 @@ public class RegisterAccountCommand implements Serializable {
 		this.email = email;
 	}
 
+    @NonBlank
 	@Email
 	public String getEmail() {
 		return email;

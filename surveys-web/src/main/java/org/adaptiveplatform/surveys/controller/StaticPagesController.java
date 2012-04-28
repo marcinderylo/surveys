@@ -1,13 +1,12 @@
 package org.adaptiveplatform.surveys.controller;
 
-import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.Resource;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.annotation.Resource;
+import java.util.Map;
+import java.util.Properties;
 
 @Controller
 public class StaticPagesController {
@@ -17,7 +16,8 @@ public class StaticPagesController {
 
     @RequestMapping("/")
     public String defaultPage() {
-        return "redirect:/static/surveys-flex.swf";
+//        return "redirect:/static/surveys-flex.swf";
+        return "staticPages/landingPage";
     }
 
     @RequestMapping("/version")
