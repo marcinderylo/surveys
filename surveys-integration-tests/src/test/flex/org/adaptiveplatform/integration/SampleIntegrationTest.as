@@ -2,15 +2,19 @@ package org.adaptiveplatform.integration {
 import mx.messaging.Channel;
 import mx.messaging.ChannelSet;
 import mx.messaging.channels.AMFChannel;
-import mx.rpc.Fault;
+import mx.rpc.events.FaultEvent;
 import mx.rpc.events.ResultEvent;
 
 import org.adaptiveplatform.communication.RemoteServiceImpl;
 import org.adaptiveplatform.communication.ResultHandler;
 import org.adaptiveplatform.surveys.application.generated.RemoteSystemInformationDao;
+import org.adaptiveplatform.surveys.application.generated.RemoteUserFacade;
+import org.adaptiveplatform.surveys.dto.generated.RegisterAccountCommand;
 import org.flexunit.Assert;
 import org.flexunit.asserts.assertEquals;
 import org.flexunit.async.Async;
+import org.hamcrest.assertThat;
+import org.hamcrest.collection.hasItems;
 
 public class SampleIntegrationTest {
 
@@ -32,15 +36,31 @@ public class SampleIntegrationTest {
         remoteService.channelSet = channels;
 
         var authentication:AuthenticationServiceRemote = new AuthenticationServiceRemote(channels);
+
         var systemInformationDao:RemoteSystemInformationDao = new RemoteSystemInformationDao();
         systemInformationDao.remoteService = remoteService;
+        var userFacade = new RemoteUserFacade();
+        userFacade.remoteService = remoteService;
 
-        call(systemInformationDao.getSystemVersion(), function (version:String):void {
-            assertEquals("0.9.1.SNAPSHOT", version);
+        const LOGIN:String = "ee45@ggg.com";
+        const PASSWORD:String = "123123";
+
+        var command:RegisterAccountCommand = new RegisterAccountCommand();
+        command.name = "bob"
+        command.email = LOGIN;
+        command.password = PASSWORD;
+
+        call(authentication.logout(), function () {
+            call(userFacade.registerUser(command), function (userId:int) {
+                call(authentication.login(LOGIN, PASSWORD), function (result:Object):void {
+                    assertEquals(LOGIN, result.name);
+                    assertThat(result.authorities, hasItems("ROLE_USER", "ROLE_STUDENT"));
+                });
+            });
         });
     }
 
-    private function call(resultHandler:ResultHandler, onSuccess:Function):void {
+    private function call(resultHandler:ResultHandler, onSuccess:Function = null):void {
         var successHandler:Function = function (event:ResultEvent, passThrough:Object):void {
             onSuccess(event.result);
         };
@@ -48,8 +68,8 @@ public class SampleIntegrationTest {
     }
 
 
-    private function onFault(fault:Fault):void {
-        Assert.fail("Remote call failed with: " + fault.faultString);
+    private function onFault(fault:FaultEvent):void {
+        Assert.fail("Remote call failed with: " + fault.fault.faultString);
     }
 
     private function handleTimeout(passThroughData:Object):void {
