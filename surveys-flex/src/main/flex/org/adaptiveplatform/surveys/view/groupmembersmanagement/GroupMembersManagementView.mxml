@@ -263,7 +263,7 @@
         <mx:Label text="{resourceManager.getString('adaptive', 'groupManagement.users')}" width="100%"
                   textAlign="center"/>
         <mx:TabBar id="role" itemClick="onItemClick(event)"
-                   dataProvider="{[{label:  'Students', data: 'ROLE_USER', value: GroupRoleEnum.STUDENT}, {label: 'Teachers', data: 'ROLE_ADMINISTRATOR', value: GroupRoleEnum.GROUP_ADMINISTRATOR}, {label: 'Evaluators', data: 'ROLE_EVALUATOR', value: GroupRoleEnum.EVALUATOR}]}"
+                   dataProvider="{[{label:  'Students', data: 'ROLE_STUDENT', value: GroupRoleEnum.STUDENT}, {label: 'Teachers', data: 'ROLE_ADMINISTRATOR', value: GroupRoleEnum.GROUP_ADMINISTRATOR}, {label: 'Evaluators', data: 'ROLE_EVALUATOR', value: GroupRoleEnum.EVALUATOR}]}"
                    selectedIndex="0"/>
         <mx:ApplicationControlBar width="100%">
             <mx:Label text="{resourceManager.getString('adaptive', 'search')}:"/>
