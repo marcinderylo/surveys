@@ -6,109 +6,108 @@
 		   xmlns:wizzard="org.adaptiveplatform.surveys.view.wizzard.*">
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.core.UIComponent;
-			import mx.events.IndexChangedEvent;
-			import mx.rpc.Fault;
+        import mx.collections.ArrayCollection;
+        import mx.core.UIComponent;
+        import mx.events.IndexChangedEvent;
 
-			import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
-			import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
-			import org.adaptiveplatform.surveys.application.ViewController;
-			import org.adaptiveplatform.surveys.application.generated.EvaluationDao;
-			import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
-			import org.adaptiveplatform.surveys.dto.generated.AddGroupToResearchCommand;
-			import org.adaptiveplatform.surveys.dto.generated.PrepareResearchCommand;
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.BusinessExceptionHandler;
+        import org.adaptiveplatform.surveys.application.ViewController;
+        import org.adaptiveplatform.surveys.application.generated.EvaluationFacade;
+        import org.adaptiveplatform.surveys.dto.generated.AddGroupToResearchCommand;
+        import org.adaptiveplatform.surveys.dto.generated.PrepareResearchCommand;
+        import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateDto;
 
-			private var views:ViewController;
+        private var views:ViewController;
 
-			private var evaluationFacade:EvaluationFacade;
+        private var evaluationFacade:EvaluationFacade;
 
-			[Bindable]
-			public var isValid:Boolean=false;
+        [Bindable]
+        public var isValid:Boolean = false;
 
-			public function initializeView():void {
-				researchCommand=new PrepareResearchCommand();
-				range.researchName.text="";
-				if (survey.surveyList)
-					survey.surveyList.selectedItems=[];
-				if (group.groupList) {
-					group.resetGroup();
-					group.selectedGroups.removeAll();
-				}
-				if (survey) {
-					survey.resetSurvey();
-				}
-				range.start.selectedDate=null;
-				range.end.selectedDate=null;
-			}
+        public function initializeView():void {
+            researchCommand = new PrepareResearchCommand();
+            range.researchName.text = "";
+            if (survey.surveyList)
+                survey.surveyList.selectedItems = [];
+            if (group.groupList) {
+                group.resetGroup();
+                group.selectedGroups.removeAll();
+            }
+            if (survey) {
+                survey.resetSurvey();
+            }
+            range.start.selectedDate = null;
+            range.end.selectedDate = null;
+        }
 
-			[Bindable]
-			private var researchCommand:PrepareResearchCommand;
+        [Bindable]
+        private var researchCommand:PrepareResearchCommand;
 
-			private function goToList():void {
-				researchCommand=new PrepareResearchCommand();
-				isValid=false;
-				navigator.selectedIndex=0;
-				range.enabled=true;
-				survey.enabled=false;
-				group.enabled=false;
-				publication.enabled=false;
-				views.goto(View.RESEARCH_LIST);
-			}
+        private function goToList():void {
+            researchCommand = new PrepareResearchCommand();
+            isValid = false;
+            navigator.selectedIndex = 0;
+            range.enabled = true;
+            survey.enabled = false;
+            group.enabled = false;
+            publication.enabled = false;
+            views.goto(View.RESEARCH_LIST);
+        }
 
-			private function onCreationComplete():void {
-				views=ApplicationContextHolder.context.view;
-				evaluationFacade=ApplicationContextHolder.context.service.evaluationFacade;
-				researchCommand=new PrepareResearchCommand();
-			}
+        private function onCreationComplete():void {
+            views = ApplicationContextHolder.context.view;
+            evaluationFacade = ApplicationContextHolder.context.service.evaluationFacade;
+            researchCommand = new PrepareResearchCommand();
+        }
 
-			public function previous():void {
-				var newIndex:Number=--navigator.selectedIndex;
-				navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
-			}
+        public function previous():void {
+            var newIndex:Number = --navigator.selectedIndex;
+            navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
+        }
 
-			public function next():void {
-				var newIndex:Number=++navigator.selectedIndex;
-				navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
-			}
+        public function next():void {
+            var newIndex:Number = ++navigator.selectedIndex;
+            navigator.dispatchEvent(new IndexChangedEvent(IndexChangedEvent.CHANGE, false, false, null, newIndex, newIndex));
+        }
 
-			private function save():void {
-				researchCommand.name=range.researchName.text;
-				researchCommand.surveyTemplateId=survey.surveyList.selectedItem.id;
-				researchCommand.groupsToAdd=new ArrayCollection();
-				for each (var groupObj:Object in publication.groupList.dataProvider) {
-					var command:AddGroupToResearchCommand=new AddGroupToResearchCommand();
-					command.groupId=groupObj.id;
-					command.validFrom=groupObj.validFrom;
-					command.validTo=groupObj.validTo;
-					researchCommand.groupsToAdd.addItem(command);
-				}
-				createResearch();
-			}
+        private function save():void {
+            researchCommand.name = range.researchName.text;
+            researchCommand.surveyTemplateId = survey.surveyList.selectedItem.id;
+            researchCommand.groupsToAdd = new ArrayCollection();
+            for each (var groupObj:Object in publication.groupList.dataProvider) {
+                var command:AddGroupToResearchCommand = new AddGroupToResearchCommand();
+                command.groupId = groupObj.id;
+                command.validFrom = groupObj.validFrom;
+                command.validTo = groupObj.validTo;
+                researchCommand.groupsToAdd.addItem(command);
+            }
+            createResearch();
+        }
 
-			protected function createResearch():void {
-				evaluationFacade.createResearch(researchCommand) //
-					.onSuccess(function(o:Object):void {
-						goToList();
-					}).onFault(BusinessExceptionHandler.displayAlert());
-			}
+        protected function createResearch():void {
+            evaluationFacade.createResearch(researchCommand)//
+                    .onSuccess(function (o:Object):void {
+                        goToList();
+                    }).onFault(BusinessExceptionHandler.displayAlert());
+        }
 
-			private function test(e:Event):void {
-				trace(e.type);
-			}
+        private function test(e:Event):void {
+            trace(e.type);
+        }
 
-			private function onChange(event:IndexChangedEvent):void {
-				(navigator.getChildAt(navigator.selectedIndex) as UIComponent).enabled=true;
-				if (event.oldIndex > event.newIndex) {
-					isValid=true;
-				} else {
-					isValid=false;
-				}
-				if (navigator.selectedIndex == 3) {
-					publication.groups=group.selectedGroups;
-				}
-			}
-		]]>
+        private function onChange(event:IndexChangedEvent):void {
+            (navigator.getChildAt(navigator.selectedIndex) as UIComponent).enabled = true;
+            if (event.oldIndex > event.newIndex) {
+                isValid = true;
+            } else {
+                isValid = false;
+            }
+            if (navigator.selectedIndex == 3) {
+                publication.groups = group.selectedGroups;
+            }
+        }
+        ]]>
 	</mx:Script>
 	<mx:VBox width="100%"
 			 height="100%">
