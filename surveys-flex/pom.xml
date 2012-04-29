@@ -15,7 +15,7 @@
 		<flexmojos.version>4.2-beta</flexmojos.version>
 		<flexsdk.version>4.1.0.16076</flexsdk.version>
 		<skip.flex.tests>false</skip.flex.tests>
-		<configurationReport>true</configurationReport>
+		<configurationReport>false</configurationReport>
 	</properties>
 
 	<build>
@@ -56,6 +56,7 @@
 					<sourceFile>Main.mxml</sourceFile>
                     <storepass>wat</storepass>
                     <coverage>true</coverage>
+                    <debug>true</debug>
 				</configuration>
 				<executions>
 					<execution>
