@@ -299,6 +299,24 @@ public class StudentGroupsSystemTest extends ContainerEnabledTest {
         assertThat(groups).isEmpty();
     }
 
+    /**
+     * regression test case for bug causing students and evaluators being removed from group when
+     * non-group-admin queries
+     */
+    @Test
+    public void shouldntQueryForAnonymizedGroupsRemoveMembersFromGroup() throws Exception {
+        // given
+        users.loginAs(EVALUATOR_EMAIL);
+        List<StudentGroupDto> groups = groupDao.query(evaluatorQuery());
+        // when
+        users.logout();
+        users.loginAs(TEACHER_EMAIL);
+        StudentGroupDto group = groupDao.getGroup(1L);
+        // then
+        assertThat(group.getStudents()).hasSize(1);
+        assertThat(group.getEvaluators()).hasSize(1);
+    }
+
     private static StudentGroupQuery adminQuery() {
         return new StudentGroupQuery(GroupRoleEnum.GROUP_ADMINISTRATOR);
     }
@@ -318,4 +336,5 @@ public class StudentGroupsSystemTest extends ContainerEnabledTest {
         cmd.getRemoveMembers().add(email);
         return cmd;
     }
+
 }
