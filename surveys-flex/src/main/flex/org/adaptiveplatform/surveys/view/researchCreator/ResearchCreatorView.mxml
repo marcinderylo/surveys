@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:steps="org.adaptiveplatform.surveys.view.researchCreator.steps.*"
+           width="100%"
+           height="100%"
+           creationComplete="onCreationComplete()"
+           verticalScrollPolicy="off"
+           horizontalScrollPolicy="off">
+    <mx:Script>
+        <![CDATA[
+        import org.adaptiveplatform.surveys.application.ApplicationContextHolder;
+        import org.adaptiveplatform.surveys.application.ServiceLocator;
+
+        [Bindable]
+        private var model:ResearchCreatorModel;
+
+        private function onCreationComplete():void {
+            var services:ServiceLocator = ApplicationContextHolder.context.service;
+            model = new ResearchCreatorModel(services.surveyDao, services.studentGroupDao);
+        }
+
+        public function initializeView(ignore:* = null):void {
+            model.initialize();
+        }
+        ]]>
+    </mx:Script>
+    <mx:VBox top="10" right="10" bottom="10" left="10">
+        <mx:ViewStack id="navigator"
+                      width="100%"
+                      height="100%"
+                      selectedIndex="{model.currentStep.stepNumber}">
+            <steps:RangeSelectionStep label="{resourceManager.getString('adaptive', 'range')}"
+                                      model="{model}"
+                                      stepModel="{model.rangeSelection}"
+                                      width="100%" height="100%"/>
+
+            <steps:SurveySelectionStep label="{resourceManager.getString('adaptive', 'surveyChoice')}"
+                                       model="{model}"
+                                       stepModel="{model.surveySelection}"
+                                       width="100%" height="100%"/>
+
+            <steps:GroupSelectionStep label="{resourceManager.getString('adaptive', 'groupChoice')}"
+                                      model="{model}"
+                                      stepModel="{model.groupSelection}"
+                                      width="100%" height="100%"/>
+
+            <steps:ConfirmationStep label="{resourceManager.getString('adaptive', 'researchBegining')}"
+                                    model="{model}"
+                                    stepModel="{model.confirmation}"
+                                    width="100%" height="100%"/>
+
+        </mx:ViewStack>
+        <mx:HBox width="100%" horizontalAlign="right">
+            <mx:Button label="{resourceManager.getString('adaptive', 'previous')}"
+                       id="prev"
+                       visible="{navigator.selectedIndex!=0}"
+                       includeInLayout="{navigator.selectedIndex!=0}"
+                       click="model.previousStep()"
+                       icon="@Embed(source='/assets/icons/previous.png')"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'next')}"
+                       enabled="{model.currentStep.valid}"
+                       visible="{navigator.selectedIndex!=3}"
+                       includeInLayout="{navigator.selectedIndex!=3}"
+                       click="model.nextStep()"
+                       icon="@Embed(source='/assets/icons/next.png')"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'save')}"
+                       enabled="{model.currentStep.valid}"
+                       visible="{navigator.selectedIndex==3}"
+                       includeInLayout="{navigator.selectedIndex==3}"
+                       click="model.save()"
+                       icon="@Embed(source='/assets/icons/save.png')"/>
+            <mx:Button label="{resourceManager.getString('adaptive', 'cancel')}"
+                       height="{prev.height}"
+                       click="model.cancel()"/>
+        </mx:HBox>
+    </mx:VBox>
+</mx:Canvas>

@@ -46,6 +46,12 @@
     <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.evalStartPage')}"
                    visible="{evaluatorStartPageVisible}"
                    includeInLayout="{evaluatorStartPageVisible}" click="{views.goto(View.EVALUATOR_START_PAGE)}"/>
+
+    <!-- TODO remove me -->
+    <mx:LinkButton label="Research Creation Wizard"
+                   visible="{evaluatorStartPageVisible}"
+                   includeInLayout="{evaluatorStartPageVisible}" click="{views.goto(View.RESEARCH_CREATOR)}"/>
+
     <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.users')}" visible="{usersVisible}"
                    includeInLayout="{usersVisible}" click="{views.goto(View.USERS_LIST)}"/>
     <mx:LinkButton label="{resourceManager.getString('adaptive', 'navigation.groupManagement')}"

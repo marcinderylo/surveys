@@ -21,6 +21,7 @@ package org.adaptiveplatform.surveys.view {
 		public static const SURVEY_PUBLICATION_DETAILS:String = "surveyPublicationDetails";
 		public static const RESEARCH_LIST:String = "researchList";
 		public static const RESEARCH_WIZZARD:String = "researchWizzard";
+        public static const RESEARCH_CREATOR:String = "researchCreatorView";
 		public static const EVALUATOR_START_PAGE:String = "evaluatorStartPage";
 		public static const GROUP_SIGNUP:String = "groupSignup";
 	}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         width="100%"
+         height="100%"
+         verticalAlign="middle"
+         horizontalAlign="center">
+    <mx:Script>
+		<![CDATA[
+        import org.adaptiveplatform.surveys.view.researchCreator.ResearchCreatorModel;
+
+        [Bindable]
+        public var model:ResearchCreatorModel;
+        [Bindable]
+        public var stepModel:RangeSelectionStepModel;
+        ]]>
+	</mx:Script>
+    <!-- validate date period inside model
+    <validators:DatePeriodValidator id="timePeriodValidator" startDate="{model.defaultStartingDate}" source="{end}"
+                                    property="text"
+                                    errorMessage="{resourceManager.getString('adaptive', 'timePeriodValidatorText')}"
+                                    required="false"/>
+    -->
+
+    <mx:Form>
+        <mx:FormItem label="{resourceManager.getString('adaptive', 'researchName')}:" required="true">
+            <mx:TextInput text="@{stepModel.surveyName}"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('adaptive', 'validFrom')}:">
+            <mx:DateField selectedDate="{stepModel.defaultStartingDate}"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('adaptive', 'validTo')}:">
+            <mx:DateField selectedDate="{stepModel.defaultEndingDate}"/>
+        </mx:FormItem>
+    </mx:Form>
+</mx:VBox>

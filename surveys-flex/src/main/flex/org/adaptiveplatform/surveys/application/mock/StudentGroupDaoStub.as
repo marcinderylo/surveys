@@ -8,7 +8,7 @@ import org.adaptiveplatform.surveys.dto.generated.StudentGroupQuery;
 
 internal class StudentGroupDaoStub implements StudentGroupDao {
 
-    private var random:RandomDto = new RandomDto();
+    private var random:RandomDtoGenerator = new RandomDtoGenerator();
     private var groups:ArrayCollection = new ArrayCollection();
 
     public function StudentGroupDaoStub() {

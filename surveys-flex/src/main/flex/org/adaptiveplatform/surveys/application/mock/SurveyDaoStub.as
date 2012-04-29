@@ -10,7 +10,7 @@ import org.adaptiveplatform.surveys.dto.generated.SurveyTemplateQuery;
 
 internal class SurveyDaoStub implements SurveyDao {
 
-    private var random:RandomDto = new RandomDto();
+    private var random:RandomDtoGenerator = new RandomDtoGenerator();
     private var filled:ArrayCollection = new ArrayCollection();
     private var published:ArrayCollection = new ArrayCollection();
     private var templates:ArrayCollection = new ArrayCollection();

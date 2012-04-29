@@ -9,7 +9,7 @@ import org.adaptiveplatform.surveys.dto.generated.ResearchesQuery;
 
 internal class EvaluationDaoStub implements EvaluationDao {
 
-    private var random:RandomDto = new RandomDto();
+    private var random:RandomDtoGenerator = new RandomDtoGenerator();
 
     private var researches:ArrayCollection = new ArrayCollection();
     private var activities:ArrayCollection = new ArrayCollection();

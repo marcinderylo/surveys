@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         width="100%"
+         height="100%">
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.DateField;
+
+        import org.adaptiveplatform.surveys.view.researchCreator.ResearchCreatorModel;
+
+        [Bindable]
+        public var model:ResearchCreatorModel;
+        [Bindable]
+        public var stepModel:ConfirmationStepModel;
+        ]]>
+	</mx:Script>
+    <!--<components:DisplayAnswerQuestionComponent question="{question}"/>-->
+    <mx:Label text="{resourceManager.getString('adaptive', 'surveyTemplate')}: {stepModel.surveyName}"/>
+    <mx:Label
+            text="{resourceManager.getString('adaptive', 'validFrom')}: {DateField.dateToString(stepModel.defaultStartingDate, 'DD/MM/YYYY')}"/>
+    <mx:Label text="{resourceManager.getString('adaptive', 'validTo')}: {DateField.dateToString(stepModel.defaultEndingDate, 'DD/MM/YYYY')}"/>
+    <mx:DataGrid id="groupList"
+                 dataProvider="{stepModel.groupsToAdd}"
+                 width="100%"
+                 height="100%"
+                 rowHeight="26"
+                 draggableColumns="false"
+                 sortableColumns="true"
+                 selectable="true"
+                 editable="true"
+                 allowMultipleSelection="true">
+        <mx:columns>
+            <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'groupName')}"
+                               dataField="groupName"
+                               editable="false"/>
+            <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'validFrom')}"
+                               dataField="validFrom"
+                               itemRenderer="mx.controls.DateField"
+                               rendererIsEditor="true"
+                               width="150"
+                               editorDataField="selectedDate"/>
+            <mx:DataGridColumn headerText="{resourceManager.getString('adaptive', 'validTo')}"
+                               dataField="validTo"
+                               itemRenderer="mx.controls.DateField"
+                               rendererIsEditor="true"
+                               width="150"
+                               editorDataField="selectedDate"/>
+        </mx:columns>
+    </mx:DataGrid>
+
+</mx:VBox>

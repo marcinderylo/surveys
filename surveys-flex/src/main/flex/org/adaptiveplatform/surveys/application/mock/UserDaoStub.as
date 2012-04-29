@@ -9,7 +9,7 @@ import org.adaptiveplatform.surveys.dto.generated.UserDto;
 import org.adaptiveplatform.surveys.dto.generated.UserQuery;
 
 internal class UserDaoStub implements UserDao {
-    private var random:RandomDto = new RandomDto();
+    private var random:RandomDtoGenerator = new RandomDtoGenerator();
     private var users:ArrayCollection = new ArrayCollection();
 
     public function UserDaoStub(count:int = 100) {
