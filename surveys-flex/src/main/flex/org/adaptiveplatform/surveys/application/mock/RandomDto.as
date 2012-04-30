@@ -2,12 +2,12 @@ package org.adaptiveplatform.surveys.application.mock {
 import mx.collections.ArrayCollection;
 
 import org.adaptiveplatform.surveys.application.UserRole;
-import org.adaptiveplatform.surveys.application.generated.UserDao;
 import org.adaptiveplatform.surveys.dto.generated.ActivityTypeEnum;
 import org.adaptiveplatform.surveys.dto.generated.AnswerTemplateDto;
 import org.adaptiveplatform.surveys.dto.generated.EvaluationActivityDto;
 import org.adaptiveplatform.surveys.dto.generated.FilledSurveyDto;
 import org.adaptiveplatform.surveys.dto.generated.FillingProgressDto;
+import org.adaptiveplatform.surveys.dto.generated.FillingStatusEnum;
 import org.adaptiveplatform.surveys.dto.generated.PublishedSurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.generated.QuestionEvaluationDto;
 import org.adaptiveplatform.surveys.dto.generated.QuestionTemplateDto;
@@ -42,6 +42,7 @@ public class RandomDto {
         research.name = random.name();
         research.templateDto = surveyTemplate();
         research.fillingProgress = fillingProgress();
+        research.status = FillingStatusEnum.FILLING_IN_PROGRESS;
         research.questions = new ArrayCollection();
         for (var i:int = 0; i < 5; i++) {
             research.questions.addItem(questionEvaluation());

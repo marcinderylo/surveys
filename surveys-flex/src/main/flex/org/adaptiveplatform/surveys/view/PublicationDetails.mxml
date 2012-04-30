@@ -81,7 +81,7 @@
 						questions=research.templateDto.questions;
 						filledSurveys=research.submittedSurveys;
 						if (research.status)
-							status.text=research.status.name;
+							status.text=resourceManager.getString('adaptive', 'org.adaptiveplatform.surveys.dto.generated.FillingStatusEnum.' + research.status.name);
 						groupNames.text="";
 						for each (var group:String in result.groups) {
 							groupNames.text+=group + ", ";
