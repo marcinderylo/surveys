@@ -3,7 +3,7 @@ package org.adaptiveplatform.surveys.acceptance;
 import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.EvaluationDao;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.ResearchDto;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class GivenResearchWithPublishedTemplateEvaluatorShould extends Container
     @Resource
     private EvaluationDao dao;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
     @Resource
     private CoreFixtureBuilder users;
 

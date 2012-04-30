@@ -5,7 +5,7 @@ import org.adaptiveplatform.surveys.application.StudentGroupDao;
 import org.adaptiveplatform.surveys.application.StudentGroupFacade;
 import org.adaptiveplatform.surveys.application.SurveyFacade;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.*;
 import org.adaptiveplatform.surveys.exception.*;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class StudentGroupsSystemTest extends ContainerEnabledTest {
     @Resource
     private CoreFixtureBuilder users;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
 
     @Before
     public void initializeData() throws Exception {

@@ -29,17 +29,20 @@
 	<logging>
 		<target class="flex.messaging.log.ConsoleTarget" level="Error">
 			<properties>
+                <categoryPrefix>blazeds</categoryPrefix>
 				<prefix>[BlazeDS]</prefix>
 				<includeDate>false</includeDate>
 				<includeTime>false</includeTime>
 				<includeLevel>false</includeLevel>
 				<includeCategory>false</includeCategory>
 			</properties>
+            <!--
 			<filters>
 				<pattern>Endpoint.*</pattern>
 				<pattern>Service.*</pattern>
 				<pattern>Configuration</pattern>
 			</filters>
+			-->
 		</target>
 	</logging>
 	<flex-client>

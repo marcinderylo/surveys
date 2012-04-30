@@ -80,7 +80,7 @@ public class SurveyPublication implements Serializable {
 
         public void enableFillingInPeriod(DateTime from, DateTime to) {
                 DateTime start = from != null ? from : new DateTime();
-                DateTime end = to != null ? to : new DateTime().plusYears(10);
+                DateTime end = to != null ? to : start.plusYears(10);
                 this.availabilityPeriod = new Interval(start, end);
         }
 }

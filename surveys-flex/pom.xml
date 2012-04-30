@@ -46,7 +46,6 @@
 					</dependency>
 				</dependencies>
 				<configuration>
-                    <debug>true</debug>
 					<targetPlayer>10.0.0</targetPlayer>
 					<skipTest>${skip.flex.tests}</skipTest>
                     <localesCompiled>

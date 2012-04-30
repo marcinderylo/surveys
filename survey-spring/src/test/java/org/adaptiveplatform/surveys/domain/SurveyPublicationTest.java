@@ -53,12 +53,6 @@ public class SurveyPublicationTest {
 	}
 
 	@Test
-	public void shouldFillingBeDisabledOutsideOfAnStartlessPeriod() throws Exception {
-		whenEnablingSurveyFillingInPeriod(null, oneHourAgo());
-		expectThatSurveyFillingIsForbiddenNow();
-	}
-
-	@Test
 	public void shouldFillingBeEnabledIfNoFillingPeriodIsSet() throws Exception {
 		whenEnablingSurveyFillingInPeriod(null, null);
 		expectThatSurveyFillingIsPossibleNow();

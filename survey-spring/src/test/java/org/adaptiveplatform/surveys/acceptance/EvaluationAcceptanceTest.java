@@ -4,7 +4,7 @@ import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.EvaluationDao;
 import org.adaptiveplatform.surveys.application.EvaluationFacade;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.*;
 import org.adaptiveplatform.surveys.test.Asserts;
 import org.junit.Before;
@@ -35,7 +35,7 @@ public class EvaluationAcceptanceTest extends ContainerEnabledTest {
     @Resource
     private EvaluationFacade facade;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
     @Resource
     private CoreFixtureBuilder users;
 

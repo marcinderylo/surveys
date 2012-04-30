@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.EvaluationDao;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.*;
 import org.adaptiveplatform.surveys.exception.NoSuchResearchException;
 import org.junit.Assert;
@@ -31,7 +31,7 @@ public class ResearchesManagementAcceptanceTest extends ContainerEnabledTest {
     @Resource
     private CoreFixtureBuilder users;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
 
     @Resource
     private EvaluationDao dao;

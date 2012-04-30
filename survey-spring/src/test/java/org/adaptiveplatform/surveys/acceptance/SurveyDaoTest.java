@@ -3,7 +3,7 @@ package org.adaptiveplatform.surveys.acceptance;
 import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.*;
 import org.adaptiveplatform.surveys.exception.FilledSurveyDoesNotExistException;
 import org.junit.Before;
@@ -32,7 +32,7 @@ public class SurveyDaoTest extends ContainerEnabledTest {
     @Resource
     private SurveyDao dao;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
     @Resource
     private CoreFixtureBuilder users;
 

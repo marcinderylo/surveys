@@ -9,5 +9,17 @@ package org.adaptiveplatform.surveys.dto.generated {
     
     	public function QuestionTemplateDto(){
 		}
+
+        public function requiredComment():Boolean {
+            if(type.equals(QuestionTypeEnum.OPEN)){
+                return true;
+            }
+            for each (var answer:AnswerTemplateDto in answers) {
+                if(answer.requiresComment){
+                    return true;
+                }
+            }
+            return false;
+        }
 	}
 }

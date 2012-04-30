@@ -4,7 +4,7 @@ import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.application.SurveyFacade;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.*;
 import org.adaptiveplatform.surveys.exception.NotAllowedToPublishTemplatesInGroupException;
 import org.adaptiveplatform.surveys.exception.SurveyTemplateAlreadyExistsException;
@@ -39,7 +39,7 @@ public class HavingANewSurveyTemplateWithQuestionsEvaluatorShould extends Contai
     @Resource
     private CoreFixtureBuilder users;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
 
     private Long inaccessibleGroupId;
     private Long existingTemplateId;

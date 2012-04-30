@@ -3,7 +3,7 @@ package org.adaptiveplatform.surveys.acceptance;
 import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.SurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.SurveyTemplateQuery;
 import org.junit.Before;
@@ -27,7 +27,7 @@ public class SurveyTemplateCreationTest extends ContainerEnabledTest {
     @Resource
     private SurveyDao dao;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
     @Resource
     private CoreFixtureBuilder users;
 

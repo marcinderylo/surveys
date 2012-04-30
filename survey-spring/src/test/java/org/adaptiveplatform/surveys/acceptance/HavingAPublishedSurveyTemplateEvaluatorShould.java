@@ -4,7 +4,7 @@ import org.adaptiveplatform.surveys.ContainerEnabledTest;
 import org.adaptiveplatform.surveys.application.SurveyDao;
 import org.adaptiveplatform.surveys.application.SurveyFacade;
 import org.adaptiveplatform.surveys.builders.CoreFixtureBuilder;
-import org.adaptiveplatform.surveys.builders.SurveysFixtureBuilder;
+import org.adaptiveplatform.surveys.builders.SurveysFixtureCreator;
 import org.adaptiveplatform.surveys.dto.GroupRoleEnum;
 import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateDto;
 import org.adaptiveplatform.surveys.dto.PublishedSurveyTemplateQuery;
@@ -30,7 +30,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class HavingAPublishedSurveyTemplateEvaluatorShould extends ContainerEnabledTest {
 
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
     @Resource
     private CoreFixtureBuilder users;
 

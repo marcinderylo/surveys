@@ -30,7 +30,7 @@ public class SurveysSampleData {
     @Resource
     private CoreFixtureBuilder users;
     @Resource
-    private SurveysFixtureBuilder surveys;
+    private SurveysFixtureCreator surveys;
     @Resource
     private SurveyDao surveyDao;
     @Resource
