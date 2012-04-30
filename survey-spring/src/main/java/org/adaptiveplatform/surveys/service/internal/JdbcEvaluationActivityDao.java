@@ -1,26 +1,24 @@
 package org.adaptiveplatform.surveys.service.internal;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.adaptiveplatform.surveys.dto.ActivitiesQuery;
 import org.adaptiveplatform.surveys.dto.ActivityTypeEnum;
 import org.adaptiveplatform.surveys.dto.EvaluationActivityDto;
 import org.adaptiveplatform.surveys.dto.UserDto;
 import org.adaptiveplatform.surveys.service.EvaluationActivityDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author Marcin Deryło
  */
 @Repository
@@ -29,38 +27,27 @@ public class JdbcEvaluationActivityDao implements EvaluationActivityDao {
 
     public static final String GET_ALL_ACTIVITIES_QUERY =
             "SELECT * FROM EVALUATION_ACTIVITIES WHERE USER_ID = :userId "
-            + "ORDER BY CREATION_DATE DESC";
-    private JdbcTemplate jdbcTemplate;
+                    + "ORDER BY CREATION_DATE DESC";
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     public JdbcEvaluationActivityDao(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
     @Override
     public List<EvaluationActivityDto> query(ActivitiesQuery query,
-            UserDto caller) {
-        return jdbcTemplate.query(GET_ALL_ACTIVITIES_QUERY,
-                statementPreparator(query, caller), resultRowMapper());
+                                             UserDto caller) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("userId", caller.getId());
+        if (shouldLimitResults(query)) {
+            // todo limit results ...
+        }
+        return jdbcTemplate.query(GET_ALL_ACTIVITIES_QUERY, parameters, resultRowMapper());
     }
 
-    private PreparedStatementSetter statementPreparator(
-            final ActivitiesQuery query,
-            final UserDto caller) {
-        return new PreparedStatementSetter() {
-
-            @Override
-            public void setValues(PreparedStatement ps) throws SQLException {
-                if (shouldLimitResults(query)) {
-                    ps.setMaxRows(query.getMaxNumberOfResults());
-                }
-                ps.setLong(1, caller.getId());
-            }
-
-            private boolean shouldLimitResults(ActivitiesQuery query) {
-                return query.getMaxNumberOfResults() > 0;
-            }
-        };
+    private boolean shouldLimitResults(ActivitiesQuery query) {
+        return query.getMaxNumberOfResults() > 0;
     }
 
     private RowMapper<EvaluationActivityDto> resultRowMapper() {
