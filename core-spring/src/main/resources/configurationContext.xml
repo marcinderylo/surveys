@@ -1,42 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
 
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <import resource="classpath:/datasourceContext.xml" />
-    <import resource="classpath:/securityContext.xml" />
+    <import resource="classpath:/datasourceContext.xml"/>
+    <import resource="classpath:/securityContext.xml"/>
 
-    <context:component-scan base-package="org.adaptiveplatform.surveys" />
+    <context:component-scan base-package="org.adaptiveplatform.surveys"/>
 
-    <tx:annotation-driven />
+    <tx:annotation-driven/>
 
-	<!-- validation -->
+    <!-- validation -->
     <bean id="beansValidatorsFactory" class="javax.validation.Validation"
-		factory-method="buildDefaultValidatorFactory" scope="singleton" />
+          factory-method="buildDefaultValidatorFactory" scope="singleton"/>
 
     <bean id="beansValidator" factory-bean="beansValidatorsFactory"
-		factory-method="getValidator" />
+          factory-method="getValidator"/>
 
     <bean id="methodCallValidator"
-		class="org.adaptiveplatform.adapt.commons.validation.argsvalidation.impl.ApacheBValMethodValidatorAdapter">
-        <constructor-arg ref="beansValidator" />
+          class="org.adaptiveplatform.adapt.commons.validation.argsvalidation.impl.ApacheBValMethodValidatorAdapter">
+        <constructor-arg ref="beansValidator"/>
     </bean>
 
     <bean id="argsValidatingAdvice"
-		class="org.adaptiveplatform.adapt.quiz.support.validation.MethodValidationAspectJAdvice">
-        <constructor-arg ref="methodCallValidator" />
+          class="org.adaptiveplatform.adapt.quiz.support.validation.MethodValidationAspectJAdvice">
+        <constructor-arg ref="methodCallValidator"/>
     </bean>
     <aop:config>
         <aop:pointcut id="facadeOperation"
-			expression="execution(* org.adaptiveplatform.surveys.application.*FacadeImpl.*(..))" />
+                      expression="execution(* org.adaptiveplatform.surveys.application.*FacadeImpl.*(..))"/>
+        <aop:pointcut id="daoOperation"
+                      expression="execution(* org.adaptiveplatform.surveys.application.*Dao*.*(..))"/>
+        <aop:advisor advice-ref="transactions" pointcut-ref="facadeOperation"/>
+        <aop:advisor advice-ref="transactions" pointcut-ref="daoOperation"/>
         <aop:aspect id="validatingAspect" ref="argsValidatingAdvice">
-            <aop:before pointcut-ref="facadeOperation" method="validateMethodArguments" />
+            <aop:before pointcut-ref="facadeOperation" method="validateMethodArguments"/>
         </aop:aspect>
     </aop:config>
 </beans>
